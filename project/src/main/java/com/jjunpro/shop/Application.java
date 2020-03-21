@@ -10,5 +10,6 @@ public class Application {
         SpringApplication application = new SpringApplication(Application.class);
         application.setBanner(new CustomBanner());
         application.run(args);
+        // 젠킨슨 테스트
     }
 }
