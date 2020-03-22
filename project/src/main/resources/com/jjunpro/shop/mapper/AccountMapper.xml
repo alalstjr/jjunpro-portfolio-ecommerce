@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jjunpro.shop.mapper.AccountMapper">
+
+  <select id="selectAccountById" resultType="account">
+        SELECT ID
+                ,USERNAME
+                ,EMAIL
+                ,FIRSTNAME
+                ,LASTNAME
+        FROM ACCOUNT
+        WHERE ID = #{id}
+    </select>
+
+  <select id="selectAllAccount" resultType="account">
+        SELECT  ID
+                ,USERNAME
+                ,EMAIL
+                ,FIRSTNAME
+                ,LASTNAME
+        FROM ACCOUNT
+    </select>
+
+  <insert id="insertAccount">
+      INSERT INTO ACCOUNT (USERNAME, EMAIL, FIRSTNAME, LASTNAME)
+      VALUES (#{username}, #{email}, #{firstname}, #{lastname})
+    </insert>
+
+</mapper>
