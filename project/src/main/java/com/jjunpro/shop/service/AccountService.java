@@ -1,28 +1,24 @@
 package com.jjunpro.shop.service;
 
-import com.jjunpro.shop.mapper.AccountMapper;
 import com.jjunpro.shop.model.Account;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import java.util.Optional;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
-@Service
-@Transactional
-@RequiredArgsConstructor
-public class AccountService {
+public interface AccountService extends UserDetailsService {
 
-    private final AccountMapper accountMapper;
+    Optional<Account> findById(Long id);
 
-    public Account getAccountById(Long id) {
-        return accountMapper.selectAccountById(id);
-    }
+    List<Account> findAll();
 
-    public List<Account> getAllAccount() {
-        return accountMapper.selectAllAccount();
-    }
+    Account findByUsername(String username);
 
-    public void addAccount(Account account) {
-        accountMapper.insertAccount(account);
-    }
+    Optional<Account> findByEmail(String email);
+
+    Account insertAccount(Account account);
+
+    Long updateAccount(Account account);
+
+    UserDetails loadUserByUsername(String email);
 }

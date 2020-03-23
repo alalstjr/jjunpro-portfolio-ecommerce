@@ -3,28 +3,53 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jjunpro.shop.mapper.AccountMapper">
 
-  <select id="selectAccountById" resultType="account">
-        SELECT ID
-                ,USERNAME
-                ,EMAIL
-                ,FIRSTNAME
-                ,LASTNAME
-        FROM ACCOUNT
+  <select id="findById" resultType="account">
+        SELECT id
+                ,username
+                ,email
+                ,firstName
+                ,lastName
+        FROM account
         WHERE ID = #{id}
     </select>
 
-  <select id="selectAllAccount" resultType="account">
-        SELECT  ID
-                ,USERNAME
-                ,EMAIL
-                ,FIRSTNAME
-                ,LASTNAME
-        FROM ACCOUNT
+  <select id="findAll" resultType="account">
+        SELECT  id
+                ,username
+                ,email
+                ,firstName
+                ,lastName
+        FROM account
     </select>
 
-  <insert id="insertAccount">
-      INSERT INTO ACCOUNT (USERNAME, EMAIL, FIRSTNAME, LASTNAME)
-      VALUES (#{username}, #{email}, #{firstname}, #{lastname})
-    </insert>
+  <select id="findByUsername" resultType="account">
+    SELECT * FROM account WHERE username = #{username}
+  </select>
+
+  <select id="findByEmail" resultType="account">
+    SELECT * FROM account WHERE email = #{email}
+  </select>
+
+  <select id="findByEmailAndEnabled" resultType="account">
+    SELECT * FROM account WHERE email = #{email} AND #{enabled} = true
+  </select>
+
+  <insert id="insertAccount" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO account (username, email, firstName, lastName, password, enabled, userRole)
+    VALUES (#{username}, #{email}, #{firstName}, #{lastName}, #{password}, #{enabled}, #{userRole})
+  </insert>
+
+  <update id="updateAccount" useGeneratedKeys="true" keyProperty="id">
+    UPDATE account
+    SET
+    username = #{username},
+    email = #{email},
+    firstName = #{firstName},
+    lastName = #{lastName},
+    password = #{password},
+    enabled = #{enabled},
+    userRole = #{userRole}
+    WHERE id = #{id}
+  </update>
 
 </mapper>

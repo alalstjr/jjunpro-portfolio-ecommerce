@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.jjunpro'
-version = '0.0.0'
+version = '1.0.0'
 sourceCompatibility = '11'
 
 configurations {
@@ -21,7 +21,13 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.social:spring-social-facebook:2.0.3.RELEASE'
+
     implementation 'org.springframework.social:spring-social-security:1.1.6.RELEASE'
+    implementation 'org.springframework.social:spring-social-config:1.1.6.RELEASE'
+    implementation 'org.springframework.social:spring-social-google:1.0.0.RELEASE'
+    implementation 'org.springframework.social:spring-social-twitter:1.1.2.RELEASE'
+
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -34,7 +40,6 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'org.springframework.security:spring-security-test'
-    implementation 'junit:junit:4.12'
     implementation 'junit:junit:4.12'
 }
 
