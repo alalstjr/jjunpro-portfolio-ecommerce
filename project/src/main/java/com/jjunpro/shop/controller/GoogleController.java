@@ -1,10 +1,14 @@
 package com.jjunpro.shop.controller;
 
+import com.google.api.services.people.v1.model.EmailAddress;
+import com.google.api.services.people.v1.model.Name;
+import com.google.api.services.people.v1.model.Person;
 import com.jjunpro.shop.enums.UserRole;
 import com.jjunpro.shop.model.Account;
 import com.jjunpro.shop.service.AccountServiceImpl;
-import com.jjunpro.shop.service.FacebookServiceImpl;
+import com.jjunpro.shop.service.GoogleServiceImpl;
 import com.jjunpro.shop.service.SecurityServiceImpl;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
@@ -12,55 +16,49 @@ import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.social.facebook.api.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 @RequiredArgsConstructor
-public class FacebookController {
+public class GoogleController {
 
-    private final FacebookServiceImpl facebookService;
+    private final GoogleServiceImpl   googleService;
     private final AccountServiceImpl  accountService;
     private final SecurityServiceImpl securityService;
 
-    @GetMapping("/facebookLogin")
-    public RedirectView facebookLogin() {
-        RedirectView redirectView = new RedirectView();
-        String       url          = facebookService.facebookLogin();
+    @GetMapping("/googleLogin")
+    public RedirectView googleLogin() {
 
-        System.out.println(url);
+        RedirectView redirectView = new RedirectView();
+        String       url          = googleService.googleLogin();
         redirectView.setUrl(url);
 
         return redirectView;
     }
 
-    @GetMapping("/facebook")
-    public String facebook(@RequestParam("code") String code) {
-        String accessToken = facebookService.getFacebookAccessToken(code);
+    /* Google Login Call Back 턴 메소드 */
+    @GetMapping("/google")
+    public String google(
+            @RequestParam("code") String code,
+            HttpServletRequest request,
+            Model model
+    ) throws IOException {
+        Person       googleUserProfile = googleService.getGoogleUserProfile(code);
+        Name         userName          = googleUserProfile.getNames().iterator().next();
+        EmailAddress emailAddress      = googleUserProfile.getEmailAddresses().iterator().next();
 
-        return "redirect:/facebookProfileData/" + accessToken;
-    }
-
-    @GetMapping("/facebookProfileData/{accessToken:.+}")
-    public String facebookProfileData(
-            @PathVariable String accessToken,
-            Model model,
-            HttpServletRequest request
-    ) {
-        User facebookUserProfile = facebookService.getFacebookUserProfile(accessToken);
-
-        Optional<Account> accountDB = accountService.findByEmail(facebookUserProfile.getEmail());
+        Optional<Account> accountDB = accountService
+                .findByEmail(emailAddress.getValue());
 
         UserRole userrole;
 
         if (accountDB.isPresent()) {
-            accountDB.get().setFirstName(facebookUserProfile.getFirstName());
-            accountDB.get().setLastName(facebookUserProfile.getLastName());
+            accountDB.get().setFirstName(userName.getGivenName());
+            accountDB.get().setLastName(userName.getFamilyName());
             userrole = accountDB.get().getUserRole();
 
             accountService.updateAccount(accountDB.get());
@@ -68,8 +66,8 @@ public class FacebookController {
             model.addAttribute("user", accountDB.get());
         } else {
             Account account = Account.builder()
-                    .firstName(facebookUserProfile.getFirstName())
-                    .lastName(facebookUserProfile.getLastName())
+                    .firstName(userName.getGivenName())
+                    .lastName(userName.getFamilyName())
                     .enabled(true)
                     .userRole(UserRole.USER)
                     .build();
@@ -81,7 +79,7 @@ public class FacebookController {
         }
 
         securityService.autologin(
-                facebookUserProfile.getEmail(),
+                emailAddress.getValue(),
                 null,
                 userrole,
                 request

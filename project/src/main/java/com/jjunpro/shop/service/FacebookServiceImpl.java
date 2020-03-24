@@ -36,7 +36,7 @@ public class FacebookServiceImpl implements FacebookService {
      * facebooklogin -> getFacebookAccessToken
      * */
     @Override
-    public String facebooklogin() {
+    public String facebookLogin() {
         OAuth2Parameters parameters = new OAuth2Parameters();
 
         parameters.setRedirectUri(this.uri);
@@ -72,6 +72,7 @@ public class FacebookServiceImpl implements FacebookService {
         String[]         fields           = {"id", "first_name", "last_name", "email"};
         FacebookTemplate facebookTemplate = new FacebookTemplate(accessToken);
 
-        return facebookTemplate.fetchObject("me", User.class, fields);
+        return facebookTemplate
+                .fetchObject("me", User.class, fields);
     }
 }
