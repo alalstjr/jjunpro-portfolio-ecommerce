@@ -46,8 +46,9 @@ public class AccountServiceImpl implements AccountService {
     public Account insertAccount(Account account) {
         account.setEnabled(true);
         account.setUserRole(UserRole.USER);
-        /* TUDO 페스워드 필수 작성 아닌것으로 수정 */
-        account.encodePassword(passwordEncoder);
+        if(account.getPassword() != null) {
+            account.encodePassword(passwordEncoder);
+        }
 
         Long              insertAccount = accountMapper.insertAccount(account);
         Optional<Account> accountDB     = this.findById(insertAccount);

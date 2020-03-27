@@ -29,6 +29,8 @@ implementation 'com.google.apis:google-api-services-people:v1-rev528-1.25.0'
 
 https://console.developers.google.com/apis/dashboard?authuser=1&project=jjunpro-project
 
+사용자 인증 정보 > 사용자 인증정보 만들기 + > 웹 에플리케이션 > 승인된 리디렉션 URI > 원하는 로그인 콜백 링크 작성 'http://localhost:8081/google' > ID, 클라이언트 보안 비밀 프로젝트 프로퍼티스에 추가
+
 ## GoogleLogin scope 설정
 
 > GoogleServiceImpl.class
@@ -184,3 +186,7 @@ public String google(
     return "account/userProfile";
 }
 ~~~
+
+# 참고 사이트
+
+[social-login-oauth2 구버전 전체적인 코드 틀만 참고함](#https://github.com/talk2amareswaran/social-login-oauth2-spring-boot)

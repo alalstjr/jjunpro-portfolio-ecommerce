@@ -19,10 +19,6 @@ public class UserFormDTO {
     private String signInProvider;
     private String providerUserId;
 
-    public UserFormDTO() {
-
-    }
-
     public UserFormDTO(Connection<?> connection) {
         UserProfile socialUserProfile = connection.fetchUserProfile();
         this.id = null;

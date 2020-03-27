@@ -36,7 +36,7 @@ public class FacebookServiceImpl implements FacebookService {
      * facebooklogin -> getFacebookAccessToken
      * */
     @Override
-    public String facebookLogin() {
+    public String login() {
         OAuth2Parameters parameters = new OAuth2Parameters();
 
         parameters.setRedirectUri(this.uri);
@@ -54,7 +54,7 @@ public class FacebookServiceImpl implements FacebookService {
      * getFacebookAccessToken -> getFacebookUserProfile
      * */
     @Override
-    public String getFacebookAccessToken(String code) {
+    public String getAccessToken(String code) {
         return facebookConnectionFactory()
                 .getOAuthOperations()
                 .exchangeForAccess(code, this.uri, null)
@@ -68,7 +68,7 @@ public class FacebookServiceImpl implements FacebookService {
      * getFacebookAccessToken -> getFacebookUserProfile
      * */
     @Override
-    public User getFacebookUserProfile(String accessToken) {
+    public User getUserProfile(String accessToken) {
         String[]         fields           = {"id", "first_name", "last_name", "email"};
         FacebookTemplate facebookTemplate = new FacebookTemplate(accessToken);
 

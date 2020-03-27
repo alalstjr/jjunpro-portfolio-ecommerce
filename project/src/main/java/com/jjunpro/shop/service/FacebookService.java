@@ -4,9 +4,9 @@ import org.springframework.social.facebook.api.User;
 
 public interface FacebookService {
 
-    String facebookLogin();
+    String login();
 
-    String getFacebookAccessToken(String code);
+    String getAccessToken(String code);
 
-    User getFacebookUserProfile(String accessToken);
+    User getUserProfile(String accessToken);
 }

@@ -35,28 +35,21 @@ public class GoogleServiceImpl implements GoogleService {
      * scope 설정
      * https://developers.google.com/people/api/rest/v1/people/get
      * */
-
     @Override
-    public String googleLogin() {
-
+    public String login() {
         List<String> SCOPES = Arrays.asList(
                 PeopleServiceScopes.USERINFO_EMAIL,
                 PeopleServiceScopes.USERINFO_PROFILE
         );
 
-        String authorizationUrl =
-                new GoogleBrowserClientRequestUrl(
-                        this.googleId,
-                        this.uri,
-                        SCOPES
-                ).setResponseTypes(Collections.singleton("code")).build();
-
-        return authorizationUrl;
+        return new GoogleBrowserClientRequestUrl(this.googleId, this.uri, SCOPES)
+                .setResponseTypes(Collections.singleton("code"))
+                .build();
 
     }
 
     @Override
-    public Person getGoogleUserProfile(String code) throws IOException {
+    public Person getUserProfile(String code) throws IOException {
         HttpTransport  httpTransport = new NetHttpTransport();
         JacksonFactory jsonFactory   = new JacksonFactory();
 
@@ -84,12 +77,10 @@ public class GoogleServiceImpl implements GoogleService {
          * Get the person 값 가져오기
          * https://developers.google.com/people/v1/read-people
          * */
-        Person execute = peopleService
+        return peopleService
                 .people()
                 .get("people/me")
                 .setPersonFields("names,emailAddresses")
                 .execute();
-
-        return execute;
     }
 }
