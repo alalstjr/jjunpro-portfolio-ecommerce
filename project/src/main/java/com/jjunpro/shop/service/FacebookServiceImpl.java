@@ -16,14 +16,14 @@ public class FacebookServiceImpl implements FacebookService {
     private String uri;
 
     @Value("${spring.social.facebook.app-id}")
-    private String facebookId;
+    private String appId;
 
     @Value("${spring.social.facebook.app-secret}")
-    private String facebookSecret;
+    private String appSecret;
 
     /* FaceBook 관리자 접근 권한 생성 */
     private FacebookConnectionFactory facebookConnectionFactory() {
-        return new FacebookConnectionFactory(this.facebookId, this.facebookSecret);
+        return new FacebookConnectionFactory(this.appId, this.appSecret);
     }
 
     /*

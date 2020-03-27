@@ -26,10 +26,10 @@ public class GoogleServiceImpl implements GoogleService {
     private String uri;
 
     @Value("${spring.social.google.app-id}")
-    private String googleId;
+    private String appId;
 
     @Value("${spring.social.google.app-secret}")
-    private String googleSecret;
+    private String appSecret;
 
     /*
      * scope 설정
@@ -42,7 +42,7 @@ public class GoogleServiceImpl implements GoogleService {
                 PeopleServiceScopes.USERINFO_PROFILE
         );
 
-        return new GoogleBrowserClientRequestUrl(this.googleId, this.uri, SCOPES)
+        return new GoogleBrowserClientRequestUrl(this.appId, this.uri, SCOPES)
                 .setResponseTypes(Collections.singleton("code"))
                 .build();
 
@@ -57,8 +57,8 @@ public class GoogleServiceImpl implements GoogleService {
                 new GoogleAuthorizationCodeTokenRequest(
                         httpTransport,
                         jsonFactory,
-                        this.googleId,
-                        this.googleSecret,
+                        this.appId,
+                        this.appSecret,
                         code,
                         this.uri
                 ).execute();
@@ -66,7 +66,7 @@ public class GoogleServiceImpl implements GoogleService {
         GoogleCredential credential = new GoogleCredential.Builder()
                 .setTransport(httpTransport)
                 .setJsonFactory(jsonFactory)
-                .setClientSecrets(this.googleId, this.googleSecret)
+                .setClientSecrets(this.appId, this.appSecret)
                 .build()
                 .setFromTokenResponse(tokenResponse);
 

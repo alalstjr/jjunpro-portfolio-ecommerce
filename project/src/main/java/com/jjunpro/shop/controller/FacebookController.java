@@ -49,8 +49,10 @@ public class FacebookController {
             Model model,
             HttpServletRequest request
     ) {
+        /* 페이스북에서 받아온 사용자의 정보 */
         User userProfile = facebookService.getUserProfile(accessToken);
 
+        /* DB 내부에 사용자가 이미 가입되어 있는지 체크합니다. */
         Optional<Account> accountDB = accountService.findByEmail(userProfile.getEmail());
 
         UserRole userrole;

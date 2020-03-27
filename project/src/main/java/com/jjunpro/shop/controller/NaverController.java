@@ -1,12 +1,11 @@
 package com.jjunpro.shop.controller;
 
-import com.google.api.services.people.v1.model.EmailAddress;
-import com.google.api.services.people.v1.model.Name;
-import com.google.api.services.people.v1.model.Person;
+import com.jjunpro.shop.OAuth.naver.NaverAccount;
+import com.jjunpro.shop.OAuth.naver.NaverUser;
 import com.jjunpro.shop.enums.UserRole;
 import com.jjunpro.shop.model.Account;
 import com.jjunpro.shop.service.AccountServiceImpl;
-import com.jjunpro.shop.service.GoogleServiceImpl;
+import com.jjunpro.shop.service.NaverServiceImpl;
 import com.jjunpro.shop.service.SecurityServiceImpl;
 import java.io.IOException;
 import java.util.Optional;
@@ -21,45 +20,46 @@ import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/google")
-public class GoogleController {
+@RequestMapping("/naver")
+public class NaverController {
 
-    private final GoogleServiceImpl   googleService;
+    private final NaverServiceImpl    naverService;
     private final AccountServiceImpl  accountService;
     private final SecurityServiceImpl securityService;
 
     @GetMapping("/login")
     public RedirectView login() {
         RedirectView redirectView = new RedirectView();
-        String       url          = googleService.login();
+        String       url          = naverService.login();
 
         redirectView.setUrl(url);
 
         return redirectView;
     }
 
-    /* Google Login Call Back 턴 메소드 */
+    /* Naver Login Call Back 턴 메소드 */
     @GetMapping("")
-    public String google(
+    public String naver(
             @RequestParam("code") String code,
             HttpServletRequest request,
             Model model
     ) throws IOException {
-        /* 구글에서 받아온 사용자의 정보 */
-        Person       userProfile = googleService.getUserProfile(code);
-        Name         userName          = userProfile.getNames().iterator().next();
-        EmailAddress emailAddress      = userProfile.getEmailAddresses().iterator().next();
+        /* 네이버에서 받아온 사용자의 정보 */
+        NaverUser    userProfile   = naverService.getUserProfile(code);
+        NaverAccount naverAccount = userProfile.getResponse();
 
         /* DB 내부에 사용자가 이미 가입되어 있는지 체크합니다. */
         Optional<Account> accountDB = accountService
-                .findByEmail(emailAddress.getValue());
+                .findByEmail(naverAccount.getEmail());
 
         UserRole userrole;
 
         if (accountDB.isPresent()) {
-            accountDB.get().setEmail(emailAddress.getValue());
-            accountDB.get().setFirstName(userName.getGivenName());
-            accountDB.get().setLastName(userName.getFamilyName());
+            accountDB.get().setEmail(naverAccount.getEmail());
+            accountDB.get().setFirstName(naverAccount.getName());
+            accountDB.get().setAgeRange(naverAccount.getAge());
+            accountDB.get().setBirthday(naverAccount.getBirthday());
+            accountDB.get().setGender(naverAccount.getGender());
             userrole = accountDB.get().getUserRole();
 
             accountService.updateAccount(accountDB.get());
@@ -67,11 +67,13 @@ public class GoogleController {
             model.addAttribute("user", accountDB.get());
         } else {
             Account account = Account.builder()
-                    .email(emailAddress.getValue())
-                    .firstName(userName.getGivenName())
-                    .lastName(userName.getFamilyName())
+                    .email(naverAccount.getEmail())
+                    .firstName(naverAccount.getName())
                     .enabled(true)
                     .userRole(UserRole.USER)
+                    .ageRange(naverAccount.getAge())
+                    .birthday(naverAccount.getBirthday())
+                    .gender(naverAccount.getGender())
                     .build();
             userrole = account.getUserRole();
 
@@ -81,7 +83,7 @@ public class GoogleController {
         }
 
         securityService.autologin(
-                emailAddress.getValue(),
+                naverAccount.getEmail(),
                 null,
                 userrole,
                 request
