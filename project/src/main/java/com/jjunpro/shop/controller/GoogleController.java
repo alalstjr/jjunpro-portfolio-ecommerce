@@ -46,9 +46,46 @@ public class GoogleController {
             Model model
     ) throws IOException {
         /* 구글에서 받아온 사용자의 정보 */
-        Person       userProfile = googleService.getUserProfile(code);
-        Name         userName          = userProfile.getNames().iterator().next();
-        EmailAddress emailAddress      = userProfile.getEmailAddresses().iterator().next();
+        Person       userProfile  = googleService.getUserProfile(code);
+        Name         userName     = userProfile.getNames().iterator().next();
+        EmailAddress emailAddress = userProfile.getEmailAddresses().iterator().next();
+        String       ageRange     = null;
+        String       gender       = null;
+
+        /**
+         * Ex) JSON CODE
+         *
+         * "birthdays":[
+         *  {
+         *      "date":{
+         *          "day":21,
+         *          "month":7,
+         *          "year":1994
+         *      },
+         *      "metadata":{
+         *          "primary":true,
+         *              "source":{
+         *                  "id":"100376147650509948248",
+         *                  "type":"PROFILE"
+         *              }
+         *          }
+         *      }
+         *      ...
+         * ]
+         *
+         * 나누어져 있는 날짜를 합쳐서 저장힙니다.
+         * */
+        StringBuilder birthday = new StringBuilder();
+        if (userProfile.getBirthdays() != null) {
+            birthday.append(userProfile.getBirthdays().iterator().next().getDate().getYear());
+            birthday.append(userProfile.getBirthdays().iterator().next().getDate().getMonth());
+            birthday.append(userProfile.getBirthdays().iterator().next().getDate().getDay());
+        }
+
+        /* 사용자의 나이정보가 존재하는 경우 */
+        if (userProfile.getAgeRange() != null) {
+            ageRange = userProfile.getAgeRange();
+        }
 
         /* DB 내부에 사용자가 이미 가입되어 있는지 체크합니다. */
         Optional<Account> accountDB = accountService
@@ -60,6 +97,9 @@ public class GoogleController {
             accountDB.get().setEmail(emailAddress.getValue());
             accountDB.get().setFirstName(userName.getGivenName());
             accountDB.get().setLastName(userName.getFamilyName());
+            accountDB.get().setAgeRange(ageRange);
+            accountDB.get().setGender(gender);
+            accountDB.get().setBirthday(birthday.toString());
             userrole = accountDB.get().getUserRole();
 
             accountService.updateAccount(accountDB.get());
@@ -72,6 +112,9 @@ public class GoogleController {
                     .lastName(userName.getFamilyName())
                     .enabled(true)
                     .userRole(UserRole.USER)
+                    .ageRange(ageRange)
+                    .gender(gender)
+                    .birthday(birthday.toString())
                     .build();
             userrole = account.getUserRole();
 

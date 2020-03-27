@@ -58,6 +58,10 @@ public class NaverServiceImpl implements NaverService {
 
         NaverTemplate naverTemplate = new NaverTemplate(tokenResponse.getAccessToken());
 
+        /**
+         * Get the NaverUser 값 가져오기
+         * https://developers.naver.com/docs/login/api/
+         */
         return naverTemplate.fetchObject(NaverUser.class);
     }
 }

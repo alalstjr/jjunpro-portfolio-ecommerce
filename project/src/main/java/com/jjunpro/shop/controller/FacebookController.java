@@ -50,7 +50,23 @@ public class FacebookController {
             HttpServletRequest request
     ) {
         /* 페이스북에서 받아온 사용자의 정보 */
-        User userProfile = facebookService.getUserProfile(accessToken);
+        User   userProfile = facebookService.getUserProfile(accessToken);
+        String birthday    = null;
+        String ageRange    = null;
+        String gender      = null;
+
+        /* 사용자의 생일정보가 존재하는 경우 */
+        if (userProfile.getBirthday() != null) {
+            birthday = userProfile.getBirthday();
+        }
+        /* 사용자의 나이정보가 존재하는 경우 */
+        if (userProfile.getAgeRange() != null) {
+            ageRange = userProfile.getAgeRange().toString();
+        }
+        /* 사용자의 성별정보가 존재하는 경우 */
+        if (userProfile.getGender() != null) {
+            gender = userProfile.getGender();
+        }
 
         /* DB 내부에 사용자가 이미 가입되어 있는지 체크합니다. */
         Optional<Account> accountDB = accountService.findByEmail(userProfile.getEmail());
@@ -61,6 +77,9 @@ public class FacebookController {
             accountDB.get().setEmail(userProfile.getEmail());
             accountDB.get().setFirstName(userProfile.getFirstName());
             accountDB.get().setLastName(userProfile.getLastName());
+            accountDB.get().setBirthday(birthday);
+            accountDB.get().setAgeRange(ageRange);
+            accountDB.get().setGender(gender);
             userrole = accountDB.get().getUserRole();
 
             accountService.updateAccount(accountDB.get());
@@ -73,6 +92,9 @@ public class FacebookController {
                     .lastName(userProfile.getLastName())
                     .enabled(true)
                     .userRole(UserRole.USER)
+                    .birthday(birthday)
+                    .ageRange(ageRange)
+                    .gender(gender)
                     .build();
             userrole = account.getUserRole();
 

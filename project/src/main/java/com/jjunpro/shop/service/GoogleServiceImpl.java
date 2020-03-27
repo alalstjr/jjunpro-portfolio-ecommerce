@@ -31,15 +31,17 @@ public class GoogleServiceImpl implements GoogleService {
     @Value("${spring.social.google.app-secret}")
     private String appSecret;
 
-    /*
+    /**
      * scope 설정
+     * <p>
      * https://developers.google.com/people/api/rest/v1/people/get
-     * */
+     */
     @Override
     public String login() {
         List<String> SCOPES = Arrays.asList(
                 PeopleServiceScopes.USERINFO_EMAIL,
-                PeopleServiceScopes.USERINFO_PROFILE
+                PeopleServiceScopes.USERINFO_PROFILE,
+                PeopleServiceScopes.USER_BIRTHDAY_READ
         );
 
         return new GoogleBrowserClientRequestUrl(this.appId, this.uri, SCOPES)
@@ -73,14 +75,14 @@ public class GoogleServiceImpl implements GoogleService {
         PeopleService peopleService =
                 new PeopleService.Builder(httpTransport, jsonFactory, credential).build();
 
-        /*
+        /**
          * Get the person 값 가져오기
          * https://developers.google.com/people/v1/read-people
          * */
         return peopleService
                 .people()
                 .get("people/me")
-                .setPersonFields("names,emailAddresses")
+                .setPersonFields("names,emailAddresses,ageRange,birthdays,genders")
                 .execute();
     }
 }

@@ -45,8 +45,24 @@ public class KakaoContoller {
             Model model
     ) throws IOException {
         /* 카카오에서 받아온 사용자의 정보 */
-        KakaoUser userProfile = kakaoService.getUserProfile(code);
+        KakaoUser    userProfile  = kakaoService.getUserProfile(code);
         KakaoAccount kakaoAccount = userProfile.getKakao_account();
+        String       birthday     = null;
+        String       ageRange     = null;
+        String       gender       = null;
+
+        /* 사용자의 생일정보가 존재하는 경우 */
+        if (kakaoAccount.getBirthday() != null) {
+            birthday = kakaoAccount.getBirthday();
+        }
+        /* 사용자의 나이정보가 존재하는 경우 */
+        if (kakaoAccount.getAge_range() != null) {
+            ageRange = kakaoAccount.getAge_range();
+        }
+        /* 사용자의 성별정보가 존재하는 경우 */
+        if (kakaoAccount.getGender() != null) {
+            gender = kakaoAccount.getGender();
+        }
 
         /* DB 내부에 사용자가 이미 가입되어 있는지 체크합니다. */
         Optional<Account> accountDB = accountService
@@ -57,9 +73,9 @@ public class KakaoContoller {
         if (accountDB.isPresent()) {
             accountDB.get().setEmail(kakaoAccount.getEmail());
             accountDB.get().setFirstName(kakaoAccount.getProfile().getNickname());
-            accountDB.get().setAgeRange(kakaoAccount.getAge_range());
-            accountDB.get().setBirthday(kakaoAccount.getBirthday());
-            accountDB.get().setGender(kakaoAccount.getGender());
+            accountDB.get().setAgeRange(ageRange);
+            accountDB.get().setBirthday(birthday);
+            accountDB.get().setGender(gender);
             userrole = accountDB.get().getUserRole();
 
             accountService.updateAccount(accountDB.get());
@@ -71,9 +87,9 @@ public class KakaoContoller {
                     .firstName(kakaoAccount.getProfile().getNickname())
                     .enabled(true)
                     .userRole(UserRole.USER)
-                    .ageRange(kakaoAccount.getAge_range())
-                    .birthday(kakaoAccount.getBirthday())
-                    .gender(kakaoAccount.getGender())
+                    .ageRange(ageRange)
+                    .birthday(birthday)
+                    .gender(gender)
                     .build();
             userrole = account.getUserRole();
 
