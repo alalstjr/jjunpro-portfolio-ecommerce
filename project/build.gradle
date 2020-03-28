@@ -30,6 +30,10 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    // thymeleaf-layout-direct 성능 문제 (groovy 성능 문제)
+    // 출처: https://luvstudy.tistory.com/89 [파란하늘의 지식창고]
+    implementation 'com.github.zhanhb:thymeleaf-layout-dialect:2.4.1'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5:3.0.4.RELEASE'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.2'
     compileOnly 'org.projectlombok:lombok'

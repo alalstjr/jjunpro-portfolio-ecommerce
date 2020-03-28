@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/default"
+>
+<head>
+  <meta charset="UTF-8">
+  <title>로그인</title>
+</head>
+<body>
+
+<div layout:fragment="content" class="container-box">
+  <div class="login-box">
+    <h2 class="title">
+      로그인
+      <div th:if="${param.error}" class="login-error">
+        아이디 또는 비밀번호가 일치하지 않습니다.
+      </div>
+    </h2>
+    <form
+        action="/login"
+        th:action="@{/login}"
+        method="post"
+    >
+      <div class="col-box">
+        <div class="col-70">
+          <div class="input-wrap">
+            <input type="text" placeholder="ID" class="input-css" name="username">
+          </div>
+          <div class="input-wrap">
+            <input type="text" placeholder="PASSWORD" class="input-css" name="password">
+          </div>
+        </div>
+        <div class="col-30 button-wrap">
+          <button type="submit">로그인</button>
+        </div>
+      </div>
+    </form>
+
+    <div class="account-help">
+      <ul>
+        <li><a href="#">회원가입</a></li>
+        <li><a href="#">아이디찾기</a></li>
+        <li><a href="#">비밀번호찾기</a></li>
+      </ul>
+    </div>
+
+    <div class="sns-form">
+      <a class="naver btn" th:href="@{/naver/login}">
+        <img src="/image/naver-icon.png" alt="">
+        <span>
+          네이버 로그인
+        </span>
+      </a>
+      <a class="kakao btn" th:href="@{/kakao/login}">
+        <img src="/image/kakao-icon.png" alt="">
+        <span>
+          카카오 로그인
+        </span>
+      </a>
+      <a class="facebook btn" th:href="@{/facebook/login}">
+        <img src="/image/facebook-icon.png" alt="">
+        <span>
+          페이스북 로그인
+        </span>
+      </a>
+      <a class="google btn" th:href="@{/google/login}">
+        <img src="/image/google-icon.jpg" alt="">
+        <span>
+          Google 로그인
+        </span>
+      </a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

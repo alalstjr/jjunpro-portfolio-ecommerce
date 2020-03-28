@@ -33,7 +33,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account findByUsername(String username) {
+    public Optional<Account> findByUsername(String username) {
         return accountMapper.findByUsername(username);
     }
 
@@ -77,7 +77,7 @@ public class AccountServiceImpl implements AccountService {
 
             return User
                     .builder()
-                    .username(account.get().getUsername())
+                    .username(account.get().getEmail())
                     .password(account.get().getPassword())
                     .authorities(List.of(authority))
                     .build();

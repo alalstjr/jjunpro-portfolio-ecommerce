@@ -1,7 +1,7 @@
 package com.jjunpro.shop.controller;
 
-import com.jjunpro.shop.OAuth.kakao.KakaoAccount;
-import com.jjunpro.shop.OAuth.kakao.KakaoUser;
+import com.jjunpro.shop.oauth.kakao.KakaoAccount;
+import com.jjunpro.shop.oauth.kakao.KakaoUser;
 import com.jjunpro.shop.enums.UserRole;
 import com.jjunpro.shop.model.Account;
 import com.jjunpro.shop.service.AccountServiceImpl;

@@ -25,8 +25,8 @@ public class AccountServiceImplTest {
     @Test
     public void insetAccount() {
         Account build = Account.builder()
-                .lastname("first")
-                .firstname("last")
+                .lastName("first")
+                .firstName("last")
                 .username("username")
                 .password("password")
                 .build();

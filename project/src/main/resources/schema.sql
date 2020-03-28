@@ -17,8 +17,10 @@ CREATE TABLE ACCOUNT
     USERROLE  VARCHAR NOT NULL,
     AGERANGE  VARCHAR,
     BIRTHDAY  VARCHAR,
-    GENDER    VARCHAR
+    GENDER    VARCHAR,
+    LOCAL     VARCHAR
 );
 
-INSERT INTO ACCOUNT (USERNAME, EMAIL, FIRSTNAME, LASTNAME, ENABLED, USERROLE)
-VALUES ('alalstjr', 'mimine02@naver.com', 'kim', 'minseok', true, 'USER');
+INSERT INTO ACCOUNT (USERNAME, EMAIL, FIRSTNAME, LASTNAME, ENABLED, USERROLE, PASSWORD)
+VALUES ('alalstjr', 'mimine02@naver.com', 'kim', 'minseok', true, 'USER',
+        '{bcrypt}$2a$10$RsRh35h1MBRI4s37g/UopeqkQ8Th6rxt8q6bq.fhdr1CWDSfguUg.');

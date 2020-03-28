@@ -1,0 +1,333 @@
+/******************************
+ *  Reset
+ ******************************/
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+KR:300,400,700&display=swap&subset=korean');
+
+* {
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+body, form, div, p, h1, h2, h3, h4, h5, h6, dl, dt, dd, ul, ol, li, fieldset, th, td, input, textarea, button, select {
+  margin: 0;
+  padding: 0;
+}
+
+article, aside, details, figcaption, figure, footer, header, hgroup, nav, section, summary {
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+img, fieldset, button {
+  border: 0 none;
+}
+
+table {
+  border-spacing: 0;
+}
+
+ol, ul, dl {
+  list-style: none;
+}
+
+li {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: #333;
+}
+
+img {
+  vertical-align: top
+}
+
+address, caption, em, var {
+  font-style: normal;
+  font-weight: normal;
+}
+
+input, textarea, select {
+  letter-spacing: normal;
+}
+
+button {
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+/******************************
+ *  Common
+ ******************************/
+.container-box {
+  width: 100%;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.col-box > div,
+.col-box > nav {
+  float: left;
+}
+
+.col-box::after {
+  clear: both;
+  display: block;
+  content: "";
+}
+
+.col-30 {
+  width: 30%;
+}
+
+.col-33 {
+  width: 33.333%;
+}
+
+.col-50 {
+  width: 50%;
+}
+
+.col-70 {
+  width: 70%;
+}
+
+.input-wrap {
+  margin-bottom: 10px;
+}
+
+.input-css {
+  width: 100%;
+  height: 40px;
+  padding: 0 20px;
+  border: 1px solid #e6e6e6;
+  color: #000;
+  font-weight: 300;
+  line-height: 50px;
+  box-sizing: border-box;
+}
+
+/******************************
+ *  Header
+ ******************************/
+.header-top {
+  padding: 20px 0;
+}
+
+.header-logo {
+  font-size: 2rem;
+}
+
+.nav-bar ul {
+  text-align: right;
+}
+
+.nav-bar ul > li {
+  display: inline-block;
+}
+
+.nav-bar ul > li > a {
+  display: block;
+  padding: 0 11px;
+  color: #000000;
+  font-size: 0.875rem;
+  font-weight: 300;
+  letter-spacing: -1px;
+}
+
+/******************************
+ *  Footer
+ ******************************/
+footer {
+  margin-top: 150px;
+  background: #222;
+  padding: 50px 0;
+}
+
+footer,
+footer a {
+  color: #999999;
+}
+
+.footer-logo {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  padding: 0 0.3125rem;
+}
+
+.info-link,
+.copy-info {
+  margin-bottom: 15px;
+}
+
+.info-link > li,
+.copy-info li {
+  display: inline-block;
+}
+
+.info-link > li > a,
+.copy-info li,
+.copy,
+footer .right-box > div li,
+.login-box .account-help ul li{
+  font-size: 0.875rem;
+  font-weight: 300;
+  padding: 0 0.3125rem;
+  letter-spacing: -1px;
+}
+
+.info-link > li > a {
+  display: block;
+}
+
+.copy-info li {
+  line-height: 1.25rem;
+}
+
+footer .right-box .sm-title {
+  color: #ffffff;
+  padding: 0 0 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+footer .right-box .bank-name {
+  color: #ffffff;
+  padding-bottom: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+footer .right-box > div li {
+  padding-left: 0;
+  padding-bottom: 0.3125rem;
+}
+
+/******************************
+ *  Login
+ ******************************/
+.login-box {
+  padding-top: 100px;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.login-box .title {
+  border-top: 3px solid #222;
+  position: relative;
+  padding: 37px 0 49px;
+}
+
+.login-box .button-wrap {
+  padding-left: 10px;
+  box-sizing: border-box;
+}
+
+.login-box button {
+  background-color: #000;
+  color: #fff;
+  display: block;
+  width: 100%;
+  text-align: center;
+  height: 90px;
+  font-size: 1rem;
+}
+
+.login-box .facebook {
+  background-color: #3c579e;
+}
+
+.login-box .google {
+  background-color: #4285f4;
+}
+
+.login-box .btn.kakao {
+  background-color: #ffeb3b;
+  color: #3e2723;
+}
+
+.login-box .naver {
+  background-color: #00c73c;
+}
+
+.login-box .btn {
+  display: block;
+  color: #fff;
+  text-align: center;
+  height: 30px;
+  position: relative;
+  line-height: 30px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.login-box .btn img {
+  width: 30px;
+  position: absolute;
+  left: 10px;
+}
+
+.login-box .btn span {
+  position: absolute;
+  left: 50%;
+  margin-left: -55px;
+  font-weight: bold;
+  font-size: 1.125rem;
+}
+
+.login-box .account-help {
+  margin-bottom: 40px;
+  margin-top: 30px;
+  text-align: center;
+}
+
+.login-box .account-help ul li {
+  display: inline-block;
+  padding: 0 20px;
+  position: relative;
+}
+
+.login-box .account-help ul li::after {
+  display: block;
+  content: "";
+  width: 1px;
+  height: 10px;
+  background-color: #e6e6e6;
+  position: absolute;
+  left: 0;
+  top: 6px;
+}
+
+.login-box .account-help ul li:first-child::after {
+  display: none;
+}
+
+.login-box .login-error {
+  color: #d93025;
+  position: absolute;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+/******************************
+ *  Join
+ ******************************/
+.join-box {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.join-box .join-title {
+  display: block;
+  margin-bottom: 50px;
+  padding: 70px 0 30px;
+  color: #000;
+  font-size: 30px;
+  letter-spacing: -1px;
+  text-align: center;
+}

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+                xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <meta charset="UTF-8">
+  <title layout:title-pattern="$LAYOUT_TITLE : $CONTENT_TITLE">Eblo</title>
+
+  <!-- Style -->
+  <th:block th:replace="fragments/style"></th:block>
+
+</head>
+<body>
+
+<!-- Header -->
+<nav class="navbar navber-default" th:replace="fragments/header" :: header/>
+
+<div class="container" layout:fragment="content"></div>
+
+<!-- Footer -->
+<footer class="page-footer" th:replace="fragments/footer"/>
+
+<!-- Script -->
+<th:block th:replace="fragments/script"></th:block>
+
+</body>
+</html>

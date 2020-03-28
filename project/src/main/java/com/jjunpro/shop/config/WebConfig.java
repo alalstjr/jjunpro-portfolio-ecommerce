@@ -26,7 +26,7 @@ public class WebConfig {
 
     private Connector createStandardConnector() {
         Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-        connector.setPort(8081);
+        connector.setPort(80);
         return connector;
     }
 }

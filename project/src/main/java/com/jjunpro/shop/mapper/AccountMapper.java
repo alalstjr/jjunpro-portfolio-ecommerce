@@ -12,7 +12,7 @@ public interface AccountMapper {
 
     List<Account> findAll();
 
-    Account findByUsername(String username);
+    Optional<Account> findByUsername(String username);
 
     Optional<Account> findByEmail(String email);
 

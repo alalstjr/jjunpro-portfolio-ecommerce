@@ -1,0 +1,30 @@
+<header
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    th:fragment="header">
+  <div class="container-box">
+    <div class="header-top col-box">
+      <div class="col-50">
+        <h1 class="header-logo"><a th:href="@{/}">JJunpro</a></h1>
+      </div>
+      <nav class="nav-bar col-50">
+        <ul>
+          <li sec:authorize="!isAuthenticated()">
+            <a th:href="@{/login}">로그인</a>
+          </li>
+          <li sec:authorize="isAuthenticated()">
+            <a th:href="@{/logout}">로그아웃</a>
+          </li>
+          <li sec:authorize="!isAuthenticated()">
+            <a th:href="@{/join}">회원가입</a>
+          </li>
+          <li><a href="">나의쇼핑</a></li>
+          <li><a href="">고객센터</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="header-bottom">
+      아래메뉴
+    </div>
+  </div>
+</header>

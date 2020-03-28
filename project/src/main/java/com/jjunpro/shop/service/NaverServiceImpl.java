@@ -1,21 +1,13 @@
 package com.jjunpro.shop.service;
 
-import com.google.api.client.auth.oauth2.AuthorizationCodeTokenRequest;
-import com.google.api.client.auth.oauth2.TokenResponse;
-import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.JsonString;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.people.v1.model.Person;
-import com.jjunpro.shop.OAuth.kakao.KakaoAuthorizationCodeTokenRequest;
-import com.jjunpro.shop.OAuth.kakao.KakaoTemplate;
-import com.jjunpro.shop.OAuth.kakao.KakaoUser;
-import com.jjunpro.shop.OAuth.naver.NaverAuthorizationCodeTokenRequest;
-import com.jjunpro.shop.OAuth.naver.NaverBrowserClientRequestUrl;
-import com.jjunpro.shop.OAuth.naver.NaverTemplate;
-import com.jjunpro.shop.OAuth.naver.NaverTokenResponse;
-import com.jjunpro.shop.OAuth.naver.NaverUser;
+import com.jjunpro.shop.oauth.naver.NaverAuthorizationCodeTokenRequest;
+import com.jjunpro.shop.oauth.naver.NaverBrowserClientRequestUrl;
+import com.jjunpro.shop.oauth.naver.NaverTemplate;
+import com.jjunpro.shop.oauth.naver.NaverTokenResponse;
+import com.jjunpro.shop.oauth.naver.NaverUser;
 import java.io.IOException;
 import java.util.Collections;
 import org.springframework.beans.factory.annotation.Value;
