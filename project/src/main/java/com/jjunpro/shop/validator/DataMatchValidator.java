@@ -76,16 +76,15 @@ public class DataMatchValidator implements ConstraintValidator<DataMatch, String
                 break;
 
             case EMAIL:
-                /* EMAIL 값은 체크는 필수가 아닙니다. */
+                /* EMAIL 값 체크는 필수 입니다. */
                 if (value != null && !value.isEmpty()) {
                     byUserId = accountService.findByEmail(value);
 
-                    if (byUserId.isPresent() && account != null) {
-                        if (!byUserId.get().getEmail().equals(account.getEmail())) {
-                            result = true;
-                        }
+                    if (byUserId.isPresent()) {
+                        result = true;
                     }
                 }
+
                 break;
         }
 

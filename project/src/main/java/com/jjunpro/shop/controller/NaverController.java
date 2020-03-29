@@ -49,7 +49,7 @@ public class NaverController {
         NaverAccount naverAccount = userProfile.getResponse();
         String       birthday     = null;
         String       ageRange     = null;
-        String       gender       = null;
+        int          gender       = 0;
 
         /* 사용자의 생일정보가 존재하는 경우 */
         if (naverAccount.getBirthday() != null) {
@@ -61,7 +61,7 @@ public class NaverController {
         }
         /* 사용자의 성별정보가 존재하는 경우 */
         if (naverAccount.getGender() != null) {
-            gender = naverAccount.getGender();
+            gender = naverAccount.getGender().equals("M") ? 1 : naverAccount.getGender().equals("F") ? 2 : 0;
         }
 
         /* DB 내부에 사용자가 이미 가입되어 있는지 체크합니다. */

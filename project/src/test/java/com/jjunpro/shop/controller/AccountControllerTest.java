@@ -1,8 +1,12 @@
 package com.jjunpro.shop.controller;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.jjunpro.shop.model.Account;
 import com.jjunpro.shop.service.AccountServiceImpl;
@@ -48,5 +52,26 @@ public class AccountControllerTest {
                 .build();
 
         accountService.insertAccount(account);
+    }
+
+    @Test
+    public void postJoin() throws Exception {
+        mockMvc
+                .perform(post("/join")
+                        .param("email", "alalstjr@naver.com")
+                        .param("password", "1234")
+                        .param("passwordRe","1234")
+                        .param("firstName","김민석")
+                        .param("postcode","1234")
+                        .param("addr1","addr1")
+                        .param("gender","1")
+                        .param("phoneNumber","010-1234-1234")
+                        .param("username","jjunpro")
+                        .param("birthday","070721")
+                        .param("agree1", "true")
+                        .param("agree2", "true")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andDo(print());
     }
 }

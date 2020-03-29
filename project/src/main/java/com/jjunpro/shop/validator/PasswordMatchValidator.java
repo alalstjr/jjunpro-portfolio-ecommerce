@@ -30,7 +30,7 @@ public class PasswordMatchValidator implements ConstraintValidator<PasswordMatch
     private boolean encoder;
 
     private final PasswordEncoder passwordEncoder;
-    private final AccountUtil     accountUtill;
+    private final AccountUtil     accountUtil;
     private final SecurityContext securityContext = SecurityContextHolder.getContext();
 
     /*
@@ -103,7 +103,7 @@ public class PasswordMatchValidator implements ConstraintValidator<PasswordMatch
 
         /* 비밀번호 변경인 경우 oldPassword 가 동일한지 확인합니다. */
         if (this.encoder) {
-            Optional<Account> accountData = accountUtill
+            Optional<Account> accountData = accountUtil
                     .accountInfo(securityContext.getAuthentication());
 
             valid = passwordEncoder.matches(

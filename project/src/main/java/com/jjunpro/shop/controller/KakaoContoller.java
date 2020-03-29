@@ -49,7 +49,7 @@ public class KakaoContoller {
         KakaoAccount kakaoAccount = userProfile.getKakao_account();
         String       birthday     = null;
         String       ageRange     = null;
-        String       gender       = null;
+        int          gender       = 0;
 
         /* 사용자의 생일정보가 존재하는 경우 */
         if (kakaoAccount.getBirthday() != null) {
@@ -61,7 +61,8 @@ public class KakaoContoller {
         }
         /* 사용자의 성별정보가 존재하는 경우 */
         if (kakaoAccount.getGender() != null) {
-            gender = kakaoAccount.getGender();
+            gender = kakaoAccount.getGender().equals("male") ? 1
+                    : kakaoAccount.getGender().equals("female") ? 2 : 0;
         }
 
         /* DB 내부에 사용자가 이미 가입되어 있는지 체크합니다. */

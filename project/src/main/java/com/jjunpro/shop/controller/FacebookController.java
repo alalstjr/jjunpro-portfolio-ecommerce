@@ -53,7 +53,7 @@ public class FacebookController {
         User   userProfile = facebookService.getUserProfile(accessToken);
         String birthday    = null;
         String ageRange    = null;
-        String gender      = null;
+        int    gender      = 0;
 
         /* 사용자의 생일정보가 존재하는 경우 */
         if (userProfile.getBirthday() != null) {
@@ -65,7 +65,7 @@ public class FacebookController {
         }
         /* 사용자의 성별정보가 존재하는 경우 */
         if (userProfile.getGender() != null) {
-            gender = userProfile.getGender();
+            gender = userProfile.getGender().equals("male") ? 1 : userProfile.getGender().equals("female") ? 2 : 0;
         }
 
         /* DB 내부에 사용자가 이미 가입되어 있는지 체크합니다. */
@@ -79,6 +79,7 @@ public class FacebookController {
             accountDB.get().setLastName(userProfile.getLastName());
             accountDB.get().setBirthday(birthday);
             accountDB.get().setAgeRange(ageRange);
+
             accountDB.get().setGender(gender);
             userrole = accountDB.get().getUserRole();
 

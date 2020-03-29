@@ -50,7 +50,7 @@ public class GoogleController {
         Name         userName     = userProfile.getNames().iterator().next();
         EmailAddress emailAddress = userProfile.getEmailAddresses().iterator().next();
         String       ageRange     = null;
-        String       gender       = null;
+        int          gender       = 0;
 
         /**
          * Ex) JSON CODE

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+  <th:block th:fragment="gender (name)">
+    <div th:with="valid=${!#fields.hasErrors(name)}"
+         th:class="${'user-form table-box' + (valid ? '' : ' has-error')}"
+         class="user-form table-box">
+      <label class="left-box">성별</label>
+
+      <div class="right-box">
+        <span class="radio-gap">
+          <input type="radio" name="gender" id="gender-1" value="1">
+          <label for="gender-1">남자</label>
+        </span>
+        <span class="radio-gap">
+          <input type="radio" name="gender" id="gender-2" value="2">
+          <label for="gender-2">여자</label>
+        </span>
+
+        <th:block th:if="${!valid}">
+          <span class="help-inline" th:errors="*{__${name}__}">Error</span>
+        </th:block>
+      </div>
+    </div>
+  </th:block>
+</body>
+</html>

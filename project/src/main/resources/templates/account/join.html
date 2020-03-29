@@ -14,12 +14,75 @@
       action="/join"
       th:action="@{/join}"
       method="post"
+      name="joinForm"
+      th:object="${userFormDTO}"
   >
     <div class="join-box">
-      <h2 class="join-title">회원가입</h2>
+      <h2 class="join-title">
+        회원가입
+        <!--        <th:block th:if="${userFormDTO['new']}">New </th:block>-->
+      </h2>
       <div class="title">기본정보</div>
+
+      <input th:replace="~{fragments/inputField :: input ('이메일', 'email', 'email')}"/>
+      <input th:replace="~{fragments/inputField :: input ('비밀번호', 'password', 'password')}"/>
+      <input th:replace="~{fragments/inputField :: input ('비밀번호 확인', 'passwordRe', 'password')}"/>
+      <input th:replace="~{fragments/inputField :: input ('닉네임', 'username', 'text')}"/>
+      <input th:replace="~{fragments/inputField :: input ('이름', 'firstName', 'text')}"/>
+      <div th:replace="~{fragments/daumPost :: daumPost}"></div>
+      <input th:replace="~{fragments/inputField :: input ('휴대폰번호', 'phoneNumber', 'text')}"/>
+
+      <div class="title">추가정보</div>
+
+      <input th:replace="~{fragments/inputField :: input ('생년월일', 'birthday', 'text')}"/>
+      <input th:replace="~{fragments/genderField :: gender ('gender')}"/>
+
+      <div class="title">전체동의</div>
+
+      <div class="user-form table-box">
+        <label class="left-box text-center">
+          <input type="checkbox" id="agree-all" onclick="agreeAllCheck()">
+        </label>
+        <div class="right-box">
+          이용약관 및 개인정보수집 및 이용, 쇼핑정보 수신(선택)에 모두 동의합니다.
+        </div>
+      </div>
+
+      <input th:replace="~{fragments/agreeField :: agree ('[필수] 이용약관 동의', 'agree1')}"/>
+      <input th:replace="~{fragments/agreeField :: agree ('[필수] 개인정보 수집 및 이용 동의', 'agree2')}"/>
+      <input th:replace="~{fragments/agreeField :: agree ('[선택] SMS 수신을 동의하십니까?', 'agree3')}"/>
+      <input th:replace="~{fragments/agreeField :: agree ('[선택] 이메일 수신을 동의하십니까?', 'agree4')}"/>
+
+      <div class="form-btn-wrap">
+        <a th:href="@{/login}" class="form-btn">취소</a>
+        <button type="submit" class="form-btn submit">회원가입</button>
+      </div>
     </div>
   </form>
+
+  <script>
+    /* 전체동의 체크 스크립트 */
+    function agreeAllCheck() {
+      var agree_all = document.getElementById('agree-all');
+      var chkbox1 = document.getElementById('agree11');
+      var chkbox2 = document.getElementById('agree21');
+      var chkbox3 = document.getElementById('agree31');
+      var chkbox4 = document.getElementById('agree41');
+
+      if(agree_all.checked) {
+        chkbox1.checked = true;
+        chkbox2.checked = true;
+        chkbox3.checked = true;
+        chkbox4.checked = true;
+      } else {
+        chkbox1.checked = false;
+        chkbox2.checked = false;
+        chkbox3.checked = false;
+        chkbox4.checked = false;
+      }
+    }
+  </script>
+
 </div>
 
 </body>

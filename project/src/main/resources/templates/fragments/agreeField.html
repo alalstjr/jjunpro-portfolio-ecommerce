@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+  <th:block th:fragment="agree (label, name)">
+    <div th:with="valid=${!#fields.hasErrors(name)}"
+         th:class="${'user-form table-box' + (valid ? '' : ' has-error')}"
+         class="user-form table-box">
+      <label class="left-box text-center">
+        <input type="checkbox" th:field="*{__${name}__}">
+      </label>
+
+      <div class="right-box">
+        <div th:text="${label}"></div>
+        <th:block th:if="${!valid}">
+          <span class="help-inline" th:errors="*{__${name}__}">Error</span>
+        </th:block>
+      </div>
+    </div>
+  </th:block>
+</body>
+</html>
