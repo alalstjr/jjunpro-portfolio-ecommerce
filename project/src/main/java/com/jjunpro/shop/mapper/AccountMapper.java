@@ -16,9 +16,11 @@ public interface AccountMapper {
 
     Optional<Account> findByEmail(String email);
 
-    Long insertAccount(Account account);
+    Optional<Account> findEmailByUsernameAndPhoneNumber(String username, String phoneNumber);
 
-    Long updateAccount(Account account);
+    void insertAccount(Account account);
+
+    void updateAccount(Account account);
 
     Optional<Account> findByEmailAndEnabled(String email, boolean enabled);
 }

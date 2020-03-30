@@ -1,40 +1,25 @@
 package com.jjunpro.shop.controller;
 
+import com.jjunpro.shop.dto.FindByEmailDTO;
 import com.jjunpro.shop.dto.UserFormDTO;
 import com.jjunpro.shop.model.Account;
 import com.jjunpro.shop.service.AccountServiceImpl;
-import com.jjunpro.shop.service.SecurityServiceImpl;
-import com.jjunpro.shop.validator.aspect.BindValidator;
-import java.util.Collection;
-import java.util.Iterator;
-import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.social.connect.Connection;
-import org.springframework.social.connect.web.ProviderSignInUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.context.request.WebRequest;
 
 @Controller
 @Transactional
 @RequiredArgsConstructor
 public class AccountController {
-
-    private static final String VIEWS_ACCOUNT_CREATE_OR_UPDATE_FORM = "account/join";
 
     private final AccountServiceImpl accountService;
 
@@ -49,28 +34,89 @@ public class AccountController {
         return "account/login";
     }
 
+    /*
+     * 회원가입
+     * */
     @GetMapping("/join")
     public String join(ModelMap model) {
         UserFormDTO userFormDTO = new UserFormDTO();
         model.addAttribute("userFormDTO", userFormDTO);
 
-        return VIEWS_ACCOUNT_CREATE_OR_UPDATE_FORM;
+        return "account/join";
     }
 
     @PostMapping("/join")
     public String postJoin(
             @Valid @ModelAttribute UserFormDTO userFormDTO,
             BindingResult bindingResult,
-            ModelMap model
+            Model model
     ) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("userFormDTO", userFormDTO);
 
-            return VIEWS_ACCOUNT_CREATE_OR_UPDATE_FORM;
+            return "account/join";
         }
 
-        accountService.insertAccount(userFormDTO.toEntity());
+        Account account = accountService.insertAccount(userFormDTO.toEntity());
 
-        return "account/login";
+        model.addAttribute("join", true);
+        model.addAttribute("email", account.getEmail());
+        model.addAttribute("username", account.getUsername());
+        model.addAttribute("createdDate", account.defaultCreateDate("yyyy년 MM월 dd일"));
+
+        return "account/joinResult";
     }
+
+    @GetMapping("/joinresult")
+    public String joinResult(Model model) {
+        /* 회원가입이 완료된 사용자만 접근 가능하도록 조건문 설정 */
+        if (model.getAttribute("email") == null || model.getAttribute("username") == null
+                || model.getAttribute("nickname") == null) {
+            return "redirect:/";
+        }
+
+        return "account/joinResult";
+    }
+
+    /*
+     * 아이디 찾기
+     * */
+    @GetMapping("/findbyemail")
+    public String findByEmail(ModelMap model) {
+        FindByEmailDTO findByEmailDTO = new FindByEmailDTO();
+        model.addAttribute("findByEmailDTO", findByEmailDTO);
+
+        return "account/findByEmail";
+    }
+
+    @PostMapping("/findbyemail")
+    public String findByEmail(
+            @Valid @ModelAttribute FindByEmailDTO findByEmailDTO,
+            BindingResult bindingResult,
+            ModelMap model
+    ) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("findByEmailDTO", findByEmailDTO);
+
+            return "account/findByEmail";
+        }
+
+        Optional<Account> account = accountService
+                .findEmailByUsernameAndPhoneNumber(findByEmailDTO.getUsername(),
+                        findByEmailDTO.getPhoneNumber());
+
+        if(account.isPresent()) {
+            model.addAttribute("findByEmail", true);
+            model.addAttribute("email", account.get().getEmail());
+            model.addAttribute("username", account.get().getUsername());
+            model.addAttribute("createdDate", account.get().defaultCreateDate("yyyy년 MM월 dd일"));
+
+            return "account/joinResult";
+        }
+
+        model.addAttribute("notFound", "찾을수 없습니다.");
+
+        return "account/findByEmail";
+    }
+
 }

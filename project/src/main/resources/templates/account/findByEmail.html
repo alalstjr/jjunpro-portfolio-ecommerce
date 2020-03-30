@@ -1,0 +1,33 @@
+<html xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout (~{::body},'findByEmail')}">
+<head>
+  <meta charset="UTF-8">
+  <title>아이디 찾기</title>
+</head>
+<body>
+
+<div class="login-box">
+  <h2 class="title">
+    아이디찾기
+    <div th:if="${notFound}" class="login-error">
+      이름 또는 전화번호가 일치하지 않습니다.
+    </div>
+  </h2>
+  <form
+      method="post"
+      th:action="@{/findbyemail}"
+      th:object="${findByEmailDTO}"
+  >
+    <div class="col-box input-border-top">
+      <input th:replace="~{fragments/inputField :: input ('이름', 'username', 'text')}"/>
+      <input th:replace="~{fragments/inputField :: input ('전화번호', 'phoneNumber', 'text')}"/>
+    </div>
+    <div class="form-btn-wrap">
+      <button type="submit" class="form-btn submit small">확인</button>
+    </div>
+  </form>
+
+</div>
+
+</body>
+</html>

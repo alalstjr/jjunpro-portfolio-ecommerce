@@ -16,9 +16,11 @@ public interface AccountService extends UserDetailsService {
 
     Optional<Account> findByEmail(String email);
 
+    Optional<Account> findEmailByUsernameAndPhoneNumber(String username, String phoneNumber);
+
     Account insertAccount(Account account);
 
-    Long updateAccount(Account account);
+    void updateAccount(Account account);
 
     UserDetails loadUserByUsername(String email);
 }

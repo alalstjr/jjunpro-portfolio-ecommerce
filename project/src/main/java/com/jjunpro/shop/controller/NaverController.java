@@ -72,7 +72,7 @@ public class NaverController {
 
         if (accountDB.isPresent()) {
             accountDB.get().setEmail(naverAccount.getEmail());
-            accountDB.get().setFirstName(naverAccount.getName());
+            accountDB.get().setUsername(naverAccount.getName());
             accountDB.get().setAgeRange(ageRange);
             accountDB.get().setBirthday(birthday);
             accountDB.get().setGender(gender);
@@ -84,7 +84,7 @@ public class NaverController {
         } else {
             Account account = Account.builder()
                     .email(naverAccount.getEmail())
-                    .firstName(naverAccount.getName())
+                    .username(naverAccount.getName())
                     .enabled(true)
                     .userRole(UserRole.USER)
                     .ageRange(ageRange)

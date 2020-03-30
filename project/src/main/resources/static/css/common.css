@@ -199,6 +199,11 @@ input[type="radio"]:checked {
   margin: 0 5px;
 }
 
+.form-btn:hover {
+  background-color: #333;
+  color: #fff;
+}
+
 .form-btn.submit {
   background: #222;
   color: #fff;
@@ -207,6 +212,10 @@ input[type="radio"]:checked {
 .help-inline {
   color: #d93025;
   font-size: 13px;
+}
+
+.input-border-top {
+  border-top: 1px solid #f0f0f0;
 }
 
 /******************************
@@ -334,6 +343,10 @@ footer .right-box > div li {
   text-align: center;
   height: 90px;
   font-size: 1rem;
+}
+
+.login-box button.small {
+  height: 60px;
 }
 
 .login-box .facebook {
@@ -499,4 +512,13 @@ footer .right-box > div li {
 
 .user-form.has-error .input-css {
   border-color: #d93025;
+}
+
+.join-result-box .subtitle {
+  color: #000;
+  font-size: 30px;
+  letter-spacing: -1px;
+  padding: 60px 0 15px;
+  text-align: center;
+  font-weight: bold;
 }

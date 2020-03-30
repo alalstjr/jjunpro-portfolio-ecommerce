@@ -1,20 +1,14 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorator="layouts/default"
->
+<html xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout (~{::body},'join')}">
+
 <head>
-  <meta charset="UTF-8">
   <title>회원가입</title>
 </head>
 <body>
 
-<div layout:fragment="content" class="container-box">
   <form
-      action="/join"
-      th:action="@{/join}"
       method="post"
-      name="joinForm"
+      th:action="@{/join}"
       th:object="${userFormDTO}"
   >
     <div class="join-box">
@@ -27,8 +21,7 @@
       <input th:replace="~{fragments/inputField :: input ('이메일', 'email', 'email')}"/>
       <input th:replace="~{fragments/inputField :: input ('비밀번호', 'password', 'password')}"/>
       <input th:replace="~{fragments/inputField :: input ('비밀번호 확인', 'passwordRe', 'password')}"/>
-      <input th:replace="~{fragments/inputField :: input ('닉네임', 'username', 'text')}"/>
-      <input th:replace="~{fragments/inputField :: input ('이름', 'firstName', 'text')}"/>
+      <input th:replace="~{fragments/inputField :: input ('이름', 'username', 'text')}"/>
       <div th:replace="~{fragments/daumPost :: daumPost}"></div>
       <input th:replace="~{fragments/inputField :: input ('휴대폰번호', 'phoneNumber', 'text')}"/>
 
@@ -83,7 +76,6 @@
     }
   </script>
 
-</div>
 
 </body>
 </html>

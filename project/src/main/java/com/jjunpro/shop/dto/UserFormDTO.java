@@ -29,11 +29,8 @@ public class UserFormDTO {
     @NotBlank(message = "비밀번호를 다시한번 입력해 주세요.")
     private String passwordRe;
 
-    @NotBlank(message = "닉네임은 필수로 작성해야 합니다.")
-    private String username;
-
     @NotBlank(message = "이름은 필수로 작성해야 합니다.")
-    private String firstName;
+    private String username;
 
     @NotBlank(message = "우편번호는 필수로 작성해야 합니다.")
     private String postcode;
@@ -67,7 +64,6 @@ public class UserFormDTO {
                 .email(email)
                 .password(password)
                 .username(username)
-                .firstName(firstName)
                 .postcode(postcode)
                 .addr1(addr1)
                 .addr2(addr2)

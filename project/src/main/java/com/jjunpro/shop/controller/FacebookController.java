@@ -65,7 +65,8 @@ public class FacebookController {
         }
         /* 사용자의 성별정보가 존재하는 경우 */
         if (userProfile.getGender() != null) {
-            gender = userProfile.getGender().equals("male") ? 1 : userProfile.getGender().equals("female") ? 2 : 0;
+            gender = userProfile.getGender().equals("male") ? 1
+                    : userProfile.getGender().equals("female") ? 2 : 0;
         }
 
         /* DB 내부에 사용자가 이미 가입되어 있는지 체크합니다. */
@@ -75,8 +76,7 @@ public class FacebookController {
 
         if (accountDB.isPresent()) {
             accountDB.get().setEmail(userProfile.getEmail());
-            accountDB.get().setFirstName(userProfile.getFirstName());
-            accountDB.get().setLastName(userProfile.getLastName());
+            accountDB.get().setUsername(userProfile.getFirstName() + userProfile.getLastName());
             accountDB.get().setBirthday(birthday);
             accountDB.get().setAgeRange(ageRange);
 
@@ -89,8 +89,7 @@ public class FacebookController {
         } else {
             Account account = Account.builder()
                     .email(userProfile.getEmail())
-                    .firstName(userProfile.getFirstName())
-                    .lastName(userProfile.getLastName())
+                    .username(userProfile.getFirstName() + userProfile.getLastName())
                     .enabled(true)
                     .userRole(UserRole.USER)
                     .birthday(birthday)

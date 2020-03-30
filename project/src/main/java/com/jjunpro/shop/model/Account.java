@@ -2,6 +2,7 @@ package com.jjunpro.shop.model;
 
 import com.jjunpro.shop.enums.UserRole;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import lombok.Builder;
 import lombok.Data;
 import org.apache.ibatis.type.Alias;
@@ -15,8 +16,6 @@ public class Account {
     private String        email;
     private String        password;
     private String        username;
-    private String        firstName;
-    private String        lastName;
     private boolean       enabled;
     private UserRole      userRole;
     private String        ageRange;
@@ -33,16 +32,14 @@ public class Account {
     }
 
     @Builder
-    public Account(Long id, String email, String password, String username, String firstName,
-            String lastName, boolean enabled, UserRole userRole, String ageRange,
-            String birthday, int gender, String postcode, String addr1, String addr2,
-            String phoneNumber, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public Account(Long id, String email, String password, String username,
+            boolean enabled, UserRole userRole, String ageRange, String birthday, int gender,
+            String postcode, String addr1, String addr2, String phoneNumber,
+            LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.username = username;
-        this.firstName = firstName;
-        this.lastName = lastName;
         this.enabled = enabled;
         this.userRole = userRole;
         this.ageRange = ageRange;
@@ -58,5 +55,13 @@ public class Account {
 
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);
+    }
+
+    public String defaultCreateDate(String pattern) {
+        return this.createdDate.format(DateTimeFormatter.ofPattern(pattern));
+    }
+
+    public String defaultModifiedDate(String pattern) {
+        return this.modifiedDate.format(DateTimeFormatter.ofPattern(pattern));
     }
 }

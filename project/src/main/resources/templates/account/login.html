@@ -1,15 +1,11 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorator="layouts/default"
->
+<html xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout (~{::body},'login')}">
 <head>
   <meta charset="UTF-8">
   <title>로그인</title>
 </head>
 <body>
 
-<div layout:fragment="content" class="container-box">
   <div class="login-box">
     <h2 class="title">
       로그인
@@ -40,7 +36,7 @@
     <div class="account-help">
       <ul>
         <li><a th:href="@{/join}">회원가입</a></li>
-        <li><a href="#">아이디찾기</a></li>
+        <li><a th:href="@{/findbyemail}">아이디찾기</a></li>
         <li><a href="#">비밀번호찾기</a></li>
       </ul>
     </div>
@@ -72,7 +68,6 @@
       </a>
     </div>
   </div>
-</div>
 
 </body>
 </html>

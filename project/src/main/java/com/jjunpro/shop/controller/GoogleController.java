@@ -95,8 +95,7 @@ public class GoogleController {
 
         if (accountDB.isPresent()) {
             accountDB.get().setEmail(emailAddress.getValue());
-            accountDB.get().setFirstName(userName.getGivenName());
-            accountDB.get().setLastName(userName.getFamilyName());
+            accountDB.get().setUsername(userName.getGivenName() + userName.getFamilyName());
             accountDB.get().setAgeRange(ageRange);
             accountDB.get().setGender(gender);
             accountDB.get().setBirthday(birthday.toString());
@@ -108,8 +107,7 @@ public class GoogleController {
         } else {
             Account account = Account.builder()
                     .email(emailAddress.getValue())
-                    .firstName(userName.getGivenName())
-                    .lastName(userName.getFamilyName())
+                    .username(userName.getGivenName() + userName.getFamilyName())
                     .enabled(true)
                     .userRole(UserRole.USER)
                     .ageRange(ageRange)

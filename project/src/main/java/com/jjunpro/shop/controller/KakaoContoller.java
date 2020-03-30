@@ -73,7 +73,7 @@ public class KakaoContoller {
 
         if (accountDB.isPresent()) {
             accountDB.get().setEmail(kakaoAccount.getEmail());
-            accountDB.get().setFirstName(kakaoAccount.getProfile().getNickname());
+            accountDB.get().setUsername(kakaoAccount.getProfile().getNickname());
             accountDB.get().setAgeRange(ageRange);
             accountDB.get().setBirthday(birthday);
             accountDB.get().setGender(gender);
@@ -85,7 +85,7 @@ public class KakaoContoller {
         } else {
             Account account = Account.builder()
                     .email(kakaoAccount.getEmail())
-                    .firstName(kakaoAccount.getProfile().getNickname())
+                    .username(kakaoAccount.getProfile().getNickname())
                     .enabled(true)
                     .userRole(UserRole.USER)
                     .ageRange(ageRange)

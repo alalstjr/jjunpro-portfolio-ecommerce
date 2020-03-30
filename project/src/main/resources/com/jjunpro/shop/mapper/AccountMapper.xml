@@ -4,21 +4,19 @@
 <mapper namespace="com.jjunpro.shop.mapper.AccountMapper">
 
   <select id="findById" resultType="account">
-        SELECT id
-                ,username
-                ,email
-                ,firstName
-                ,lastName
+        SELECT  id
+                username,
+                email,
+                createddate
         FROM account
         WHERE ID = #{id}
     </select>
 
   <select id="findAll" resultType="account">
-        SELECT  id
-                ,username
-                ,email
-                ,firstName
-                ,lastName
+        SELECT  id,
+                username,
+                email,
+                createddate
         FROM account
     </select>
 
@@ -30,19 +28,21 @@
     SELECT * FROM account WHERE email = #{email}
   </select>
 
+  <select id="findEmailByUsernameAndPhoneNumber" resultType="account">
+    SELECT email, username, createddate FROM account WHERE username = #{username} AND phoneNumber = #{phoneNumber}
+  </select>
+
   <select id="findByEmailAndEnabled" resultType="account">
     SELECT * FROM account WHERE email = #{email} AND #{enabled} = true
   </select>
 
   <insert id="insertAccount" useGeneratedKeys="true" keyProperty="id">
     INSERT INTO account (
-        username, email, firstName, lastName, password, enabled, userRole, ageRange, birthday, gender, postcode, addr1, addr2, phoneNumber, createddate
+        username, email, password, enabled, userRole, ageRange, birthday, gender, postcode, addr1, addr2, phoneNumber, createddate
     )
     VALUES (
         #{username},
         #{email},
-        #{firstName},
-        #{lastName},
         #{password},
         #{enabled},
         #{userRole},
@@ -62,8 +62,6 @@
     SET
     username = #{username},
     email = #{email},
-    firstName = #{firstName},
-    lastName = #{lastName},
     password = #{password},
     enabled = #{enabled},
     userRole = #{userRole},

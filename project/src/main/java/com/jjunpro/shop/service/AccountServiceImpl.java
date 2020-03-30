@@ -43,15 +43,21 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public Optional<Account> findEmailByUsernameAndPhoneNumber(String username, String phoneNumber) {
+        return accountMapper.findEmailByUsernameAndPhoneNumber(username,phoneNumber);
+    }
+
+    @Override
     public Account insertAccount(Account account) {
         account.setEnabled(true);
         account.setUserRole(UserRole.USER);
-        if(account.getPassword() != null) {
+        if (account.getPassword() != null) {
             account.encodePassword(passwordEncoder);
         }
 
-        Long              insertAccount = accountMapper.insertAccount(account);
-        Optional<Account> accountDB     = this.findById(insertAccount);
+        accountMapper.insertAccount(account);
+
+        Optional<Account> accountDB     = this.findById(account.getId());
 
         if (accountDB.isPresent()) {
             return accountDB.get();
@@ -61,8 +67,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Long updateAccount(Account account) {
-        return accountMapper.updateAccount(account);
+    public void updateAccount(Account account) {
+        accountMapper.updateAccount(account);
     }
 
     @Override

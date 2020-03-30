@@ -60,18 +60,28 @@ public class AccountControllerTest {
                 .perform(post("/join")
                         .param("email", "alalstjr@naver.com")
                         .param("password", "1234")
-                        .param("passwordRe","1234")
-                        .param("firstName","김민석")
-                        .param("postcode","1234")
-                        .param("addr1","addr1")
-                        .param("gender","1")
-                        .param("phoneNumber","010-1234-1234")
-                        .param("username","jjunpro")
-                        .param("birthday","070721")
+                        .param("passwordRe", "1234")
+                        .param("username", "김민석")
+                        .param("postcode", "1234")
+                        .param("addr1", "addr1")
+                        .param("gender", "1")
+                        .param("phoneNumber", "010-1234-1234")
+                        .param("birthday", "070721")
                         .param("agree1", "true")
                         .param("agree2", "true")
                         .with(csrf()))
                 .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    public void findByEmail() throws Exception {
+        mockMvc
+                .perform(post("/findbyemail")
+                        .param("username", "김민석")
+                        .param("phoneNumber", "01040211220")
+                        .with(csrf())
+                ).andExpect(status().isOk())
                 .andDo(print());
     }
 }
