@@ -43,8 +43,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Optional<Account> findEmailByUsernameAndPhoneNumber(String username, String phoneNumber) {
-        return accountMapper.findEmailByUsernameAndPhoneNumber(username,phoneNumber);
+    public Optional<Account> findEmailByUsernameAndPhoneNumber(String username,
+            String phoneNumber) {
+        return accountMapper.findEmailByUsernameAndPhoneNumber(username, phoneNumber);
     }
 
     @Override
@@ -57,7 +58,7 @@ public class AccountServiceImpl implements AccountService {
 
         accountMapper.insertAccount(account);
 
-        Optional<Account> accountDB     = this.findById(account.getId());
+        Optional<Account> accountDB = this.findById(account.getId());
 
         if (accountDB.isPresent()) {
             return accountDB.get();

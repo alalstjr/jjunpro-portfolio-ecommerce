@@ -18,6 +18,8 @@ import lombok.Setter;
 @PasswordMatch(password = "password", passwordRe = "passwordRe")
 public class UserFormDTO {
 
+    private String ip;
+
     @Email(message = "잘못된 이메일입니다.")
     @NotBlank(message = "이메일은 필수로 작성해야 합니다.")
     @DataMatch(message = "이미 존재하는 이메일 입니다.", column = ColumnType.EMAIL)
@@ -61,6 +63,7 @@ public class UserFormDTO {
 
     public Account toEntity() {
         return Account.builder()
+                .ip(ip)
                 .email(email)
                 .password(password)
                 .username(username)

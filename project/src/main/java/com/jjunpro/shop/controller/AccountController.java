@@ -4,7 +4,10 @@ import com.jjunpro.shop.dto.FindByEmailDTO;
 import com.jjunpro.shop.dto.UserFormDTO;
 import com.jjunpro.shop.model.Account;
 import com.jjunpro.shop.service.AccountServiceImpl;
+import com.jjunpro.shop.util.IpUtil;
 import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class AccountController {
 
     private final AccountServiceImpl accountService;
+    private final IpUtil             ipUtil;
 
     @GetMapping("/")
     public String main(Model model) {
@@ -49,13 +53,17 @@ public class AccountController {
     public String postJoin(
             @Valid @ModelAttribute UserFormDTO userFormDTO,
             BindingResult bindingResult,
-            Model model
+            Model model,
+            HttpServletRequest request
     ) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("userFormDTO", userFormDTO);
 
             return "account/join";
         }
+
+        /* 사용자의 IP 를 등록합니다. */
+        userFormDTO.setIp(ipUtil.getUserIp(request));
 
         Account account = accountService.insertAccount(userFormDTO.toEntity());
 
@@ -105,7 +113,7 @@ public class AccountController {
                 .findEmailByUsernameAndPhoneNumber(findByEmailDTO.getUsername(),
                         findByEmailDTO.getPhoneNumber());
 
-        if(account.isPresent()) {
+        if (account.isPresent()) {
             model.addAttribute("findByEmail", true);
             model.addAttribute("email", account.get().getEmail());
             model.addAttribute("username", account.get().getUsername());

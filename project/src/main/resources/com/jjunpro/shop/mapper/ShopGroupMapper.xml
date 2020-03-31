@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jjunpro.shop.mapper.ShopGroupMapper">
+
+  <insert id="insertShopGroup" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO shop_group (
+        ip, enabled, createddate, modifiedDate, name, viewOrder, parentShopGroupId
+    )
+    VALUES (
+        #{ip},
+        #{enabled},
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP,
+        #{name},
+        #{viewOrder},
+        #{parentShopGroupId}
+    );
+  </insert>
+
+  <delete id="deleteShopGroup">
+    DELETE FROM shop_group
+    WHERE
+    id = #{id};
+  </delete>
+
+  <select id="findByparentShopGroupId" resultType="ShopGroup">
+    SELECT * FROM shop_group
+    WHERE
+    parentShopGroupId = #{id};
+  </select>
+
+</mapper>

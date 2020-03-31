@@ -38,13 +38,16 @@
 
   <insert id="insertAccount" useGeneratedKeys="true" keyProperty="id">
     INSERT INTO account (
-        username, email, password, enabled, userRole, ageRange, birthday, gender, postcode, addr1, addr2, phoneNumber, createddate
+        ip, enabled, createddate, modifiedDate, username, email, password, userRole, ageRange, birthday, gender, postcode, addr1, addr2, phoneNumber
     )
     VALUES (
+        #{ip},
+        #{enabled},
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP,
         #{username},
         #{email},
         #{password},
-        #{enabled},
         #{userRole},
         #{ageRange},
         #{birthday},
@@ -52,14 +55,14 @@
         #{postcode},
         #{addr1},
         #{addr2},
-        #{phoneNumber},
-        CURRENT_TIMESTAMP
+        #{phoneNumber}
     )
   </insert>
 
   <update id="updateAccount" useGeneratedKeys="true" keyProperty="id">
     UPDATE account
     SET
+    ip = #{ip}
     username = #{username},
     email = #{email},
     password = #{password},
