@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" lang="en">
+<body>
+<th:block th:fragment="agree (label, name)">
+  <div th:with="valid=${!#fields.hasErrors(name)}"
+       th:class="${'form-check form-check-flat' + (valid ? '' : ' has-error')}"
+       class="form-check form-check-flat">
+
+    <input type="checkbox" th:field="*{__${name}__}" th:id="${name}" th:checked="${name}">
+    <div class="form-check-label">
+      <label th:text="${label}" th:for="${name}"></label>
+
+      <th:block th:if="${!valid}">
+        <span class="help-inline" th:errors="*{__${name}__}">Error</span>
+      </th:block>
+    </div>
+
+  </div>
+</th:block>
+</body>
+</html>

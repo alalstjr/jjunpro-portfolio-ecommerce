@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jjunpro.shop.mapper.ProductMapper">
+
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO product (
+        ip, enabled, createddate, modifiedDate, productName, explanation, tag, productType,
+        callQuestion, cuponEnabled, pointEnabled, contentPc, contentM, summaryInfo, price, discount, pointType, point,
+        quantity, buyMinQuantity, buyMaxQuantity, reviewState, reservationSale, endSale, priority, shopGroupIds
+    )
+    VALUES (
+        #{ip},
+        #{enabled},
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP,
+        #{productName},
+        #{explanation},
+        #{tag},
+        #{productType},
+        #{callQuestion},
+        #{cuponEnabled},
+        #{pointEnabled},
+        #{contentPc},
+        #{contentM},
+        #{summaryInfo},
+        #{price},
+        #{discount},
+        #{pointType},
+        #{point},
+        #{quantity},
+        #{buyMinQuantity},
+        #{buyMaxQuantity},
+        #{reviewState},
+        #{reservationSale},
+        #{endSale},
+        #{priority},
+        #{shopGroupIds}
+    );
+  </insert>
+
+</mapper>

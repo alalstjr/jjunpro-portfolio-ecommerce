@@ -44,54 +44,48 @@ CREATE TABLE SHOP_GROUP
     modifiedDate      TIMESTAMP NOT NULL,
     enabled           BOOLEAN   NOT NULL,
 
-    name              VARCHAR   NOT NULL,
-    viewOrder         INTEGER,
+    shopName          VARCHAR   NOT NULL,
+    priority          INTEGER,
     parentShopGroupId BIGINT
 );
 
-/* ITEM */
-DROP TABLE IF EXISTS ITEM;
-CREATE TABLE ITEM
+/* PRODUCT */
+DROP TABLE IF EXISTS PRODUCT;
+CREATE TABLE PRODUCT
 (
-    id                  SERIAL PRIMARY KEY,
-    ip                  VARCHAR   NOT NULL,
-    createdDate         TIMESTAMP NOT NULL,
-    modifiedDate        TIMESTAMP NOT NULL,
-    enabled             BOOLEAN   NOT NULL,
+    id              SERIAL PRIMARY KEY,
+    ip              VARCHAR   NOT NULL,
+    createdDate     TIMESTAMP NOT NULL,
+    modifiedDate    TIMESTAMP NOT NULL,
+    enabled         BOOLEAN   NOT NULL,
 
-    explanation         VARCHAR,
-    tag                 VARCHAR,
-    type                VARCHAR,
-    maker               VARCHAR,
-    origin              VARCHAR,
-    brand               VARCHAR,
-    model               VARCHAR,
-    callQuestion        VARCHAR,
-    cuponEnabled        VARCHAR,
-    pointEnabled        VARCHAR,
-    contentPc           VARCHAR,
-    contentM            VARCHAR,
-    summaryInfo         VARCHAR,
-    price               INTEGER   NOT NULL,
-    discount            SMALLINT,
-    pointType           SMALLINT,
-    point               INTEGER,
-    quantity            INTEGER,
-    buyMinQuantity      SMALLINT,
-    buyMaxQuantity      SMALLINT,
-    deliveryType        SMALLINT,
-    deliveryPayType     SMALLINT,
-    deliveryDefaultPay  SMALLINT,
-    deliveryIfPay       SMALLINT,
-    deliveryQuantityPay SMALLINT,
-    reviewState         BOOLEAN,
-    reservationSale     TIMESTAMP,
-    endSale             TIMESTAMP
+    shopGroupIds    VARCHAR,
+    productName     VARCHAR,
+    explanation     VARCHAR,
+    tag             VARCHAR,
+    productType     VARCHAR,
+    callQuestion    BOOLEAN,
+    cuponEnabled    BOOLEAN,
+    pointEnabled    BOOLEAN,
+    contentPc       VARCHAR,
+    contentM        VARCHAR,
+    summaryInfo     VARCHAR,
+    price           INTEGER   NOT NULL,
+    discount        SMALLINT,
+    pointType       SMALLINT,
+    point           INTEGER,
+    quantity        INTEGER,
+    buyMinQuantity  INTEGER,
+    buyMaxQuantity  INTEGER,
+    reviewState     BOOLEAN,
+    reservationSale TIMESTAMP,
+    endSale         TIMESTAMP,
+    priority        INTEGER
 );
 
-/* SUBITEM */
-DROP TABLE IF EXISTS SUB_ITEM;
-CREATE TABLE SUB_ITEM
+/* SUB_PRODUCT */
+DROP TABLE IF EXISTS SUB_PRODUCT;
+CREATE TABLE SUB_PRODUCT
 (
     id           SERIAL PRIMARY KEY,
     ip           VARCHAR   NOT NULL,
@@ -99,6 +93,25 @@ CREATE TABLE SUB_ITEM
     modifiedDate TIMESTAMP NOT NULL,
     enabled      BOOLEAN   NOT NULL,
 
+    productName  VARCHAR   NOT NULL,
     price        INTEGER   NOT NULL,
     quantity     INTEGER   NOT NULL
+);
+
+/* DELIVERY */
+DROP TABLE IF EXISTS DELIVERY;
+CREATE TABLE DELIVERY
+(
+    id                  SERIAL PRIMARY KEY,
+    ip                  VARCHAR   NOT NULL,
+    createdDate         TIMESTAMP NOT NULL,
+    modifiedDate        TIMESTAMP NOT NULL,
+    enabled             BOOLEAN   NOT NULL,
+
+    deliveryName        VARCHAR   NOT NULL,
+    deliveryType        SMALLINT,
+    deliveryPayType     SMALLINT,
+    deliveryDefaultPay  SMALLINT,
+    deliveryIfPay       SMALLINT,
+    deliveryQuantityPay SMALLINT
 );

@@ -1,0 +1,9 @@
+<html xmlns:th="https://www.thymeleaf.org"
+      lang="en">
+<body>
+<th:block th:fragment="hidden (name)">
+  <input class="form-control" type="hidden"
+         th:field="*{__${name}__}"/>
+</th:block>
+</body>
+</html>

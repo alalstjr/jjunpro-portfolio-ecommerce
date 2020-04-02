@@ -32,7 +32,7 @@ public class ShopGroupControllerTest {
     @Test
     @Transactional
     public void createGroup() throws Exception {
-        mockMvc.perform(post("/shopgroup/create")
+        mockMvc.perform(post("/shopgroup/set")
                 .param("name", "test")
                 .with(csrf()))
                 .andExpect(status().isOk())
@@ -46,7 +46,7 @@ public class ShopGroupControllerTest {
 
         ShopGroup shopGroup = getShopGroup();
 
-        mockMvc.perform(post("/shopgroup/create")
+        mockMvc.perform(post("/shopgroup/set")
                 .param("name", "test")
                 .param("parentShopGroupId", shopGroup.getId().toString())
                 .with(csrf()))
@@ -64,11 +64,11 @@ public class ShopGroupControllerTest {
          */
         ShopGroup shopGroupChildren = ShopGroup.builder()
                 .ip("0.0.0.0")
-                .name("test-1-1")
+                .shopName("test-1-1")
                 .parentShopGroupId(shopGroup.getId())
                 .build();
 
-        shopGroupService.insertShopGroup(shopGroupChildren);
+        shopGroupService.set(shopGroupChildren);
 
         mockMvc.perform(post("/shopgroup/delete")
                 .param("id", shopGroup.getId().toString())
@@ -77,14 +77,27 @@ public class ShopGroupControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    public void updateGroup() throws Exception {
+
+        ShopGroup shopGroup = getShopGroup();
+
+        mockMvc.perform(post("/shopgroup/set")
+                .param("id",shopGroup.getId().toString())
+                .param("name", "test-mode")
+                .with(csrf()))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
     private ShopGroup getShopGroup() {
         ShopGroupDTO shopGroupDTO = ShopGroupDTO.builder()
                 .ip("0.0.0.0")
-                .name("test-1")
+                .shopName("test-1")
                 .build();
 
         ShopGroup shopGroup = shopGroupDTO.toEntity();
-        shopGroupService.insertShopGroup(shopGroup);
+        shopGroupService.set(shopGroup);
 
         return shopGroup;
     }

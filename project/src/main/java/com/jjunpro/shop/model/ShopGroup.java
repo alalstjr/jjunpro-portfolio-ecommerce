@@ -10,16 +10,17 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class ShopGroup {
 
     private Long          id;
     private String        ip;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
-    private boolean       enabled;
-    private String        name;
-    private Integer       viewOrder;
+    private Boolean       enabled;
+    private String        shopName;
+    private Integer       priority;
     private Long          parentShopGroupId;
 }
+

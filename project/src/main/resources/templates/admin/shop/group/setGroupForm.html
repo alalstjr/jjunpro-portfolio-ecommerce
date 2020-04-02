@@ -1,0 +1,48 @@
+<html xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{fragments/admin/layout :: layout (~{::body},'setGroupForm')}">
+
+<head>
+  <title>생성</title>
+</head>
+<body>
+
+<div class="row">
+  <div class="col-md-6 d-flex align-items-stretch grid-margin">
+    <div class="row flex-grow">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Default form</h4>
+            <p class="card-description">
+              Basic form layout
+            </p>
+            <form class="forms-sample"
+                  method="post"
+                  th:action="@{/shopgroup/set}"
+                  th:object="${shopGroupDTO}"
+            >
+
+              <input
+                  th:replace="~{fragments/admin/inputHiddenField :: hidden ('id')}"/>
+              <input
+                  th:replace="~{fragments/admin/inputHiddenField :: hidden ('parentShopGroupId')}"/>
+              <input
+                  th:replace="~{fragments/admin/inputField :: input ('분류 이름', 'shopName', 'text')}"/>
+              <input
+                  th:replace="~{fragments/admin/inputField :: input ('순서', 'priority', 'number')}"/>
+              <input th:replace="~{fragments/admin/agreeField :: agree ('판매가능', 'enabled')}"/>
+
+              <button type="submit" class="btn btn-success mr-2">등록</button>
+              <button class="btn btn-light">취소</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</form>
+
+</body>
+</html>

@@ -2,6 +2,7 @@ package com.jjunpro.shop.service;
 
 import com.jjunpro.shop.mapper.ShopGroupMapper;
 import com.jjunpro.shop.model.ShopGroup;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,15 +16,21 @@ public class ShopGroupServiceImpl implements ShopGroupService {
     private final ShopGroupMapper shopGroupMapper;
 
     @Override
-    public Long insertShopGroup(ShopGroup shopGroup) {
-        shopGroup.setEnabled(true);
-        shopGroupMapper.insertShopGroup(shopGroup);
+    public Long set(ShopGroup shopGroup) {
+
+        /* id 값을 기준으로 데이터쿼리 조작 */
+        if(shopGroup.getId() == null) {
+            shopGroup.setEnabled(true);
+            shopGroupMapper.insert(shopGroup);
+        } else{
+            shopGroupMapper.update(shopGroup);
+        }
 
         return shopGroup.getId();
     }
 
     @Override
-    public void deleteShopGroup(Long id) {
+    public void delete(Long id) {
         Optional<ShopGroup> byparentShopGroupId = shopGroupMapper.findByparentShopGroupId(id);
 
         if(byparentShopGroupId.isPresent()) {
@@ -34,6 +41,16 @@ public class ShopGroupServiceImpl implements ShopGroupService {
             }
         }
 
-        shopGroupMapper.deleteShopGroup(id);
+        shopGroupMapper.delete(id);
+    }
+
+    @Override
+    public List<ShopGroup> getAll() {
+        return shopGroupMapper.getAll();
+    }
+
+    @Override
+    public ShopGroup findById(Long id) {
+        return shopGroupMapper.findById(id);
     }
 }

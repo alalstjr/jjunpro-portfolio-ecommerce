@@ -51,10 +51,10 @@ public class AccountController {
 
     @PostMapping("/join")
     public String postJoin(
-            @Valid @ModelAttribute UserFormDTO userFormDTO,
+            HttpServletRequest request,
+            @Valid UserFormDTO userFormDTO,
             BindingResult bindingResult,
-            Model model,
-            HttpServletRequest request
+            Model model
     ) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("userFormDTO", userFormDTO);

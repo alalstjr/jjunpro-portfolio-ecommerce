@@ -15,6 +15,10 @@
           <input th:case="'email'" class="input-css" type="email" th:field="*{__${name}__}"/>
           <input th:case="'password'" class="input-css" type="password"
                  th:field="*{__${name}__}"/>
+          <input th:case="'number'" class="input-css" type="number"
+                 th:field="*{__${name}__}"/>
+          <input th:case="'hidden'" class="input-css" type="hidden"
+                 th:field="*{__${name}__}"/>
         </div>
         <th:block th:if="${!valid}">
           <span class="help-inline" th:errors="*{__${name}__}">Error</span>

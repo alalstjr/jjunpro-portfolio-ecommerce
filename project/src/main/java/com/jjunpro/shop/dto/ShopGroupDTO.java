@@ -11,18 +11,20 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class ShopGroupDTO {
 
     private Long id;
 
     private String ip;
 
-    @NotBlank(message = "그룹 이름은 필수로 작성해야 합니다.")
-    private String name;
+    private Boolean enabled;
 
-    private Integer viewOrder;
+    @NotBlank(message = "그룹 이름은 필수로 작성해야 합니다.")
+    private String shopName;
+
+    private Integer priority;
 
     private Long parentShopGroupId;
 
@@ -30,8 +32,9 @@ public class ShopGroupDTO {
         return ShopGroup.builder()
                 .id(id)
                 .ip(ip)
-                .name(name)
-                .viewOrder(viewOrder)
+                .enabled(enabled)
+                .shopName(shopName)
+                .priority(priority)
                 .parentShopGroupId(parentShopGroupId)
                 .build();
     }

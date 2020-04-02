@@ -1,0 +1,8 @@
+<div th:each="group : ${shopGroupList}">
+  <div th:text="${group.id}"></div>
+  <div th:text="${group.enabled}"></div>
+  <div th:text="${group.shopName}"></div>
+  <div th:text="${group.parentShopGroupId}"></div>
+  <a th:href="@{/shopgroup/set(id=${group.id})}">수정</a>
+  <a th:href="@{/shopgroup/set(parentShopGroupId=${group.parentShopGroupId})}">하위분류 추가</a>
+</div>

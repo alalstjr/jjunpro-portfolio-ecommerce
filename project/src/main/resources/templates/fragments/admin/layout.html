@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html th:fragment="layout (template, menu)">
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="shortcut icon" type="image/x-icon" th:href="@{/resources/images/favicon.png}">
+
+  <title>JJunpro :: a Spring Framework demonstration</title>
+
+  <!-- Style -->
+  <th:block th:replace="fragments/admin/style"></th:block>
+
+</head>
+<body>
+
+<div class="container-scroller">
+  <!-- navber -->
+  <nav th:replace="fragments/admin/navbar" :: navbar/>
+
+  <!-- container -->
+  <nav th:replace="fragments/admin/container" :: container/>
+</div>
+
+<!-- Script -->
+<th:block th:replace="fragments/admin/script"></th:block>
+
+</body>
+</html>
