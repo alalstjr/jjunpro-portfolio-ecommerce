@@ -4,11 +4,12 @@
 <mapper namespace="com.jjunpro.shop.mapper.ProductMapper">
 
   <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-    INSERT INTO product (
-        ip, enabled, createddate, modifiedDate, productName, explanation, tag, productType,
-        callQuestion, cuponEnabled, pointEnabled, contentPc, contentM, summaryInfo, price, discount, pointType, point,
-        quantity, buyMinQuantity, buyMaxQuantity, reviewState, reservationSale, endSale, priority, shopGroupIds
-    )
+    INSERT INTO
+        product (
+          ip, enabled, createddate, modifiedDate, productName, explanation, tag, productType,
+          callQuestion, cuponEnabled, pointEnabled, content, summaryInfo, price, discount, point,
+          quantity, buyMinQuantity, buyMaxQuantity, reviewState, reservationSale, endSale, priority, shopGroupIds
+        )
     VALUES (
         #{ip},
         #{enabled},
@@ -21,12 +22,10 @@
         #{callQuestion},
         #{cuponEnabled},
         #{pointEnabled},
-        #{contentPc},
-        #{contentM},
+        #{content},
         #{summaryInfo},
         #{price},
         #{discount},
-        #{pointType},
         #{point},
         #{quantity},
         #{buyMinQuantity},
@@ -38,5 +37,55 @@
         #{shopGroupIds}
     );
   </insert>
+
+  <update id="update" useGeneratedKeys="true" keyProperty="id">
+    UPDATE
+        product
+    SET
+        ip = #{ip},
+        enabled = #{enabled},
+        modifiedDate = CURRENT_TIMESTAMP,
+        productName = #{productName},
+        explanation = #{explanation},
+        tag = #{tag},
+        productType = #{productType},
+        callQuestion = #{callQuestion},
+        cuponEnabled = #{cuponEnabled},
+        pointEnabled = #{pointEnabled},
+        content = #{content},
+        summaryInfo = #{summaryInfo},
+        price = #{price},
+        discount = #{discount},
+        point = #{point},
+        quantity = #{quantity},
+        buyMinQuantity = #{buyMinQuantity},
+        buyMaxQuantity = #{buyMaxQuantity},
+        reviewState = #{reviewState},
+        reservationSale = #{reservationSale},
+        endSale = #{endSale},
+        priority = #{priority},
+        shopGroupIds = #{shopGroupIds}
+    WHERE
+        id = #{id};
+  </update>
+
+  <delete id="delete">
+    DELETE FROM
+        product
+    WHERE
+        id = #{id};
+  </delete>
+
+  <select id="findAll" resultType="Product">
+    SELECT * FROM
+        product LIMIT 20;
+  </select>
+
+  <select id="findById" resultType="Product">
+    SELECT * FROM
+        product
+    WHERE
+        id = #{id};
+  </select>
 
 </mapper>

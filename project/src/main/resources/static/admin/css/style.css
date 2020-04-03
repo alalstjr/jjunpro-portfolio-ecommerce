@@ -59,6 +59,7 @@
 /* === SCSS Compass Functions === */
 @import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
 @import url("https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700");
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+KR:300,400,700&display=swap&subset=korean');
 
 @-moz-keyframes flash {
   0% {
@@ -18347,13 +18348,13 @@ input:focus {
 }
 
 .navbar.default-layout .navbar-brand-wrapper .navbar-brand {
-  color: #ffffff;
   font-size: 1.5rem;
   line-height: 48px;
   margin-right: 0;
   padding: 0.25rem 0;
   display: -webkit-flex;
   display: flex;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
 .navbar.default-layout .navbar-brand-wrapper .navbar-brand:active, .navbar.default-layout .navbar-brand-wrapper .navbar-brand:focus, .navbar.default-layout .navbar-brand-wrapper .navbar-brand:hover {
@@ -21781,4 +21782,18 @@ input[type="checkbox"] {
 
 input[type="checkbox"]:checked {
   background-image: url("/image/checkbox_checked.gif");
+}
+
+.space {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+}
+
+.material-icons {
+  font-size: 18px!important;
+}
+
+.product-area {
+  height: 200px;
 }

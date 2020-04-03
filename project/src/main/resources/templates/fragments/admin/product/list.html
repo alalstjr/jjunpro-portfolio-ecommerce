@@ -1,0 +1,24 @@
+<html xmlns:th="https://www.thymeleaf.org">
+
+<th:block th:fragment="list">
+  <th:block th:each="item : ${group}">
+    <tr>
+      <td>사진</td>
+      <td>
+        <th:block th:text="${item.productName}">상품이름</th:block>
+      </td>
+      <td>
+        <div class="progress">
+          <div class="progress-bar bg-success" role="progressbar" style="width: 25%"
+               aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+      </td>
+      <td th:text="${item.priority}">출력순서</td>
+      <td th:text="${item.enabled}">판매가능</td>
+      <td>
+        <a th:href="@{/product/set(id=${item.id})}" class="btn btn-primary mr-2">수정</a>
+        <a href="#none" onclick="return delete_confirm(this);" th:data-target="${item.id}" class="btn btn-danger mr-2">삭제</a>
+      </td>
+    </tr>
+  </th:block>
+</th:block>

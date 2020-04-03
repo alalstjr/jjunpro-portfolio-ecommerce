@@ -18,7 +18,7 @@ public class Product {
     private String        ip;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
-    private boolean       enabled;
+    private Boolean       enabled;
     private String        productName;
     private String        explanation;
     private String        tag;
@@ -26,12 +26,10 @@ public class Product {
     private Boolean       callQuestion;
     private Boolean       cuponEnabled;
     private Boolean       pointEnabled;
-    private String        contentPc;
-    private String        contentM;
+    private String        content;
     private String        summaryInfo;
     private Integer       price;
     private Short         discount;
-    private Short         pointType;
     private Integer       point;
     private Integer       quantity;
     private Integer       buyMinQuantity;

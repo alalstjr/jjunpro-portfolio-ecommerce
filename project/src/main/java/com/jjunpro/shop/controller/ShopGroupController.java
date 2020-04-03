@@ -6,6 +6,7 @@ import com.jjunpro.shop.dto.ShopGroupDTO;
 import com.jjunpro.shop.model.ShopGroup;
 import com.jjunpro.shop.service.ShopGroupServiceImpl;
 import com.jjunpro.shop.util.IpUtil;
+import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /*
  * TODO 관리자 권한으로만 접근하도록 설정해야 합니다.
@@ -34,7 +36,7 @@ public class ShopGroupController {
     public String index(
             Model model
     ) {
-        List<ShopGroup> shopGroupList = shopGroupService.getAll();
+        List<ShopGroup> shopGroupList = shopGroupService.findByIsNullParentShopGroupId();
         model.addAttribute("shopGroupList", shopGroupList);
 
         return ADMINGROUP.concat("/index");
@@ -49,7 +51,7 @@ public class ShopGroupController {
         ShopGroupDTO shopGroupDTO = new ShopGroupDTO();
 
         /* 수정 id */
-        if(id != null) {
+        if (id != null) {
             ShopGroup shopGroup = shopGroupService.findById(id);
             shopGroupDTO.setId(id);
             shopGroupDTO.setEnabled(shopGroup.getEnabled());
@@ -59,7 +61,7 @@ public class ShopGroupController {
         }
 
         /* 부모노드 id */
-        if(parentShopGroupId != null) {
+        if (parentShopGroupId != null) {
             shopGroupDTO.setParentShopGroupId(parentShopGroupId);
         }
 
@@ -80,8 +82,11 @@ public class ShopGroupController {
         return "redirect:/shopgroup";
     }
 
+    /* RedirectAttributes 사용하여 그룹 index 페이지에 상태 메세지 Attributes 전달합니다.  */
     @PostMapping("/delete")
-    public void delete(Long id) {
-        shopGroupService.delete(id);
+    public String delete(Long id, RedirectAttributes model) {
+        model.addFlashAttribute("message", shopGroupService.delete(id));
+
+        return "redirect:/shopgroup";
     }
 }

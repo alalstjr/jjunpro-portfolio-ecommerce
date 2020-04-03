@@ -4,9 +4,8 @@
 <mapper namespace="com.jjunpro.shop.mapper.ShopGroupMapper">
 
   <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-    INSERT INTO shop_group (
-        ip, enabled, createddate, modifiedDate, shopName, priority, parentShopGroupId
-    )
+    INSERT INTO
+        shop_group (ip, enabled, createddate, modifiedDate, shopName, priority, parentShopGroupId)
     VALUES (
         #{ip},
         #{enabled},
@@ -19,37 +18,54 @@
   </insert>
 
   <update id="update" useGeneratedKeys="true" keyProperty="id">
-    UPDATE shop_group
+    UPDATE
+        shop_group
     SET
-    ip = #{ip},
-    enabled = #{enabled},
-    modifiedDate = CURRENT_TIMESTAMP,
-    shopName = #{shopName},
-    priority = #{priority}
+      ip = #{ip},
+      enabled = #{enabled},
+      modifiedDate = CURRENT_TIMESTAMP,
+      shopName = #{shopName},
+      priority = #{priority}
     WHERE
-    id = #{id};
+        id = #{id};
   </update>
 
   <delete id="delete">
-    DELETE FROM shop_group
+    DELETE FROM
+        shop_group
     WHERE
-    id = #{id};
+        id = #{id};
   </delete>
 
-  <select id="findByparentShopGroupId" resultType="ShopGroup">
-    SELECT * FROM shop_group
+  <select id="findOneByparentShopGroupId" resultType="ShopGroup">
+    SELECT * FROM
+        shop_group
     WHERE
-    parentShopGroupId = #{id};
+        parentShopGroupId = #{id}
+        LIMIT 1;
   </select>
 
-  <select id="getAll" resultType="ShopGroup">
-    SELECT * FROM shop_group;
+  <select id="findByparentShopGroupIdList" resultType="ShopGroup">
+    SELECT * FROM
+        shop_group
+    WHERE
+        parentShopGroupId = #{id};
+  </select>
+
+  <select id="findByIsNullParentShopGroupId" resultType="ShopGroup">
+    SELECT
+        id, enabled, shopName, priority, parentShopGroupId
+    FROM
+        shop_group
+    WHERE
+        parentShopGroupId IS NULL LIMIT 10;
   </select>
 
   <select id="findById" resultType="ShopGroup">
-    SELECT * FROM shop_group
+    SELECT * FROM
+        shop_group
     WHERE
-    id = #{id};
+        id = #{id};
   </select>
 
 </mapper>

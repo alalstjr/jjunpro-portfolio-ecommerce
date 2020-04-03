@@ -17,7 +17,7 @@ public class ProductDTO {
 
     private String        ip;
     private Long          id;
-    private boolean       enabled;
+    private Boolean       enabled;
     private String        productName;
     private String        explanation;
     private String        tag;
@@ -25,12 +25,10 @@ public class ProductDTO {
     private Boolean       callQuestion;
     private Boolean       cuponEnabled;
     private Boolean       pointEnabled;
-    private String        contentPc;
-    private String        contentM;
+    private String        content;
     private String        summaryInfo;
     private Integer       price;
     private Short         discount;
-    private Short         pointType;
     private Integer       point;
     private Integer       quantity;
     private Integer       buyMinQuantity;
@@ -53,12 +51,10 @@ public class ProductDTO {
                 .callQuestion(callQuestion)
                 .cuponEnabled(cuponEnabled)
                 .pointEnabled(pointEnabled)
-                .contentPc(contentPc)
-                .contentM(contentM)
+                .content(content)
                 .summaryInfo(summaryInfo)
                 .price(price)
                 .discount(discount)
-                .pointType(pointType)
                 .point(point)
                 .quantity(quantity)
                 .buyMinQuantity(buyMinQuantity)

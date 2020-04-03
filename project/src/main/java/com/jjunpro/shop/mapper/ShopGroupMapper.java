@@ -14,9 +14,11 @@ public interface ShopGroupMapper {
 
     void delete(Long id);
 
-    Optional<ShopGroup> findByparentShopGroupId(Long id);
+    Optional<ShopGroup> findOneByparentShopGroupId(Long id);
 
-    List<ShopGroup> getAll();
+    List<ShopGroup> findByparentShopGroupIdList(Long id);
+
+    List<ShopGroup> findByIsNullParentShopGroupId();
 
     ShopGroup findById(Long id);
 }

@@ -2,6 +2,9 @@ package com.jjunpro.shop.service;
 
 import com.jjunpro.shop.mapper.ProductMapper;
 import com.jjunpro.shop.model.Product;
+import com.jjunpro.shop.model.ShopGroup;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +16,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void set(Product product) {
-        if(product.getId() == null) {
+        if (product.getId() == null) {
             productMapper.insert(product);
         } else {
             productMapper.update(product);
@@ -21,7 +24,19 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void delete(Long id) {
+    public String delete(Long id) {
         productMapper.delete(id);
+
+        return "삭제 완료";
+    }
+
+    @Override
+    public List<Product> findAll() {
+        return productMapper.findAll();
+    }
+
+    @Override
+    public Product findById(Long id) {
+        return productMapper.findById(id);
     }
 }

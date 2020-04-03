@@ -65,6 +65,7 @@ public class ShopGroupControllerTest {
         ShopGroup shopGroupChildren = ShopGroup.builder()
                 .ip("0.0.0.0")
                 .shopName("test-1-1")
+                .enabled(true)
                 .parentShopGroupId(shopGroup.getId())
                 .build();
 

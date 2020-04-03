@@ -7,9 +7,9 @@ public interface ShopGroupService {
 
     Long set(ShopGroup shopGroup);
 
-    void delete(Long id);
+    String delete(Long id);
 
-    List<ShopGroup> getAll();
+    List<ShopGroup> findByIsNullParentShopGroupId();
 
     ShopGroup findById(Long id);
 }

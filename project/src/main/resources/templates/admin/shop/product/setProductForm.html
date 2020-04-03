@@ -1,0 +1,69 @@
+<html xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{fragments/admin/layout :: layout (~{::body},'setProductForm')}">
+
+<head>
+  <title>상품 등록</title>
+</head>
+<body>
+
+<div class="row">
+  <div class="col-md-6 d-flex align-items-stretch grid-margin">
+    <div class="row flex-grow">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">
+              <th:block
+                  th:if="${productDTO.id == null}"
+              >
+                새로운 상품등록
+              </th:block>
+              <th:block
+                  th:if="${productDTO.id != null}"
+              >
+                상품 수정
+              </th:block>
+            </h4>
+            <form class="forms-sample"
+                  method="post"
+                  th:action="@{/product/set}"
+                  th:object="${productDTO}"
+            >
+
+              <input th:replace="~{fragments/admin/inputHiddenField :: hidden ('id')}"/>
+              <input th:replace="~{fragments/admin/inputField :: input ('상품 이름', 'productName', 'text')}"/>
+              <input th:replace="~{fragments/admin/inputField :: input ('상품 설명', 'explanation', 'text')}"/>
+
+              <input th:replace="~{fragments/admin/agreeField :: agree ('판매가능', 'enabled')}"/>
+              <input th:replace="~{fragments/admin/agreeField :: agree ('전화문의', 'callQuestion')}"/>
+              <input th:replace="~{fragments/admin/agreeField :: agree ('쿠폰사용 가능상태', 'cuponEnabled')}"/>
+              <input th:replace="~{fragments/admin/agreeField :: agree ('포인트사용 가능상태', 'pointEnabled')}"/>
+              <input th:replace="~{fragments/admin/agreeField :: agree ('리뷰작성 상태', 'reviewState')}"/>
+
+              <input th:replace="~{fragments/admin/inputField :: input ('상품 태그', 'tag', 'text')}"/>
+              <input th:replace="~{fragments/admin/inputField :: input ('상품 타입', 'productType', 'text')}"/>
+              <input th:replace="~{fragments/admin/inputField :: input ('상품 내용', 'content', 'textarea')}"/>
+              <input th:replace="~{fragments/admin/inputField :: input ('가격', 'price', 'number')}"/>
+              <input th:replace="~{fragments/admin/inputField :: input ('할인율', 'discount', 'number')}"/>
+              <input th:replace="~{fragments/admin/inputField :: input ('포인트 적립율', 'point', 'number')}"/>
+              <input th:replace="~{fragments/admin/inputField :: input ('수량', 'quantity', 'number')}"/>
+              <input th:replace="~{fragments/admin/inputField :: input ('최소구매 수량', 'buyMinQuantity', 'number')}"/>
+              <input th:replace="~{fragments/admin/inputField :: input ('최대구매 수량', 'buyMaxQuantity', 'number')}"/>
+              <input th:replace="~{fragments/admin/inputField :: input ('판매예약', 'reservationSale', 'date')}"/>
+              <input th:replace="~{fragments/admin/inputField :: input ('판매종료', 'endSale', 'date')}"/>
+              <input th:replace="~{fragments/admin/inputField :: input ('출력순서', 'priority', 'number')}"/>
+
+              <button type="submit" class="btn btn-success mr-2">등록</button>
+              <a th:href="@{/product}" class="btn btn-light">취소</a>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</form>
+
+</body>
+</html>

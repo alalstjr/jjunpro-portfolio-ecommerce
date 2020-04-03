@@ -20,6 +20,7 @@
              th:field="*{__${name}__}"/>
       <input th:case="'hidden'" class="form-control" type="hidden"
              th:field="*{__${name}__}"/>
+      <textarea class="form-control product-area" rows="2" th:case="textarea" th:field="*{__${name}__}"></textarea>
     </th:block>
     <th:block th:if="${!valid}">
       <span class="help-inline" th:errors="*{__${name}__}">Error</span>
