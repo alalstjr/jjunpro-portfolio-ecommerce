@@ -1,0 +1,16 @@
+<html xmlns:th="https://www.thymeleaf.org"
+      lang="en">
+<body>
+<th:block th:fragment="hidden (name, id)">
+  <input class="form-control" type="hidden"
+         th:field="*{__${name}__}" th:id="${id}"/>
+  <div th:with="valid=${!#fields.hasErrors(name)}"
+       th:class="${'form-group' + (valid ? '' : ' has-error')}"
+       class="form-group">
+    <th:block th:if="${!valid}">
+      <span class="text-danger" th:errors="*{__${name}__}">Error</span>
+    </th:block>
+  </div>
+</th:block>
+</body>
+</html>

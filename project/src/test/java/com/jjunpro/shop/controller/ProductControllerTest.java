@@ -4,7 +4,10 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.jjunpro.shop.dto.ShopGroupDTO;
@@ -17,10 +20,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class ProductControllerTest {
 
     @Autowired
@@ -30,19 +35,35 @@ public class ProductControllerTest {
     ShopGroupServiceImpl shopGroupService;
 
     @Test
+    public void index() throws Exception {
+        mockMvc.perform(get("/product"))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    /* 분류가 등록되지 않은상태에서 상품등록 접근시 message FlashMap 전송과 링크이동이 되는지 확인합니다. */
+    @Test
+    public void initSet() throws Exception {
+        mockMvc.perform(get("/product/set"))
+                .andExpect(flash().attributeExists("message"))
+                .andDo(print());
+    }
+
+    /* 상품등록이 정상적으로 등록되는지 확인합니다. */
+    @Test
     public void set() throws Exception {
 
         /* 임시 분류를 하나 생성합니다. */
         ShopGroup shopGroup = getShopGroup();
 
         mockMvc.perform(post("/product/set")
+                .param("enabled","true")
                 .param("productName", "닌텐도 DS")
                 .param("price", "10000")
                 .param("shopGroupIds", shopGroup.getId().toString() + ",")
                 .with(csrf()))
-                .andExpect(status().isOk())
+                .andExpect(status().is3xxRedirection())
                 .andDo(print());
-
     }
 
     @Test
@@ -52,6 +73,7 @@ public class ProductControllerTest {
     private ShopGroup getShopGroup() {
         ShopGroupDTO shopGroupDTO = ShopGroupDTO.builder()
                 .ip("0.0.0.0")
+                .enabled(true)
                 .shopName("전자제품")
                 .build();
 

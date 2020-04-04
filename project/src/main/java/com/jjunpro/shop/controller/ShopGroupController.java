@@ -74,8 +74,15 @@ public class ShopGroupController {
     public String processSet(
             HttpServletRequest request,
             @Valid ShopGroupDTO shopGroupDTO,
-            BindingResult bindingResult
+            BindingResult bindingResult,
+            Model model
     ) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("shopGroupDTO", shopGroupDTO);
+
+            return ADMINGROUP.concat("/setGroupForm");
+        }
+
         shopGroupDTO.setIp(ipUtil.getUserIp(request));
         shopGroupService.set(shopGroupDTO.toEntity());
 

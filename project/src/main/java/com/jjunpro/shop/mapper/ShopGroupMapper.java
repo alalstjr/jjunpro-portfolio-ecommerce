@@ -21,4 +21,6 @@ public interface ShopGroupMapper {
     List<ShopGroup> findByIsNullParentShopGroupId();
 
     ShopGroup findById(Long id);
+
+    Integer allCount();
 }

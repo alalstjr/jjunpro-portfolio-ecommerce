@@ -9,9 +9,20 @@
     <th:block th:switch="${type}">
       <input th:case="'text'" class="form-control" type="text" th:field="*{__${name}__}"
       />
-      <input th:case="'date'" class="form-control" type="text" th:field="*{__${name}__}"
-             placeholder="YYYY-MM-DD" title="Enter a date in this format: YYYY-MM-DD"
-             pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))"/>
+      <th:block th:case="'date'">
+        <input class="form-control" type="text" th:field="*{__${name}__}"
+               th:id="${name}"
+               autocomplete = "off"
+               placeholder="YYYY-MM-DD" title="Enter a date in this format: YYYY-MM-DD"/>
+
+        <script th:inline="javascript">
+          /*<![CDATA[*/
+          $([['#' + ${name}]]).datepicker({
+            dateFormat: 'yy-mm-dd 00:00:00'
+          });
+          /*]]>*/
+        </script>
+      </th:block>
       <input th:case="'email'" class="form-control" type=s"email" th:field="*{__${name}__}"
       />
       <input th:case="'password'" class="form-control" type="password"
@@ -20,10 +31,11 @@
              th:field="*{__${name}__}"/>
       <input th:case="'hidden'" class="form-control" type="hidden"
              th:field="*{__${name}__}"/>
-      <textarea class="form-control product-area" rows="2" th:case="textarea" th:field="*{__${name}__}"></textarea>
+      <textarea class="form-control product-area" rows="2" th:case="textarea"
+                th:field="*{__${name}__}"></textarea>
     </th:block>
     <th:block th:if="${!valid}">
-      <span class="help-inline" th:errors="*{__${name}__}">Error</span>
+      <span class="text-danger" th:errors="*{__${name}__}">Error</span>
     </th:block>
   </div>
 </th:block>

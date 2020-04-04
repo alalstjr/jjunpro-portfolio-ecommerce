@@ -57,6 +57,11 @@ public class ShopGroupServiceImpl implements ShopGroupService {
         return shopGroupMapper.findById(id);
     }
 
+    @Override
+    public Integer allCount() {
+        return shopGroupMapper.allCount();
+    }
+
     /* 분류 호출 Recursion 재귀함수 */
     private void recursion(List<ShopGroup> shopGroupList) {
         /* 부모노드 분류의 자식노드 분류 List 를 조회 */

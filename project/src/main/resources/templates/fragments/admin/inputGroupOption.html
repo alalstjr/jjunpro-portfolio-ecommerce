@@ -1,0 +1,24 @@
+<html xmlns:th="https://www.thymeleaf.org"
+      lang="en">
+
+<th:block th:fragment="option (count)">
+  <th:block th:each="item : ${items}">
+    <option th:value="${item.id + ',' + item.shopName}">
+      <!-- 분류 노드별 구분을 주기위한 count 공백 -->
+      <th:block th:if="${count != 0}" th:each="space : ${#numbers.sequence(1,count)}">
+        &nbsp;
+        <th:block th:if="${space == count}">
+          -
+        </th:block>
+      </th:block>
+
+      <th:block th:text="${item.shopName}"></th:block>
+    </option>
+
+    <!-- 하위 노드가 존재하는경우 재귀함수 실행 -->
+    <th:block
+        th:include="@{fragments/admin/inputGroupOption} :: option (*{__${count + 1}__})"
+        th:with="items=${item.getChildrenShopGroupList()}"></th:block>
+
+  </th:block>
+</th:block>

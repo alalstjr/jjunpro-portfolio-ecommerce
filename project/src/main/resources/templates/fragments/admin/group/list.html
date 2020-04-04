@@ -23,16 +23,25 @@
         </div>
       </td>
       <td th:text="${item.priority}">출력순서</td>
-      <td th:text="${item.enabled}">판매가능</td>
+      <td>
+        <th:block th:if="${item.enabled} == false">
+          <span class="material-icons text-danger">close</span>
+        </th:block>
+        <th:block th:if="${item.enabled} == true">
+          <span class="material-icons text-success">check</span>
+        </th:block>
+      </td>
       <td>
         <a th:href="@{/shopgroup/set(id=${item.id})}" class="btn btn-primary mr-2">수정</a>
-        <a th:href="@{/shopgroup/set(parentShopGroupId=${item.id})}" class="btn btn-success mr-2">하위분류 추가</a>
-        <a href="#none" onclick="return delete_confirm(this);" th:data-target="${item.id}" class="btn btn-danger mr-2">삭제</a>
+        <a th:href="@{/shopgroup/set(parentShopGroupId=${item.id})}" class="btn btn-success mr-2">하위분류
+          추가</a>
+        <a href="#none" onclick="return delete_confirm(this);" th:data-target="${item.id}"
+           class="btn btn-danger mr-2">삭제</a>
       </td>
     </tr>
     <!-- 하위 노드가 존재하는경우 재귀함수 실행 -->
-    <th:block th:if="${item.childrenShopGroupList.size() > 0}"
-              th:include="@{fragments/admin/group/list} :: list (*{__${count + 1}__})"
-              th:with="group=${item.getChildrenShopGroupList()}"></th:block>
+    <th:block
+        th:include="@{fragments/admin/group/list} :: list (*{__${count + 1}__})"
+        th:with="group=${item.getChildrenShopGroupList()}"></th:block>
   </th:block>
 </th:block>

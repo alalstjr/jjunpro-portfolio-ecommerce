@@ -68,4 +68,8 @@
         id = #{id};
   </select>
 
+  <select id="allCount" resultType="Integer">
+    SELECT COUNT(*) FROM
+        shop_group;
+  </select>
 </mapper>

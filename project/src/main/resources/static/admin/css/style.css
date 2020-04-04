@@ -18722,11 +18722,19 @@ address p {
 }
 
 .card-title {
+  font-size: 14px;
+}
+
+.form-title {
+  font-size: 24px;
+}
+
+.card-title,
+.form-title {
   font-family: "Poppins", sans-serif;
   font-weight: 500;
   color: #404852;
   margin-bottom: 22px;
-  font-size: 14px;
   text-transform: capitalize;
 }
 
@@ -21757,7 +21765,7 @@ ul li {
 /* custom css */
 .none-data {
   text-align: center;
-  padding: 40px;
+  padding: 150px;
   font-size: 18px;
 }
 
@@ -21790,10 +21798,37 @@ input[type="checkbox"]:checked {
   display: inline-block;
 }
 
-.material-icons {
-  font-size: 18px!important;
-}
-
 .product-area {
   height: 200px;
+}
+
+.group-css {
+  display: inline-block;
+  padding: 5px 22px 5px 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  position: relative;
+  margin-right: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.group-css span {
+  position: absolute;
+  right: 2px;
+  top: 3px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.group-text-form {
+  margin-bottom: 20px;
+}
+
+.danger-massage {
+  margin-bottom: 20px;
+}
+
+.group-form {
+  padding: 3px 0;
 }

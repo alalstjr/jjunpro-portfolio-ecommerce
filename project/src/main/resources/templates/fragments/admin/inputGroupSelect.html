@@ -1,0 +1,23 @@
+<html xmlns:th="https://www.thymeleaf.org"
+      lang="en">
+<body>
+<th:block th:fragment="select (label, items)">
+  <div class="form-group">
+    <label th:text="${label}">Label</label>
+
+    <div>
+      <select class="form-control form-control-lg" onchange="groupHandle(this.value)"
+              id="group-select">
+        <option value="none">분류선택</option>
+        <!-- 분류 리스트 옵션 재귀함수 출력 -->
+        <th:block
+            th:include="@{fragments/admin/inputGroupOption} :: option (0)"
+            th:with="items=${items}"></th:block>
+
+      </select>
+
+    </div>
+  </div>
+</th:block>
+</body>
+</html>

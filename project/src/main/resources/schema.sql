@@ -59,7 +59,6 @@ CREATE TABLE PRODUCT
     modifiedDate    TIMESTAMP NOT NULL,
     enabled         BOOLEAN   NOT NULL,
 
-    shopGroupIds    VARCHAR,
     productName     VARCHAR,
     explanation     VARCHAR,
     tag             VARCHAR,
@@ -78,7 +77,8 @@ CREATE TABLE PRODUCT
     reviewState     BOOLEAN,
     reservationSale TIMESTAMP,
     endSale         TIMESTAMP,
-    priority        INTEGER
+    priority        INTEGER,
+    shopGroupIds    VARCHAR   NOT NULL
 );
 
 /* SUB_PRODUCT */

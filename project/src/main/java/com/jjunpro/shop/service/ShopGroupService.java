@@ -12,4 +12,6 @@ public interface ShopGroupService {
     List<ShopGroup> findByIsNullParentShopGroupId();
 
     ShopGroup findById(Long id);
+
+    Integer allCount();
 }

@@ -6,13 +6,17 @@
 </head>
 <body>
 
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
 <div class="row">
   <div class="col-md-6 d-flex align-items-stretch grid-margin">
     <div class="row flex-grow">
       <div class="col-12">
         <div class="card">
           <div class="card-body">
-            <h4 class="card-title">
+            <h4 class="form-title">
               <th:block
                   th:if="${productDTO.id == null}"
               >
@@ -29,6 +33,12 @@
                   th:action="@{/product/set}"
                   th:object="${productDTO}"
             >
+              <input th:replace="~{fragments/admin/inputGroupSelect :: select ('분류등록', ${shopGroupList})}"/>
+
+              <input th:replace="~{fragments/admin/inputHiddenValidField :: hidden ('shopGroupIds', 'shopGroupIds')}"/>
+
+              <div id="groupText" class="form-control group-text-form"></div>
+
 
               <input th:replace="~{fragments/admin/inputHiddenField :: hidden ('id')}"/>
               <input th:replace="~{fragments/admin/inputField :: input ('상품 이름', 'productName', 'text')}"/>
@@ -64,6 +74,78 @@
 </div>
 
 </form>
+
+<script>
+
+  function groupHandle(target) {
+    var targetArr = target.split(',');
+
+    var initValue = document.getElementById("shopGroupIds").value;
+
+    if(initValue.indexOf(targetArr[0]) === -1) {
+      if(initValue.length === 0) {
+        document.getElementById("shopGroupIds").value = targetArr[0];
+      } else {
+        document.getElementById("shopGroupIds").value = initValue + "," + targetArr[0];
+      }
+
+      groupTextHandle(targetArr);
+    }
+  }
+
+  /* 선택된 그룹 삭제 메소드 */
+  function groupDeleteHandle(e) {
+    var thisEl = e.target.dataset.id;
+    var deleteEl = document.getElementById(thisEl);
+    deleteEl.remove();
+
+    var thisElArr = thisEl.split('-');
+
+    var initValue = document.getElementById("shopGroupIds").value;
+    var targetArr = initValue.split(',');
+
+    targetArr.splice(targetArr.indexOf(thisElArr[1]),1);
+
+    document.getElementById("shopGroupIds").value = targetArr.join(',');
+  }
+
+  /* View Text */
+  function groupTextHandle(targetArr) {
+    var theDiv = document.getElementById("groupText");
+    var newDiv = document.createElement("div");
+    newDiv.id = "group-" + targetArr[0];
+    newDiv.className = "group-css btn-success";
+    var content = document.createTextNode(targetArr[1]);
+
+    var newBtn = document.createElement("span");
+    newBtn.setAttribute("data-id", "group-" + targetArr[0]);
+    var btnContent = document.createTextNode("close");
+    newBtn.className = "material-icons deleteGroup";
+    newBtn.appendChild(btnContent);
+    newBtn.onclick = groupDeleteHandle;
+
+    newDiv.appendChild(content);
+    newDiv.appendChild(newBtn);
+    theDiv.appendChild(newDiv);
+  }
+
+  /* 상품에 등록된 분류선택지를 초기화면에 보여줍니다. */
+  (function () {
+    var initValue = document.getElementById("shopGroupIds").value;
+    var elementById = document.getElementById("group-select").options;
+
+    for(var i = 0; i < elementById.length; i++) {
+
+      var targetArr = elementById[i].value.split(',');
+      var initValueArr = initValue.split(',');
+
+      if(initValueArr.indexOf(targetArr[0]) !== -1) {
+        groupTextHandle(targetArr);
+      }
+    }
+  })();
+
+</script>
 
 </body>
 </html>

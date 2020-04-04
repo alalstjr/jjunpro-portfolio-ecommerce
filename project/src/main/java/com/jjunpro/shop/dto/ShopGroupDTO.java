@@ -21,7 +21,7 @@ public class ShopGroupDTO {
 
     private Boolean enabled;
 
-    @NotBlank(message = "그룹 이름은 필수로 작성해야 합니다.")
+    @NotBlank(message = "분류 이름은 필수로 작성해야 합니다.")
     private String shopName;
 
     private Integer priority;

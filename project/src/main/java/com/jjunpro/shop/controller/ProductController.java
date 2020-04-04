@@ -9,6 +9,7 @@ import com.jjunpro.shop.model.Product;
 import com.jjunpro.shop.model.ShopGroup;
 import com.jjunpro.shop.service.ProductService;
 import com.jjunpro.shop.service.ProductServiceImpl;
+import com.jjunpro.shop.service.ShopGroupServiceImpl;
 import com.jjunpro.shop.util.IpUtil;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -28,8 +29,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequiredArgsConstructor
 public class ProductController {
 
-    private final ProductServiceImpl productService;
-    private final IpUtil             ipUtil;
+    private final ProductServiceImpl   productService;
+    private final ShopGroupServiceImpl shopGroupService;
+    private final IpUtil               ipUtil;
 
     @GetMapping("")
     public String index(
@@ -44,23 +46,27 @@ public class ProductController {
     @GetMapping("/set")
     public String initSet(
             Model model,
-            @RequestParam(required = false) Long id
+            @RequestParam(required = false) Long id,
+            RedirectAttributes redirectAttributes
     ) {
+        /* 분류가 하나이상 존재하는지 확인합니다. */
+        if(shopGroupService.allCount() == 0) {
+            redirectAttributes.addFlashAttribute("message", "분류가 하나이상 존재해야 상품등록이 가능합니다.");
+
+            return "redirect:/shopgroup/set";
+        }
+
         ProductDTO productDTO = new ProductDTO();
 
         /* 수정 id */
         if (id != null) {
             Product product = productService.findById(id);
-            productDTO.setId(id);
-            productDTO.setEnabled(product.getEnabled());
-            productDTO.setProductName(product.getProductName());
-            productDTO.setPriority(product.getPriority());
-
             model.addAttribute("productDTO", product);
-        } else  {
-
-        model.addAttribute("productDTO", productDTO);
+        } else {
+            model.addAttribute("productDTO", productDTO);
         }
+
+        this.getShopGroupList(model);
 
         return ADMINPRODUCT.concat("/setProductForm");
     }
@@ -69,8 +75,16 @@ public class ProductController {
     public String set(
             HttpServletRequest request,
             @Valid ProductDTO productDTO,
-            BindingResult bindingResult
+            BindingResult bindingResult,
+            Model model
     ) {
+        if (bindingResult.hasErrors()) {
+            this.getShopGroupList(model);
+            model.addAttribute("productDTO", productDTO);
+
+            return ADMINPRODUCT.concat("/setProductForm");
+        }
+
         productDTO.setIp(ipUtil.getUserIp(request));
         productService.set(productDTO.toEntity());
 
@@ -83,5 +97,11 @@ public class ProductController {
         model.addFlashAttribute("message", productService.delete(id));
 
         return "redirect:/product";
+    }
+
+    /* 분류 리스트를 불러옵니다. */
+    private void getShopGroupList(Model model) {
+        List<ShopGroup> shopGroupList = shopGroupService.findByIsNullParentShopGroupId();
+        model.addAttribute("shopGroupList", shopGroupList);
     }
 }
