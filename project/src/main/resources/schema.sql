@@ -78,7 +78,8 @@ CREATE TABLE PRODUCT
     reservationSale TIMESTAMP,
     endSale         TIMESTAMP,
     priority        INTEGER,
-    shopGroupIds    VARCHAR   NOT NULL
+    shopGroupIds    VARCHAR   NOT NULL,
+    fileStorageIds  VARCHAR
 );
 
 /* SUB_PRODUCT */
@@ -112,4 +113,18 @@ CREATE TABLE DELIVERY
     deliveryDefaultPay  SMALLINT,
     deliveryIfPay       SMALLINT,
     deliveryQuantityPay SMALLINT
+);
+
+/* FILESTORAGE */
+DROP TABLE IF EXISTS FILESTORAGE;
+CREATE TABLE FILESTORAGE
+(
+    id              SERIAL PRIMARY KEY,
+    createdDate     TIMESTAMP NOT NULL,
+    modifiedDate    TIMESTAMP NOT NULL,
+
+    fileName        VARCHAR   NOT NULL,
+    fileDownloadUri VARCHAR   NOT NULL,
+    fileType        VARCHAR   NOT NULL,
+    fileSize        INTEGER   NOT NULL
 );

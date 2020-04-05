@@ -2,7 +2,8 @@ package com.jjunpro.shop.enums;
 
 public enum DomainType implements EnumModel {
 
-    ACCOUNT("account");
+    ACCOUNT("account"),
+    PRODUCT("product");
 
     public final String domainType;
 

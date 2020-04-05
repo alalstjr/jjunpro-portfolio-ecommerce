@@ -11,9 +11,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class ShopGroup {
 
     private Long          id;
@@ -29,5 +27,21 @@ public class ShopGroup {
 
     /* parentShopGroupId 조회하여 List 를 저장하는 임시변수 */
     private Set<ShopGroup> childrenShopGroupList = new HashSet<>();
+
+    @Builder
+    public ShopGroup(Long id, String ip, LocalDateTime createdDate,
+            LocalDateTime modifiedDate, Boolean enabled, String shopName, Integer priority,
+            Long parentShopGroupId,
+            Set<ShopGroup> childrenShopGroupList) {
+        this.id = id;
+        this.ip = ip;
+        this.createdDate = createdDate;
+        this.modifiedDate = modifiedDate;
+        this.enabled = enabled;
+        this.shopName = shopName;
+        this.priority = priority;
+        this.parentShopGroupId = parentShopGroupId;
+        this.childrenShopGroupList = childrenShopGroupList;
+    }
 }
 

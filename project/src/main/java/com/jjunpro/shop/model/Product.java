@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -47,11 +48,17 @@ public class Product {
 
     private Integer priority;
     private String  shopGroupIds;
+    private String  fileStorageIds;
 
     /* Storage Value */
 
     /* shopGroupIds 조회하여 List 를 저장하는 임시변수 */
     private Set<ShopGroup> shopGroupList = new HashSet<>();
+
+    private MultipartFile[] fileStorage;
+
+    /* 파일삭제 id 값을 저장하는 임시변수 */
+    private String deleteFileStorageIds;
 
     @Builder
     public Product(Long id, String ip, LocalDateTime createdDate, LocalDateTime modifiedDate,
@@ -61,7 +68,8 @@ public class Product {
             Short discount, Integer point, Integer quantity, Integer buyMinQuantity,
             Integer buyMaxQuantity, Boolean reviewState, LocalDateTime reservationSale,
             LocalDateTime endSale, Integer priority, String shopGroupIds,
-            Set<ShopGroup> shopGroupList) {
+            String fileStorageIds, Set<ShopGroup> shopGroupList,
+            MultipartFile[] fileStorage) {
         this.id = id;
         this.ip = ip;
         this.createdDate = createdDate;
@@ -87,6 +95,8 @@ public class Product {
         this.endSale = endSale;
         this.priority = priority;
         this.shopGroupIds = shopGroupIds;
+        this.fileStorageIds = fileStorageIds;
         this.shopGroupList = shopGroupList;
+        this.fileStorage = fileStorage;
     }
 }

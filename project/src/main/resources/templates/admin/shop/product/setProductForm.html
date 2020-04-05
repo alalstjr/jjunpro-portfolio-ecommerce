@@ -32,6 +32,7 @@
                   method="post"
                   th:action="@{/product/set}"
                   th:object="${productDTO}"
+                  enctype="multipart/form-data"
             >
               <input th:replace="~{fragments/admin/inputGroupSelect :: select ('분류등록', ${shopGroupList})}"/>
 
@@ -42,6 +43,23 @@
 
               <input th:replace="~{fragments/admin/inputHiddenField :: hidden ('id')}"/>
               <input th:replace="~{fragments/admin/inputField :: input ('상품 이름', 'productName', 'text')}"/>
+              <input th:replace="~{fragments/admin/inputField :: input ('상품 사진', 'fileStorage', 'file')}"/>
+
+              <!-- 기존에 업로드된 파일 목록 -->
+              <input th:replace="~{fragments/admin/inputHiddenField :: hidden ('fileStorageIds')}"/>
+              <input th:replace="~{fragments/admin/inputHiddenField :: hidden ('deleteFileStorageIds')}"/>
+              <div class="row mb-3">
+                <div th:each="file : ${dbFile}" class="col-sm-4" th:id="${'file-id-' + file.id}">
+                  <div>
+                    <img th:src="${file.fileDownloadUri}" alt="" class="img-thumbnail">
+                  </div>
+                  <div th:text="${file.fileName}" class="text-gray ellipsis mb-2"></div>
+                  <div class="mb-2">
+                    <button class="btn btn-danger" type="button" th:onclick="|javascript:deleteFile('${file.id}')|">삭제</button>
+                  </div>
+                </div>
+              </div>
+
               <input th:replace="~{fragments/admin/inputField :: input ('상품 설명', 'explanation', 'text')}"/>
 
               <input th:replace="~{fragments/admin/agreeField :: agree ('판매가능', 'enabled')}"/>
@@ -144,6 +162,19 @@
       }
     }
   })();
+
+  /* 이미지 파일삭제 메소드 */
+  function deleteFile(target) {
+    var initValue = document.getElementById("deleteFileStorageIds").value;
+
+    document.getElementById("file-id-"+target).remove();
+
+    if (initValue.length === 0) {
+      document.getElementById("deleteFileStorageIds").value = target;
+    } else {
+      document.getElementById("deleteFileStorageIds").value = initValue + "," + target;
+    }
+  }
 
 </script>
 

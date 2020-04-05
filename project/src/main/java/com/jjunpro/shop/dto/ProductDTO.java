@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -75,6 +76,12 @@ public class ProductDTO {
     @NotBlank(message = "분류 지정은 필수로 작성해야 합니다.")
     private String shopGroupIds;
 
+    private MultipartFile[] fileStorage;
+
+    private String fileStorageIds;
+
+    private String deleteFileStorageIds;
+
     public Product toEntity() {
         return Product.builder()
                 .ip(ip)
@@ -100,6 +107,8 @@ public class ProductDTO {
                 .endSale(this.defaultDate(endSale))
                 .priority(priority)
                 .shopGroupIds(shopGroupIds)
+                .fileStorage(fileStorage)
+                .fileStorageIds(fileStorageIds)
                 .build();
     }
 

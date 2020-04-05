@@ -3,6 +3,7 @@ package com.jjunpro.shop.controller;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -18,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,7 +59,7 @@ public class ProductControllerTest {
         ShopGroup shopGroup = getShopGroup();
 
         mockMvc.perform(post("/product/set")
-                .param("enabled","true")
+                .param("enabled", "true")
                 .param("productName", "닌텐도 DS")
                 .param("price", "10000")
                 .param("shopGroupIds", shopGroup.getId().toString() + ",")
@@ -68,6 +70,22 @@ public class ProductControllerTest {
 
     @Test
     public void delete() {
+    }
+
+    /* File Upload 정상등록이 되는지 확인합니다. */
+    @Test
+    public void fileUpload() throws Exception {
+        MockMultipartFile multipartFile = new MockMultipartFile(
+                "file",
+                "text.txt",
+                "text/plain",
+                "hello file".getBytes()
+        );
+
+        mockMvc.perform(multipart("/file/set")
+                .file(multipartFile)
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection());
     }
 
     private ShopGroup getShopGroup() {

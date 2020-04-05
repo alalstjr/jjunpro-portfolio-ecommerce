@@ -23,13 +23,15 @@
           /*]]>*/
         </script>
       </th:block>
-      <input th:case="'email'" class="form-control" type=s"email" th:field="*{__${name}__}"
+      <input th:case="'email'" class="form-control" type="email" th:field="*{__${name}__}"
       />
       <input th:case="'password'" class="form-control" type="password"
              th:field="*{__${name}__}"/>
       <input th:case="'number'" class="form-control" type="number"
              th:field="*{__${name}__}"/>
       <input th:case="'hidden'" class="form-control" type="hidden"
+             th:field="*{__${name}__}"/>
+      <input th:case="'file'" class="form-control" type="file" multiple="multiple"
              th:field="*{__${name}__}"/>
       <textarea class="form-control product-area" rows="2" th:case="textarea"
                 th:field="*{__${name}__}"></textarea>
