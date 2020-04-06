@@ -59,11 +59,11 @@ public class ProductDTO {
 
     @Min(value = 0, message = "0 이하로 작성할 수 없습니다.")
     @NotNull(message = "최소상품 구입수량은 필수로 작성해야 합니다.")
-    private Integer buyMinQuantity;
+    private Integer buyMinQuantity = 1;
 
     @Min(value = 0, message = "0 이하로 작성할 수 없습니다.")
     @NotNull(message = "최대상품 구입수량은 필수로 작성해야 합니다.")
-    private Integer buyMaxQuantity;
+    private Integer buyMaxQuantity = 9999;
 
     private Boolean reviewState;
 
@@ -113,6 +113,10 @@ public class ProductDTO {
     }
 
     public LocalDateTime defaultDate(String date) {
-        return LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        if (!date.isEmpty()) {
+            return LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        }
+
+        return null;
     }
 }

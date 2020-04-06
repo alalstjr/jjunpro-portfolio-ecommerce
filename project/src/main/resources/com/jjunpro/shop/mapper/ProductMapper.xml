@@ -81,7 +81,8 @@
 
   <select id="findAll" resultType="Product">
     SELECT * FROM
-        product LIMIT 20;
+        product
+    ORDER BY createddate DESC LIMIT 20;
   </select>
 
   <select id="findById" resultType="Product">
@@ -91,4 +92,10 @@
         id = #{id};
   </select>
 
+  <select id="findCountByShopGroupId" resultType="Integer">
+    SELECT COUNT(*) FROM
+        product
+    WHERE
+        shopGroupIds LIKE '%'||#{shopGroupId}||'%';
+  </select>
 </mapper>

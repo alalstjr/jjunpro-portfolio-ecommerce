@@ -21832,3 +21832,9 @@ input[type="checkbox"]:checked {
 .group-form {
   padding: 3px 0;
 }
+
+.table td img.product-list-img {
+  width: 100px;
+  height: auto;
+  border-radius: unset;
+}

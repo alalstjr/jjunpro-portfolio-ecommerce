@@ -2,6 +2,7 @@ package com.jjunpro.shop.enums;
 
 public enum DomainType implements EnumModel {
 
+    NULL("null"),
     ACCOUNT("account"),
     PRODUCT("product");
 

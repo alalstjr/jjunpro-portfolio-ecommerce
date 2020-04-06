@@ -4,6 +4,7 @@ import static com.jjunpro.shop.util.ClassPathUtil.ADMINGROUP;
 
 import com.jjunpro.shop.dto.ShopGroupDTO;
 import com.jjunpro.shop.model.ShopGroup;
+import com.jjunpro.shop.service.ProductServiceImpl;
 import com.jjunpro.shop.service.ShopGroupServiceImpl;
 import com.jjunpro.shop.util.IpUtil;
 import java.util.Arrays;
@@ -30,6 +31,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class ShopGroupController {
 
     private final ShopGroupServiceImpl shopGroupService;
+    private final ProductServiceImpl   productService;
     private final IpUtil               ipUtil;
 
     @GetMapping("")

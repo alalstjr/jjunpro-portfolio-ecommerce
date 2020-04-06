@@ -28,6 +28,8 @@ public class ShopGroup {
     /* parentShopGroupId 조회하여 List 를 저장하는 임시변수 */
     private Set<ShopGroup> childrenShopGroupList = new HashSet<>();
 
+    private Integer productCount;
+
     @Builder
     public ShopGroup(Long id, String ip, LocalDateTime createdDate,
             LocalDateTime modifiedDate, Boolean enabled, String shopName, Integer priority,

@@ -3,7 +3,9 @@
 <th:block th:fragment="list">
   <th:block th:each="item : ${group}">
     <tr>
-      <td>사진</td>
+      <td>
+        <img class="product-list-img" th:src="${item.thumbnail}" onError="this.onerror=null;this.src='/image/none-img.png';" alt="">
+      </td>
       <td>
         <th:block th:text="${item.productName}">상품이름</th:block>
       </td>
@@ -26,6 +28,11 @@
         <th:block th:if="${item.enabled} == true">
           <span class="material-icons text-success">check</span>
         </th:block>
+      </td>
+      <td>
+        <span th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT') + '원'}"></span>
+        /
+        <span th:text="${item.quantity + '개'}"></span>
       </td>
       <td>
         <a th:href="@{/product/set(id=${item.id})}" class="btn btn-primary mr-2">수정</a>

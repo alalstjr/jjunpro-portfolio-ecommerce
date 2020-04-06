@@ -13,6 +13,7 @@
         <input class="form-control" type="text" th:field="*{__${name}__}"
                th:id="${name}"
                autocomplete = "off"
+               readonly="readonly"
                placeholder="YYYY-MM-DD" title="Enter a date in this format: YYYY-MM-DD"/>
 
         <script th:inline="javascript">

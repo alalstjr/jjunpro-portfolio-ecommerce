@@ -3,18 +3,18 @@ package com.jjunpro.shop.controller;
 import static com.jjunpro.shop.util.ClassPathUtil.ADMINPRODUCT;
 
 import com.jjunpro.shop.dto.ProductDTO;
+import com.jjunpro.shop.enums.DomainType;
 import com.jjunpro.shop.model.FileStorage;
 import com.jjunpro.shop.model.Product;
 import com.jjunpro.shop.model.ShopGroup;
 import com.jjunpro.shop.service.FileStorageServiceImpl;
 import com.jjunpro.shop.service.ProductServiceImpl;
 import com.jjunpro.shop.service.ShopGroupServiceImpl;
+import com.jjunpro.shop.util.FileUtil;
 import com.jjunpro.shop.util.IpUtil;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,12 +36,28 @@ public class ProductController {
     private final ProductServiceImpl     productService;
     private final ShopGroupServiceImpl   shopGroupService;
     private final FileStorageServiceImpl fileStorageService;
+    private final FileUtil               fileUtil;
 
     @GetMapping("")
     public String index(
             Model model
     ) {
         List<Product> productList = productService.findAll();
+
+        /* 상품 목록에서 보려주는 대문 이미지 탐색 */
+        for (Product product : productList) {
+            if (product.getFileStorageIds() != null) {
+                String[] fileStorageArr = product.getFileStorageIds().split(",");
+                Optional<FileStorage> fileStorage = fileStorageService
+                        .findById(Long.parseLong(fileStorageArr[0].trim()));
+
+                if(fileStorage.isPresent()) {
+                    String fileDownloadUri = fileStorage.get().getFileDownloadUri();
+                    product.setThumbnail(fileDownloadUri);
+                }
+            }
+        }
+
         model.addAttribute("productList", productList);
 
         return ADMINPRODUCT.concat("/index");
@@ -97,7 +113,7 @@ public class ProductController {
             @Valid ProductDTO productDTO,
             BindingResult bindingResult,
             Model model
-    ) {
+    ) throws NoSuchFieldException, IllegalAccessException {
         if (bindingResult.hasErrors()) {
             this.getShopGroupList(model);
             model.addAttribute("productDTO", productDTO);
@@ -105,86 +121,8 @@ public class ProductController {
             return ADMINPRODUCT.concat("/setProductForm");
         }
 
-        StringBuilder uploadFile = new StringBuilder();
-
-        /**
-         * - file remove
-         */
-        if (!productDTO.getDeleteFileStorageIds().isEmpty()) {
-            String[] dbFileArr     = productDTO.getFileStorageIds().split(",");
-            String[] deleteFileArr = productDTO.getDeleteFileStorageIds().split(",");
-
-            /*
-             * 삭제하려는 파일 id 값은 저장하면 안되므로
-             * { uploadFile } 변수에 담아서 전송할 수 없도록 합니다.
-             *
-             * 업로드된 파일 정보와 삭제하려는 파일을 비교합니다.
-             * 삭제하려는 파일정보가 업로드된 파일정보와 일치하지 않으면
-             * 서버로 전송 저장되는 { uploadFile } 변수에 담아집니다.
-             *
-             * ex) 전송하는 File : 1, 2, 3, 4, 5
-             *     삭제하는 File : 1, 7, 3, 6, 8
-             *
-             * uploadFile = { 1, 3 } , 이외 값들은 삭제됩니다.
-             *
-             * 2중 for문에서 삭제되는 값 확인되면 break 문을 사용하여 불필요한 탐색을 안하도록 중지합니다.
-             */
-            for (String dbFile : dbFileArr) {
-                boolean equalsCheck = true;
-                for (String deleteFile : deleteFileArr) {
-                    if (dbFile.trim().equals(deleteFile.trim())) {
-                        equalsCheck = false;
-                        break;
-                    }
-                }
-
-                if (equalsCheck) {
-                    uploadFile.append(dbFile.trim()).append(",");
-                }
-            }
-
-            if (uploadFile.length() == 0) {
-                /* 저장되는 파일이 0 개 인경우 Null */
-                productDTO.setFileStorageIds(null);
-            } else {
-                /*
-                 * uploadFile 변수 끝자리에 오는 문자 ',' 콤마를 삭제합니다.
-                 * ex) { 1, 2, 3, } => { 1, 2, 3 }
-                 */
-                productDTO.setFileStorageIds(uploadFile.substring(0, uploadFile.length() - 1));
-            }
-
-            this.fileStorageService.delete(deleteFileArr);
-        }
-
-        /**
-         * - file upload
-         *
-         * 문자열로 저장하기전에 배열에 포함되는 특수문자 ([, ]) 가로를 삭제 후 저장해 줍니다.
-         * 다른곳에서 불러와 문자열을 배열로 만들 때 따로 특수만자 제거 작업이 필요없도록 미리 설정하는 것입니다.
-         */
-        /* 업로드 파일이 하나 이상 존재하는 경우 */
-        if (!productDTO.getFileStorage()[0].isEmpty()) {
-            /*
-             * 기존에 저장된 파일 id 값이 존재하고
-             * uploadFile.length() 값이 0 인경우 => file remove 과정을 거치지 않은 경우
-             *
-             * 기존의 저장된 파일 id 값과 새로 저장하려는 파일 id 값을 같이 { uploadFile } 저장하여 전송합니다.
-             * ex) 기존 저장된 파일 id { 1, 2, 3 }
-             *     새로 저장되는 파일 Id { 5, 6 }
-             *     uploadFile => { 1, 2, 3, 5, 6 }
-             */
-            if (!productDTO.getFileStorageIds().isEmpty() && uploadFile.length() == 0) {
-                uploadFile.append(productDTO.getFileStorageIds()).append(",");
-            }
-
-            List<Long> longs = fileStorageService.uploadMultipleFiles(productDTO.getFileStorage());
-
-            String replaceAll = longs.toString().replaceAll("[\\[\\]]", "");
-            uploadFile.append(replaceAll);
-
-            productDTO.setFileStorageIds(uploadFile.toString());
-        }
+        /* File Upload / delete */
+        this.fileUtil.setFileHandler(productDTO, DomainType.PRODUCT);
 
         productDTO.setIp(ipUtil.getUserIp(request));
         productService.set(productDTO.toEntity());
@@ -195,6 +133,14 @@ public class ProductController {
     /* RedirectAttributes 사용하여 그룹 index 페이지에 상태 메세지 Attributes 전달합니다.  */
     @PostMapping("/delete")
     public String delete(Long id, RedirectAttributes model) {
+        /* DB 조회 후 삭제하려는 DATA 에 파일정보가 있으면 같이 삭제 */
+        Product dbProduct = productService.findById(id);
+
+        if (dbProduct.getFileStorageIds() != null) {
+            String[] fileStorageArr = dbProduct.getFileStorageIds().split(",");
+            fileStorageService.delete(fileStorageArr, DomainType.PRODUCT);
+        }
+
         model.addFlashAttribute("message", productService.delete(id));
 
         return "redirect:/product";

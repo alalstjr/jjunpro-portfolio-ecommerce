@@ -31,6 +31,7 @@
           <span class="material-icons text-success">check</span>
         </th:block>
       </td>
+      <th th:text="${item.productCount}"></th>
       <td>
         <a th:href="@{/shopgroup/set(id=${item.id})}" class="btn btn-primary mr-2">수정</a>
         <a th:href="@{/shopgroup/set(parentShopGroupId=${item.id})}" class="btn btn-success mr-2">하위분류

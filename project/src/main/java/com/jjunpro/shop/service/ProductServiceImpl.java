@@ -4,6 +4,7 @@ import com.jjunpro.shop.mapper.ProductMapper;
 import com.jjunpro.shop.mapper.ShopGroupMapper;
 import com.jjunpro.shop.model.Product;
 import com.jjunpro.shop.model.ShopGroup;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,11 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void set(Product product) {
+        /* 저장하는 파일이 없는경우 null 저장 */
+        if(product.getFileStorageIds().isEmpty()) {
+            product.setFileStorageIds(null);
+        }
+
         if (product.getId() == null) {
             productMapper.insert(product);
         } else {
@@ -40,6 +46,7 @@ public class ProductServiceImpl implements ProductService {
         for (Product product : productList) {
             if (product.getShopGroupIds() != null) {
                 String[] groupIdArr = product.getShopGroupIds().split(",");
+                Arrays.sort(groupIdArr);
 
                 for (String groupId : groupIdArr) {
                     ShopGroup shopGroup = shopGroupMapper
@@ -56,5 +63,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product findById(Long id) {
         return productMapper.findById(id);
+    }
+
+    @Override
+    public Integer findCountByShopGroupId(Long shopGroupId) {
+        return productMapper.findCountByShopGroupId(shopGroupId.toString());
     }
 }

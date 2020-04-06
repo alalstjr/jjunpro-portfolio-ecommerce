@@ -16,4 +16,6 @@ public interface ProductMapper {
     List<Product> findAll();
 
     Product findById(Long id);
+
+    Integer findCountByShopGroupId(String shopGroupId);
 }

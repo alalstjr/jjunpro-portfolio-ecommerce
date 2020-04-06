@@ -15,11 +15,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
-//@RequestMapping("/file")
+@RequestMapping("/file")
 @RequiredArgsConstructor
 public class FileController {
 
@@ -30,10 +29,14 @@ public class FileController {
     public void fileUpload(MultipartFile file) {
     }
 
-    @GetMapping("/downloadFile/{fileName:.+}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
+    @GetMapping("/{domain}/{fileName:.+}")
+    public ResponseEntity<Resource> downloadFile(
+            @PathVariable String domain,
+            @PathVariable String fileName,
+            HttpServletRequest request
+    ) {
         // Load file as Resource
-        Resource resource = fileStorageService.loadFileAsResource(fileName);
+        Resource resource = fileStorageService.loadFileAsResource(domain + '/' + fileName);
 
         // Try to determine file's content type
         String contentType = null;

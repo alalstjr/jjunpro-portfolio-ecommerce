@@ -43,6 +43,11 @@ dependencies {
     }
     testImplementation 'org.springframework.security:spring-security-test'
     implementation 'junit:junit:4.12'
+
+    /* Custom Libs dir Setting */
+    implementation fileTree(dir: 'lib', include: ['*.jar'])
+    /* 썸네일 제작 라이브러리 */
+    implementation 'org.imgscalr:imgscalr-lib:4.2'
 }
 
 test {

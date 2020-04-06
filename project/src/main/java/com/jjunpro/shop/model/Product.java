@@ -60,6 +60,9 @@ public class Product {
     /* 파일삭제 id 값을 저장하는 임시변수 */
     private String deleteFileStorageIds;
 
+    /* 목록에서 보여지는 썸네일 이미지 파일 */
+    private String thumbnail;
+
     @Builder
     public Product(Long id, String ip, LocalDateTime createdDate, LocalDateTime modifiedDate,
             Boolean enabled, String productName, String explanation, String tag,

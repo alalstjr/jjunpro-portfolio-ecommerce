@@ -11,11 +11,11 @@ public interface FileStorageService {
 
     Long storeFile(MultipartFile file, DomainType domain);
 
-    List<Long> uploadMultipleFiles(MultipartFile[] files);
+    List<Long> uploadMultipleFiles(MultipartFile[] files, DomainType domain);
 
     Resource loadFileAsResource(String fileName);
 
     Optional<FileStorage> findById(Long id);
 
-    void delete(String[] deleteFileArr);
+    void delete(String[] deleteFileArr, DomainType domainType);
 }

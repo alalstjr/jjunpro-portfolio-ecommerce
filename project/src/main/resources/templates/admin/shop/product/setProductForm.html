@@ -96,18 +96,20 @@
 <script>
 
   function groupHandle(target) {
-    var targetArr = target.split(',');
+    if(target !== "none") {
+      var targetArr = target.split(',');
 
-    var initValue = document.getElementById("shopGroupIds").value;
+      var initValue = document.getElementById("shopGroupIds").value;
 
-    if(initValue.indexOf(targetArr[0]) === -1) {
-      if(initValue.length === 0) {
-        document.getElementById("shopGroupIds").value = targetArr[0];
-      } else {
-        document.getElementById("shopGroupIds").value = initValue + "," + targetArr[0];
+      if(initValue.indexOf(targetArr[0]) === -1) {
+        if(initValue.length === 0) {
+          document.getElementById("shopGroupIds").value = targetArr[0];
+        } else {
+          document.getElementById("shopGroupIds").value = initValue + "," + targetArr[0];
+        }
+
+        groupTextHandle(targetArr);
       }
-
-      groupTextHandle(targetArr);
     }
   }
 

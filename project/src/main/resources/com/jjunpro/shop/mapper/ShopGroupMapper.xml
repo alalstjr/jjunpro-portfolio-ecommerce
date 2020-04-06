@@ -42,14 +42,15 @@
         shop_group
     WHERE
         parentShopGroupId = #{id}
-        LIMIT 1;
+    ORDER BY createddate DESC LIMIT 1;
   </select>
 
   <select id="findByparentShopGroupIdList" resultType="ShopGroup">
     SELECT * FROM
         shop_group
     WHERE
-        parentShopGroupId = #{id};
+        parentShopGroupId = #{id}
+    ORDER BY createddate DESC;
   </select>
 
   <select id="findByIsNullParentShopGroupId" resultType="ShopGroup">
@@ -58,7 +59,8 @@
     FROM
         shop_group
     WHERE
-        parentShopGroupId IS NULL LIMIT 10;
+        parentShopGroupId IS NULL
+    ORDER BY createddate DESC LIMIT 10;
   </select>
 
   <select id="findById" resultType="ShopGroup">
