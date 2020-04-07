@@ -62,17 +62,25 @@
   <update id="updateAccount" useGeneratedKeys="true" keyProperty="id">
     UPDATE account
     SET
-    ip = #{ip}
-    username = #{username},
-    email = #{email},
-    password = #{password},
-    enabled = #{enabled},
-    userRole = #{userRole},
-    ageRange = #{ageRange},
-    birthday = #{birthday},
-    gender = #{gender}
-    modifiedDate = CURRENT_TIMESTAMP
+      ip = #{ip}
+      username = #{username},
+      email = #{email},
+      password = #{password},
+      enabled = #{enabled},
+      userRole = #{userRole},
+      ageRange = #{ageRange},
+      birthday = #{birthday},
+      gender = #{gender}
+      modifiedDate = CURRENT_TIMESTAMP
     WHERE id = #{id}
+  </update>
+
+  <update id="updatePoint">
+    UPDATE account
+    SET
+        point = #{afterPoint}
+    WHERE
+        id = #{id};
   </update>
 
 </mapper>

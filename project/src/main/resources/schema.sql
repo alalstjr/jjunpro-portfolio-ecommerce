@@ -25,14 +25,16 @@ CREATE TABLE ACCOUNT
     postcode     VARCHAR,
     addr1        VARCHAR,
     addr2        VARCHAR,
-    phoneNumber  VARCHAR   NOT NULL UNIQUE
+    phoneNumber  VARCHAR   NOT NULL UNIQUE,
+
+    point        INTEGER
 );
 
 INSERT INTO ACCOUNT (username, email, enabled, userRole, password, phoneNumber, createdDate,
-                     modifiedDate, IP)
-VALUES ('김민석', 'mimine02@naver.com', true, 'USER',
-        '{bcrypt}$2a$10$RsRh35h1MBRI4s37g/UopeqkQ8Th6rxt8q6bq.fhdr1CWDSfguUg.', '01040211220',
-        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '0.0.0.0');
+                     modifiedDate, ip, point)
+VALUES ('김민석', 'alalstjr@naver.com', true, 'USER',
+        '{bcrypt}$2a$10$LeNw1of.2HNeTi8/8Xp/IO0D9JMcK/Wq.LzvnlOtNzCP3EwESEKFe', '01040211220',
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '0.0.0.0', '1000');
 
 /* SHOP_GROUP */
 DROP TABLE IF EXISTS SHOP_GROUP;
@@ -70,7 +72,7 @@ CREATE TABLE PRODUCT
     summaryInfo     VARCHAR,
     price           INTEGER   NOT NULL,
     discount        SMALLINT,
-    point           INTEGER,
+    point           SMALLINT,
     quantity        INTEGER,
     buyMinQuantity  INTEGER,
     buyMaxQuantity  INTEGER,
@@ -127,4 +129,32 @@ CREATE TABLE FILESTORAGE
     fileDownloadUri VARCHAR   NOT NULL,
     fileType        VARCHAR   NOT NULL,
     fileSize        INTEGER   NOT NULL
+);
+
+/* PRODUCT_ORDER */
+DROP TABLE IF EXISTS PRODUCT_ORDER;
+CREATE TABLE PRODUCT_ORDER
+(
+    id               SERIAL PRIMARY KEY,
+    ip               VARCHAR   NOT NULL,
+    createdDate      TIMESTAMP NOT NULL,
+    modifiedDate     TIMESTAMP NOT NULL,
+    enabled          BOOLEAN   NOT NULL,
+
+    orderName        VARCHAR   NOT NULL,
+    orderEmail       VARCHAR,
+    orderPhone       VARCHAR   NOT NULL,
+    postcode         VARCHAR   NOT NULL,
+    addr1            VARCHAR   NOT NULL,
+    addr2            VARCHAR   NOT NULL,
+    memo             VARCHAR   NOT NULL,
+
+    payment          SMALLINT  NOT NULL,
+    cupon            VARCHAR,
+    point            INTEGER,
+    totalAmount      INTEGER,
+    productIds       VARCHAR,
+    productQuantitys VARCHAR,
+    productAmounts   VARCHAR,
+    accountId        VARCHAR
 );

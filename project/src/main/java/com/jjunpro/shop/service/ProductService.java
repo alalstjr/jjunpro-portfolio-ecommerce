@@ -2,6 +2,7 @@ package com.jjunpro.shop.service;
 
 import com.jjunpro.shop.model.Product;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,7 +14,7 @@ public interface ProductService {
 
     List<Product> findAll();
 
-    Product findById(Long id);
+    Optional<Product> findById(Long id);
 
     Integer findCountByShopGroupId(Long shopGroupId);
 }

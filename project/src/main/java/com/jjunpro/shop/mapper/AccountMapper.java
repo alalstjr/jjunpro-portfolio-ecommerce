@@ -23,4 +23,6 @@ public interface AccountMapper {
     void updateAccount(Account account);
 
     Optional<Account> findByEmailAndEnabled(String email, boolean enabled);
+
+    void updatePoint(Long id, int afterPoint);
 }

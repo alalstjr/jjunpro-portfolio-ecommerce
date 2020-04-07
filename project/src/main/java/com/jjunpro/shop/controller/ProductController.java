@@ -4,6 +4,7 @@ import static com.jjunpro.shop.util.ClassPathUtil.ADMINPRODUCT;
 
 import com.jjunpro.shop.dto.ProductDTO;
 import com.jjunpro.shop.enums.DomainType;
+import com.jjunpro.shop.exception.DataNullException;
 import com.jjunpro.shop.model.FileStorage;
 import com.jjunpro.shop.model.Product;
 import com.jjunpro.shop.model.ShopGroup;
@@ -51,7 +52,7 @@ public class ProductController {
                 Optional<FileStorage> fileStorage = fileStorageService
                         .findById(Long.parseLong(fileStorageArr[0].trim()));
 
-                if(fileStorage.isPresent()) {
+                if (fileStorage.isPresent()) {
                     String fileDownloadUri = fileStorage.get().getFileDownloadUri();
                     product.setThumbnail(fileDownloadUri);
                 }
@@ -80,23 +81,27 @@ public class ProductController {
 
         /* 수정 id */
         if (id != null) {
-            Product product = productService.findById(id);
+            Optional<Product> product = productService.findById(id);
             model.addAttribute("productDTO", product);
 
-            /* 업로드된 file 정보를 불러옵니다. */
-            if (product.getFileStorageIds() != null) {
-                List<FileStorage> dbFile = new ArrayList<>();
+            if (product.isPresent()) {
+                /* 업로드된 file 정보를 불러옵니다. */
+                if (product.get().getFileStorageIds() != null) {
+                    List<FileStorage> dbFile = new ArrayList<>();
 
-                String[] fileStorageArr = product.getFileStorageIds().split(",");
+                    String[] fileStorageArr = product.get().getFileStorageIds().split(",");
 
-                for (String fileStorage : fileStorageArr) {
-                    Optional<FileStorage> serviceById = fileStorageService
-                            .findById(Long.parseLong(fileStorage.trim()));
+                    for (String fileStorage : fileStorageArr) {
+                        Optional<FileStorage> serviceById = fileStorageService
+                                .findById(Long.parseLong(fileStorage.trim()));
 
-                    serviceById.ifPresent(dbFile::add);
+                        serviceById.ifPresent(dbFile::add);
+                    }
+
+                    model.addAttribute("dbFile", dbFile);
                 }
-
-                model.addAttribute("dbFile", dbFile);
+            } else {
+                throw new DataNullException("상품이 존재하지 않습니다.");
             }
         } else {
             model.addAttribute("productDTO", productDTO);
@@ -134,11 +139,15 @@ public class ProductController {
     @PostMapping("/delete")
     public String delete(Long id, RedirectAttributes model) {
         /* DB 조회 후 삭제하려는 DATA 에 파일정보가 있으면 같이 삭제 */
-        Product dbProduct = productService.findById(id);
+        Optional<Product> dbProduct = productService.findById(id);
 
-        if (dbProduct.getFileStorageIds() != null) {
-            String[] fileStorageArr = dbProduct.getFileStorageIds().split(",");
-            fileStorageService.delete(fileStorageArr, DomainType.PRODUCT);
+        if(dbProduct.isPresent()) {
+            if (dbProduct.get().getFileStorageIds() != null) {
+                String[] fileStorageArr = dbProduct.get().getFileStorageIds().split(",");
+                fileStorageService.delete(fileStorageArr, DomainType.PRODUCT);
+            }
+        } else {
+            throw new DataNullException("상품이 존재하지 않습니다.");
         }
 
         model.addFlashAttribute("message", productService.delete(id));

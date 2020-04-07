@@ -35,6 +35,7 @@ public class Account {
     private String        addr1;
     private String        addr2;
     private String        phoneNumber;
+    private Integer       point;
 
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);

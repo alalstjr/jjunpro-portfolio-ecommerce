@@ -34,7 +34,7 @@ public class Product {
     private String        summaryInfo;
     private Integer       price;
     private Short         discount;
-    private Integer       point;
+    private Short         point;
     private Integer       quantity;
     private Integer       buyMinQuantity;
     private Integer       buyMaxQuantity;
@@ -68,7 +68,7 @@ public class Product {
             Boolean enabled, String productName, String explanation, String tag,
             String productType, Boolean callQuestion, Boolean cuponEnabled,
             Boolean pointEnabled, String content, String summaryInfo, Integer price,
-            Short discount, Integer point, Integer quantity, Integer buyMinQuantity,
+            Short discount, Short point, Integer quantity, Integer buyMinQuantity,
             Integer buyMaxQuantity, Boolean reviewState, LocalDateTime reservationSale,
             LocalDateTime endSale, Integer priority, String shopGroupIds,
             String fileStorageIds, Set<ShopGroup> shopGroupList,

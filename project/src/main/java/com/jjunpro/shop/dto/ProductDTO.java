@@ -3,6 +3,7 @@ package com.jjunpro.shop.dto;
 import com.jjunpro.shop.model.Product;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -15,9 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class ProductDTO {
 
     private String ip;
@@ -51,7 +50,9 @@ public class ProductDTO {
 
     private Short discount;
 
-    private Integer point;
+    @Min(value = 0, message = "0 이하로 작성할 수 없습니다.")
+    @Max(value = 100, message = "100 이상 작성할 수 없습니다.")
+    private Short point;
 
     @Min(value = 0, message = "0 이하로 작성할 수 없습니다.")
     @NotNull(message = "상품 수량 필수로 작성해야 합니다.")
