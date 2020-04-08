@@ -1,12 +1,16 @@
 package com.jjunpro.shop.controller;
 
+import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import com.jjunpro.shop.dto.ShopGroupDTO;
 import com.jjunpro.shop.model.ShopGroup;
@@ -96,5 +100,16 @@ public class ProductControllerTest {
         shopGroupService.set(shopGroup);
 
         return shopGroup;
+    }
+
+    @Test
+    public void viewTest() throws Exception {
+        mockMvc.perform(get("/product/view")
+                .param("id", "1")
+                .param("quantity", "10")
+                .with(csrf()))
+                .andExpect(model().attributeExists("productSet"))
+                .andExpect(request().sessionAttribute("productSet", notNullValue()))
+                .andDo(print());
     }
 }

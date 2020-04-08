@@ -14,6 +14,8 @@ public interface ProductMapper {
 
     void delete(Long id);
 
+    List<Product> findAllAdmin();
+
     List<Product> findAll();
 
     Optional<Product> findById(Long id);

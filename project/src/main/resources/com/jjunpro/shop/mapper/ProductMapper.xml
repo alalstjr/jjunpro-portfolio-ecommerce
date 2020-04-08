@@ -79,7 +79,17 @@
         id = #{id};
   </delete>
 
+  <!-- 일반 사용자가 접근하는 함수 -->
   <select id="findAll" resultType="Product">
+    SELECT * FROM
+        product
+    WHERE
+        enabled = true
+    ORDER BY createddate DESC LIMIT 20;
+  </select>
+
+  <!-- 관리자 전용 접근 함수 -->
+  <select id="findAllAdmin" resultType="Product">
     SELECT * FROM
         product
     ORDER BY createddate DESC LIMIT 20;

@@ -1,8 +1,10 @@
 package com.jjunpro.shop.controller;
 
 import static com.jjunpro.shop.util.ClassPathUtil.ADMINPRODUCT;
+import static com.jjunpro.shop.util.ClassPathUtil.SHOP;
 
 import com.jjunpro.shop.dto.ProductDTO;
+import com.jjunpro.shop.dto.ProductSetDTO;
 import com.jjunpro.shop.enums.DomainType;
 import com.jjunpro.shop.exception.DataNullException;
 import com.jjunpro.shop.model.FileStorage;
@@ -17,20 +19,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/product")
 @RequiredArgsConstructor
+@SessionAttributes("productSet")
 public class ProductController {
 
     private final IpUtil                 ipUtil;
@@ -43,22 +50,7 @@ public class ProductController {
     public String index(
             Model model
     ) {
-        List<Product> productList = productService.findAll();
-
-        /* 상품 목록에서 보려주는 대문 이미지 탐색 */
-        for (Product product : productList) {
-            if (product.getFileStorageIds() != null) {
-                String[] fileStorageArr = product.getFileStorageIds().split(",");
-                Optional<FileStorage> fileStorage = fileStorageService
-                        .findById(Long.parseLong(fileStorageArr[0].trim()));
-
-                if (fileStorage.isPresent()) {
-                    String fileDownloadUri = fileStorage.get().getFileDownloadUri();
-                    product.setThumbnail(fileDownloadUri);
-                }
-            }
-        }
-
+        List<Product> productList = productService.findAll(true);
         model.addAttribute("productList", productList);
 
         return ADMINPRODUCT.concat("/index");
@@ -82,9 +74,10 @@ public class ProductController {
         /* 수정 id */
         if (id != null) {
             Optional<Product> product = productService.findById(id);
-            model.addAttribute("productDTO", product);
 
             if (product.isPresent()) {
+                model.addAttribute("productDTO", product.get());
+
                 /* 업로드된 file 정보를 불러옵니다. */
                 if (product.get().getFileStorageIds() != null) {
                     List<FileStorage> dbFile = new ArrayList<>();
@@ -141,7 +134,7 @@ public class ProductController {
         /* DB 조회 후 삭제하려는 DATA 에 파일정보가 있으면 같이 삭제 */
         Optional<Product> dbProduct = productService.findById(id);
 
-        if(dbProduct.isPresent()) {
+        if (dbProduct.isPresent()) {
             if (dbProduct.get().getFileStorageIds() != null) {
                 String[] fileStorageArr = dbProduct.get().getFileStorageIds().split(",");
                 fileStorageService.delete(fileStorageArr, DomainType.PRODUCT);
@@ -155,9 +148,45 @@ public class ProductController {
         return "redirect:/product";
     }
 
+    @GetMapping("/view")
+    public String view(
+            @RequestParam Long id,
+            Model model
+    ) {
+        Optional<Product> product = productService.findById(id);
+        if (product.isPresent()) {
+            model.addAttribute("product", product.get());
+        }
+
+        model.addAttribute("productSet", new ProductSetDTO());
+
+        return SHOP.concat("/productView");
+    }
+
+    @PostMapping("/view")
+    public String viewSet(
+            @ModelAttribute ProductSetDTO productSet,
+            Model model
+    ) {
+        /* Session 저장소에 상품 id, 수량 등등 기타정보를 담아서 주문서로 넘깁니다. */
+        model.addAttribute("productSet", productSet);
+
+        return "redirect:/product/order";
+    }
+
+    @GetMapping("/order")
+    public String order(
+            Model model
+    ) {
+        ProductSetDTO productSet = (ProductSetDTO) model.getAttribute("productSet");
+
+        return SHOP.concat("/productOrder");
+    }
+
+
     /* 분류 리스트를 불러옵니다. */
     private void getShopGroupList(Model model) {
-        List<ShopGroup> shopGroupList = shopGroupService.findByIsNullParentShopGroupId();
+        List<ShopGroup> shopGroupList = this.shopGroupService.findByIsNullParentShopGroupId();
         model.addAttribute("shopGroupList", shopGroupList);
     }
 }

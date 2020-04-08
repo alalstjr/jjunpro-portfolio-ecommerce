@@ -3,8 +3,10 @@ package com.jjunpro.shop.controller;
 import com.jjunpro.shop.dto.FindByEmailDTO;
 import com.jjunpro.shop.dto.UserFormDTO;
 import com.jjunpro.shop.model.Account;
+import com.jjunpro.shop.model.Product;
 import com.jjunpro.shop.service.AccountServiceImpl;
 import com.jjunpro.shop.util.IpUtil;
+import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,12 +28,6 @@ public class AccountController {
 
     private final AccountServiceImpl accountService;
     private final IpUtil             ipUtil;
-
-    @GetMapping("/")
-    public String main(Model model) {
-        model.addAttribute("account", new Account());
-        return "main/main";
-    }
 
     @GetMapping("/login")
     public String login() {

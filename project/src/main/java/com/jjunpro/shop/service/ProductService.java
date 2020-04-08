@@ -12,9 +12,10 @@ public interface ProductService {
 
     String delete(Long id);
 
-    List<Product> findAll();
+    List<Product> findAll(Boolean ignore);
 
     Optional<Product> findById(Long id);
 
     Integer findCountByShopGroupId(Long shopGroupId);
+
 }

@@ -1,0 +1,68 @@
+<html xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout (~{::body},'product-view')}">
+
+<body>
+
+<div class="product-view container-box">
+  <div class="row">
+    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+      <img class="product-list-img img-thumbnail"
+           th:src="${product.thumbnail}"
+           onError="this.onerror=null;this.src='/image/none-img.png';"
+           alt="상품이미지">
+    </div>
+    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+      <form
+          method="post"
+          th:action="@{/product/view}"
+          th:object="${productSet}"
+      >
+        <input type="hidden" name="id" th:value="${product.id}">
+
+        <h2 class="product-title" th:text="${product.productName}"></h2>
+        <div class="product-price">
+        <span class="real-price"
+              th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + 'WON'}"></span>
+        </div>
+        <div class="option-line"></div>
+        <div th:text="${product.explanation}" class="product-desc"></div>
+        <div class="option-line"></div>
+        <div class="row my-3">
+          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">적립금</div>
+          <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
+            <b>
+              [
+              <block:th th:text="${product.point}"></block:th>
+              %]
+              <block:th
+                  th:text="${#numbers.formatDecimal(product.price * product.discount / 100, 0, 'COMMA', 0, 'POINT') + ' WON'}"></block:th>
+            </b>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">수량</div>
+          <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
+            <input type="number" name="quantity" class="quantity-input" th:value="${productSet.quantity}">
+          </div>
+        </div>
+        <div class="option-line"></div>
+        <div class="price-sum clearfix">
+          <span class="float-left">TOTAL PRICE</span>
+          <span class="float-right"
+                th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}">0</span>
+        </div>
+        <div class="row">
+          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+            <button type="button" class="product-btn cart-btn">장바구니</button>
+          </div>
+          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+            <button type="submit" class="product-btn buy-btn">바로구매</button>
+          </div>
+        </div>
+    </div>
+    </form>
+  </div>
+</div>
+
+</body>
+</html>

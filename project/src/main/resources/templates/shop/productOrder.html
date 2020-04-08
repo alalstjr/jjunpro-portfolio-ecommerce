@@ -1,0 +1,13 @@
+<html xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout (~{::body},'product-view')}">
+
+<body>
+
+  <div class="product-order container-box">
+    주문서
+
+    <div th:text="${productSet.id}"></div>
+    <div th:text="${productSet.quantity}"></div>
+  </div>
+
+</body>

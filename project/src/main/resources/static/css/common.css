@@ -2,6 +2,7 @@
  *  Reset
  ******************************/
 @import url('https://fonts.googleapis.com/css?family=Noto+Sans+KR:300,400,700&display=swap&subset=korean');
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@500&display=swap');
 
 * {
   -webkit-font-smoothing: antialiased;
@@ -37,8 +38,14 @@ li {
 }
 
 a {
-  text-decoration: none;
-  color: #333;
+  color: #111111;
+  outline: none !important;
+  text-decoration: none !important;
+  border-radius: 0 !important;
+}
+
+a:hover {
+  color: #111111 !important;
 }
 
 img {
@@ -521,4 +528,102 @@ footer .right-box > div li {
   padding: 60px 0 15px;
   text-align: center;
   font-weight: bold;
+}
+
+/******************************
+ *  widget product-list
+ ******************************/
+
+.product-list a {
+  color: #111;
+}
+
+.product-list .product-title {
+  padding: 16px 5px 0;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.product-list .product-content {
+  padding: 5px 5px 0;
+}
+
+.product-list .real-price {
+  font-family: 'Rubik', sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.product-list .grid-margin {
+  margin-bottom: 70px;
+}
+
+/******************************
+ *  product-view
+ ******************************/
+.product-view .product-title {
+  color: #151515;
+  padding: 0px;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  margin-bottom: 0;
+}
+
+.product-view .product-price {
+  margin: 25px 0;
+}
+
+.product-view .real-price {
+  font-family: 'Rubik', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  padding-right: 15px;
+}
+
+.product-view .option-line {
+  height: 1px;
+  border-top: 1px solid #e5e5e5;
+  margin: 25px 0px;
+}
+
+.product-view .product-desc {
+  color: #666;
+  font-size: 14px;
+}
+
+.product-view .price-sum {
+  padding: 0 0 40px;
+}
+
+.product-view .price-sum > span {
+  font-family: 'Rubik', sans-serif;
+  font-size: 20px;
+  color: #111;
+  font-weight: 500;
+}
+
+.product-view .product-btn {
+  font-size: 16px;
+  font-weight: bold;
+  padding: 13px 0;
+  border-radius: 50px;
+  width: 100%;
+}
+
+.product-view .cart-btn {
+  background: #fff;
+  border: 1px solid #222;
+}
+
+.product-view .buy-btn {
+  background: #222222;
+  border: 1px solid #222;
+  color: #FFFFFF;
+}
+
+.product-view .quantity-input {
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.5;
 }
