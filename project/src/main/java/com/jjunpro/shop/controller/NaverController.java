@@ -1,7 +1,7 @@
 package com.jjunpro.shop.controller;
 
-import com.jjunpro.shop.oauth.naver.NaverAccount;
-import com.jjunpro.shop.oauth.naver.NaverUser;
+import com.jjunpro.shop.security.oauth.naver.NaverAccount;
+import com.jjunpro.shop.security.oauth.naver.NaverUser;
 import com.jjunpro.shop.enums.UserRole;
 import com.jjunpro.shop.model.Account;
 import com.jjunpro.shop.service.AccountServiceImpl;

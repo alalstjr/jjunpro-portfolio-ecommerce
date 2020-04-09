@@ -22,5 +22,5 @@ public interface AccountService extends UserDetailsService {
 
     void updateAccount(Account account);
 
-    UserDetails loadUserByUsername(String email);
+    UserDetails loadUserByUsername(String username);
 }

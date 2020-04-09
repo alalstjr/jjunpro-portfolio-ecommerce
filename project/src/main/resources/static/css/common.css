@@ -121,6 +121,12 @@ input[type="radio"]:checked {
   margin: 0 auto;
 }
 
+.container-order {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
 .table-box {
   display: table;
   width: 100%;
@@ -377,7 +383,7 @@ footer .right-box > div li {
   display: block;
   color: #fff;
   text-align: center;
-  height: 30px;
+  height: 50px;
   position: relative;
   line-height: 30px;
   padding: 10px;
@@ -450,7 +456,8 @@ footer .right-box > div li {
   text-align: center;
 }
 
-.join-box .title {
+.join-box .title,
+.input-title {
   padding: 60px 0 15px;
   border-bottom: 3px solid #222;
   color: #222;
@@ -581,7 +588,7 @@ footer .right-box > div li {
   padding-right: 15px;
 }
 
-.product-view .option-line {
+.option-line {
   height: 1px;
   border-top: 1px solid #e5e5e5;
   margin: 25px 0px;
@@ -626,4 +633,20 @@ footer .right-box > div li {
   padding: 5px 10px;
   font-size: 12px;
   line-height: 1.5;
+}
+
+.product-order .order-title,
+.product-receipt .receipt-title{
+  font-family: 'Rubik', sans-serif;
+  text-align: center;
+  padding: 60px 0 15px;
+  font-size: 30px;
+  font-weight: 500;
+  color: #111111;
+  letter-spacing: -1px;
+}
+
+.message {
+  display: block;
+  font-size: 21px;
 }

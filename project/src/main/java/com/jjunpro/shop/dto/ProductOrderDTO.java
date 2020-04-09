@@ -2,31 +2,59 @@ package com.jjunpro.shop.dto;
 
 import com.jjunpro.shop.model.ProductOrder;
 import java.util.HashMap;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 public class ProductOrderDTO {
 
-    private Long    id;
-    private String  ip;
+    private Long id;
+
+    private String ip;
+
     private Boolean enabled;
-    private String  orderName;
-    private String  orderEmail;
-    private String  orderPhone;
-    private String  postcode;
-    private String  addr1;
-    private String  addr2;
-    private String  memo;
-    private Short   payment;
-    private String  cupon;
+
+    @NotBlank(message = "주문자 성함은 필수로 작성해야 합니다.")
+    private String orderName;
+
+    @Email
+    private String orderEmail;
+
+    @NotBlank(message = "연락처는 필수로 작성해야 합니다.")
+    private String orderPhone;
+
+    @NotBlank(message = "우편번호는 필수로 작성해야 합니다.")
+    private String postcode;
+
+    @NotBlank(message = "주소는 필수로 작성해야 합니다.")
+    private String addr1;
+
+    private String addr2;
+
+    private String memo;
+
+    @NotNull(message = "주문결제 방법은 필수로 선택해야 합니다.")
+    private Short payment;
+
+    private String cupon;
+
     private Integer point;
-    private String  productIds;
-    private String  productQuantitys;
+
+    @NotBlank(message = "상품정보는 필수입니다.")
+    private String productIds;
+
+    @NotBlank(message = "상품정보는 필수입니다.")
+    private String productQuantitys;
+
     private Integer totalAmount;
 
     @Builder

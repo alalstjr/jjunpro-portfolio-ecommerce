@@ -1,31 +1,29 @@
 <html lang="en">
 <body>
-<form>
-  <th:block th:fragment="input (label, name, type)">
-    <div th:with="valid=${!#fields.hasErrors(name)}"
-         th:class="${'user-form table-box' + (valid ? '' : ' has-error')}"
-         class="user-form table-box">
-      <label class="left-box" th:for="${name}" th:text="${label}">Label</label>
-      <div class="right-box">
-        <div th:switch="${type}">
-          <input th:case="'text'" class="input-css" type="text" th:field="*{__${name}__}"/>
-          <input th:case="'date'" class="input-css" type="text" th:field="*{__${name}__}"
-                 placeholder="YYYY-MM-DD" title="Enter a date in this format: YYYY-MM-DD"
-                 pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))"/>
-          <input th:case="'email'" class="input-css" type="email" th:field="*{__${name}__}"/>
-          <input th:case="'password'" class="input-css" type="password"
-                 th:field="*{__${name}__}"/>
-          <input th:case="'number'" class="input-css" type="number"
-                 th:field="*{__${name}__}"/>
-          <input th:case="'hidden'" class="input-css" type="hidden"
-                 th:field="*{__${name}__}"/>
-        </div>
-        <th:block th:if="${!valid}">
-          <span class="help-inline" th:errors="*{__${name}__}">Error</span>
-        </th:block>
+<th:block th:fragment="input (label, name, type)">
+  <div th:with="valid=${!#fields.hasErrors(name)}"
+       th:class="${'user-form table-box' + (valid ? '' : ' has-error')}"
+       class="user-form table-box">
+    <label class="left-box" th:for="${name}" th:text="${label}">Label</label>
+    <div class="right-box">
+      <div th:switch="${type}">
+        <input th:case="'text'" class="input-css" type="text" th:field="*{__${name}__}"/>
+        <input th:case="'date'" class="input-css" type="text" th:field="*{__${name}__}"
+               placeholder="YYYY-MM-DD" title="Enter a date in this format: YYYY-MM-DD"
+               pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))"/>
+        <input th:case="'email'" class="input-css" type="email" th:field="*{__${name}__}"/>
+        <input th:case="'password'" class="input-css" type="password"
+               th:field="*{__${name}__}"/>
+        <input th:case="'number'" class="input-css" type="number"
+               th:field="*{__${name}__}"/>
+        <input th:case="'hidden'" class="input-css" type="hidden"
+               th:field="*{__${name}__}"/>
       </div>
+      <th:block th:if="${!valid}">
+        <span class="help-inline" th:errors="*{__${name}__}">Error</span>
+      </th:block>
     </div>
-  </th:block>
-</form>
+  </div>
+</th:block>
 </body>
 </html>

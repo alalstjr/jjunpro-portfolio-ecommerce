@@ -1,4 +1,4 @@
-package com.jjunpro.shop.oauth.naver;
+package com.jjunpro.shop.security.oauth.naver;
 
 public class NaverOAuthConstants {
 

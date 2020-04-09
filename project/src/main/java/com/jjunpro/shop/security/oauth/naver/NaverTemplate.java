@@ -1,4 +1,4 @@
-package com.jjunpro.shop.oauth.naver;
+package com.jjunpro.shop.security.oauth.naver;
 
 import java.net.URI;
 import org.springframework.social.oauth2.AbstractOAuth2ApiBinding;

@@ -3,6 +3,7 @@ package com.jjunpro.shop.service;
 import com.jjunpro.shop.enums.UserRole;
 import com.jjunpro.shop.mapper.AccountMapper;
 import com.jjunpro.shop.model.Account;
+import com.jjunpro.shop.security.context.AccountContext;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -78,16 +79,7 @@ public class AccountServiceImpl implements AccountService {
 
         /* 가입된 유저가 존재하는 경우 */
         if (account.isPresent()) {
-            SimpleGrantedAuthority authority = new SimpleGrantedAuthority(
-                    "ROLE_" + account.get().getUserRole()
-            );
-
-            return User
-                    .builder()
-                    .username(account.get().getEmail())
-                    .password(account.get().getPassword())
-                    .authorities(List.of(authority))
-                    .build();
+            return new AccountContext(account.get());
         } else {
             throw new UsernameNotFoundException(username + "정보를 찾을 수 없습니다.");
         }

@@ -1,13 +1,13 @@
-package com.jjunpro.shop.oauth.naver;
+package com.jjunpro.shop.security.oauth.kakao;
 
 import com.google.api.client.auth.oauth2.BrowserClientRequestUrl;
 import java.util.Collection;
 
-public class NaverBrowserClientRequestUrl extends BrowserClientRequestUrl {
+public class KakaoBrowserClientRequestUrl extends BrowserClientRequestUrl {
 
-    public NaverBrowserClientRequestUrl(
+    public KakaoBrowserClientRequestUrl(
             String clientId, String redirectUri, Collection<String> scopes) {
-        super(NaverOAuthConstants.AUTHORIZATION_SERVER_URL, clientId);
+        super(KakaoOAuthConstants.AUTHORIZATION_SERVER_URL, clientId);
         setRedirectUri(redirectUri);
         setScopes(scopes);
     }

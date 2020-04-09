@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<th:block th:fragment="payment (name)">
+  <div th:with="valid=${!#fields.hasErrors(name)}"
+       th:class="${'user-form table-box' + (valid ? '' : ' has-error')}"
+       class="user-form table-box">
+    <label class="left-box">결제수단</label>
+
+    <div class="right-box">
+        <span class="radio-gap">
+          <input type="radio" name="payment" id="payment-1" value="1">
+          <label for="payment-1">무통장입금</label>
+        </span>
+      <th:block th:if="${!valid}">
+        <span class="help-inline" th:errors="*{__${name}__}">Error</span>
+      </th:block>
+    </div>
+  </div>
+</th:block>
+</body>
+</html>

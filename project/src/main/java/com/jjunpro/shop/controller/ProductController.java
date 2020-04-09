@@ -1,10 +1,8 @@
 package com.jjunpro.shop.controller;
 
 import static com.jjunpro.shop.util.ClassPathUtil.ADMINPRODUCT;
-import static com.jjunpro.shop.util.ClassPathUtil.SHOP;
 
 import com.jjunpro.shop.dto.ProductDTO;
-import com.jjunpro.shop.dto.ProductSetDTO;
 import com.jjunpro.shop.enums.DomainType;
 import com.jjunpro.shop.exception.DataNullException;
 import com.jjunpro.shop.model.FileStorage;
@@ -19,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -30,14 +27,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/product")
 @RequiredArgsConstructor
-@SessionAttributes("productSet")
 public class ProductController {
 
     private final IpUtil                 ipUtil;
@@ -108,7 +102,7 @@ public class ProductController {
     @PostMapping("/set")
     public String set(
             HttpServletRequest request,
-            @Valid ProductDTO productDTO,
+            @Valid @ModelAttribute ProductDTO productDTO,
             BindingResult bindingResult,
             Model model
     ) throws NoSuchFieldException, IllegalAccessException {
@@ -147,42 +141,6 @@ public class ProductController {
 
         return "redirect:/product";
     }
-
-    @GetMapping("/view")
-    public String view(
-            @RequestParam Long id,
-            Model model
-    ) {
-        Optional<Product> product = productService.findById(id);
-        if (product.isPresent()) {
-            model.addAttribute("product", product.get());
-        }
-
-        model.addAttribute("productSet", new ProductSetDTO());
-
-        return SHOP.concat("/productView");
-    }
-
-    @PostMapping("/view")
-    public String viewSet(
-            @ModelAttribute ProductSetDTO productSet,
-            Model model
-    ) {
-        /* Session 저장소에 상품 id, 수량 등등 기타정보를 담아서 주문서로 넘깁니다. */
-        model.addAttribute("productSet", productSet);
-
-        return "redirect:/product/order";
-    }
-
-    @GetMapping("/order")
-    public String order(
-            Model model
-    ) {
-        ProductSetDTO productSet = (ProductSetDTO) model.getAttribute("productSet");
-
-        return SHOP.concat("/productOrder");
-    }
-
 
     /* 분류 리스트를 불러옵니다. */
     private void getShopGroupList(Model model) {

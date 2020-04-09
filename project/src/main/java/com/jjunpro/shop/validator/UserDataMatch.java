@@ -16,9 +16,6 @@ import static java.lang.annotation.ElementType.TYPE;
  * <p>
  * checkDomain 값은 필수입니다. 조회하려는 Domain 의 이름을 추가합니다.
  * Domain 이름은 소문자로 통일 입력합니다.
- * 만약 Domain 정보를 추가하려면 AccountUtill.class -> switch 문에 추가하면 됩니다.
- *
- * @see com.jjunpro.shop.util.AccountUtil
  */
 @Documented
 @Target({ TYPE, ANNOTATION_TYPE })

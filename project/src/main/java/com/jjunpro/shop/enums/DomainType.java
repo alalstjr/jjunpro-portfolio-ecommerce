@@ -4,7 +4,8 @@ public enum DomainType implements EnumModel {
 
     NULL("null"),
     ACCOUNT("account"),
-    PRODUCT("product");
+    PRODUCT("product"),
+    PRODUCTORDER("productOrder");
 
     public final String domainType;
 

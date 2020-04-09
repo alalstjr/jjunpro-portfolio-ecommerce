@@ -105,13 +105,15 @@ public class ProductServiceImpl implements ProductService {
 
     /* 상품 목록에서 보려주는 썸네일 이미지 처리 */
     private void imageSet(Product product) {
-        String[] fileStorageArr = product.getFileStorageIds().split(",");
-        Optional<FileStorage> fileStorage = this.fileStorageMapper
-                .findById(Long.parseLong(fileStorageArr[0].trim()));
+        if (product.getFileStorageIds() != null) {
+            String[] fileStorageArr = product.getFileStorageIds().split(",");
+            Optional<FileStorage> fileStorage = this.fileStorageMapper
+                    .findById(Long.parseLong(fileStorageArr[0].trim()));
 
-        if (fileStorage.isPresent()) {
-            String fileDownloadUri = fileStorage.get().getFileDownloadUri();
-            product.setThumbnail(fileDownloadUri);
+            if (fileStorage.isPresent()) {
+                String fileDownloadUri = fileStorage.get().getFileDownloadUri();
+                product.setThumbnail(fileDownloadUri);
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.jjunpro.shop.oauth.naver;
+package com.jjunpro.shop.security.oauth.naver;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeTokenRequest;
 import com.google.api.client.auth.oauth2.ClientParametersAuthentication;

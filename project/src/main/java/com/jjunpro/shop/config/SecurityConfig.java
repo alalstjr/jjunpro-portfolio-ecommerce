@@ -49,6 +49,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/join", "/login")
                 .anonymous();
 
+        http
+                .authorizeRequests()
+                .antMatchers("/order/form", "/order/receipt")
+                .hasRole("USER");
+
         /* 잘못된 접근인경우 "/" 경로로 이동 */
         http
                 .authorizeRequests().and()

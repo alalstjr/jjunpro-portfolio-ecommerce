@@ -156,5 +156,6 @@ CREATE TABLE PRODUCT_ORDER
     productIds       VARCHAR,
     productQuantitys VARCHAR,
     productAmounts   VARCHAR,
-    accountId        VARCHAR
+    accountId        VARCHAR,
+    orderState       SMALLINT
 );

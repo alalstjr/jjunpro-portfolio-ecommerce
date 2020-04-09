@@ -63,6 +63,9 @@ public class Product {
     /* 목록에서 보여지는 썸네일 이미지 파일 */
     private String thumbnail;
 
+    /* 주문목록에서 보여지는 수량 */
+    private String orderQuantity;
+
     @Builder
     public Product(Long id, String ip, LocalDateTime createdDate, LocalDateTime modifiedDate,
             Boolean enabled, String productName, String explanation, String tag,

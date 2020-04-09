@@ -1,4 +1,4 @@
-package com.jjunpro.shop.oauth.kakao;
+package com.jjunpro.shop.security.oauth.kakao;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeTokenRequest;
 import com.google.api.client.auth.oauth2.ClientParametersAuthentication;

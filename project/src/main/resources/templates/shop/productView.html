@@ -14,7 +14,7 @@
     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
       <form
           method="post"
-          th:action="@{/product/view}"
+          th:action="@{/order/view}"
           th:object="${productSet}"
       >
         <input type="hidden" name="id" th:value="${product.id}">
@@ -27,29 +27,35 @@
         <div class="option-line"></div>
         <div th:text="${product.explanation}" class="product-desc"></div>
         <div class="option-line"></div>
+        <div class="row">
+          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">할인</div>
+          <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
+            <b th:text="${product.discount + '%'}"></b>
+          </div>
+        </div>
         <div class="row my-3">
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">적립금</div>
           <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
             <b>
               [
-              <block:th th:text="${product.point}"></block:th>
+              <th:block th:text="${product.point}"></th:block>
               %]
-              <block:th
-                  th:text="${#numbers.formatDecimal(product.price * product.discount / 100, 0, 'COMMA', 0, 'POINT') + ' WON'}"></block:th>
+              <th:block
+                  th:text="${#numbers.formatDecimal((product.price - (product.price * product.discount / 100)) * product.point / 100, 0, 'COMMA', 0, 'POINT') + ' WON'}"></th:block>
             </b>
           </div>
         </div>
         <div class="row">
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">수량</div>
           <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
-            <input type="number" name="quantity" class="quantity-input" th:value="${productSet.quantity}">
+            <input type="number" name="quantity" class="quantity-input" value="1">
           </div>
         </div>
         <div class="option-line"></div>
         <div class="price-sum clearfix">
           <span class="float-left">TOTAL PRICE</span>
           <span class="float-right"
-                th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}">0</span>
+                th:text="${#numbers.formatDecimal(product.price - (product.price * product.discount / 100), 0, 'COMMA', 0, 'POINT') + ' WON'}">0</span>
         </div>
         <div class="row">
           <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">

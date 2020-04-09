@@ -35,6 +35,7 @@ public class ProductOrder {
     private String        productQuantitys;
     private String        productAmounts;
     private Long          accountId;
+    private Short         orderState;
 
     private Map<Long, Integer> productList = new HashMap<>();
 
@@ -45,7 +46,7 @@ public class ProductOrder {
             Short payment, String productQuantitys, String cupon, Integer point,
             Integer totalAmount,
             String productIds, Long accountId,
-            Map<Long, Integer> productList) {
+            Map<Long, Integer> productList, Short orderState) {
         this.id = id;
         this.ip = ip;
         this.createdDate = createdDate;
@@ -66,5 +67,6 @@ public class ProductOrder {
         this.productQuantitys = productQuantitys;
         this.accountId = accountId;
         this.productList = productList;
+        this.orderState = orderState;
     }
 }

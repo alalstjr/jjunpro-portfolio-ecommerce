@@ -1,4 +1,4 @@
-package com.jjunpro.shop.oauth.naver;
+package com.jjunpro.shop.security.oauth.naver;
 
 import com.google.api.client.util.Key;
 import lombok.Data;

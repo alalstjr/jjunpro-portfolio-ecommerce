@@ -1,13 +1,12 @@
 package com.jjunpro.shop.validator;
 
-import com.jjunpro.shop.model.Account;
-import com.jjunpro.shop.util.AccountUtil;
+import com.jjunpro.shop.security.context.AccountContext;
+import com.jjunpro.shop.service.AccountServiceImpl;
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.ConstraintValidator;
@@ -16,7 +15,7 @@ import javax.validation.ConstraintValidatorContext;
 /**
  * Spring Security Context 접근하여 로그인된 사용자의 { DATA } 정보를 받아옵니다.
  * <p>
- * AccountUtill 접근한 사용자가 DB 에 존재하는지 확인하는 메소드입니다.
+ * Account 접근한 사용자가 DB 에 존재하는지 확인하는 메소드입니다.
  * <p>
  * 최종적으로 { 접근하려는 DATA id } 그리고 { 접근하는 DB DATA id } 같은지 비교합니다.
  */
@@ -29,9 +28,8 @@ public class PasswordMatchValidator implements ConstraintValidator<PasswordMatch
     private String  oldPassword;
     private boolean encoder;
 
-    private final PasswordEncoder passwordEncoder;
-    private final AccountUtil     accountUtil;
-    private final SecurityContext securityContext = SecurityContextHolder.getContext();
+    private final PasswordEncoder    passwordEncoder;
+    private final AccountServiceImpl accountService;
 
     /*
      * initialize() 메소드는 어노테이션으로 받은 값을 해당 필드에 초기화 선언을 합니다.
@@ -103,12 +101,17 @@ public class PasswordMatchValidator implements ConstraintValidator<PasswordMatch
 
         /* 비밀번호 변경인 경우 oldPassword 가 동일한지 확인합니다. */
         if (this.encoder) {
-            Optional<Account> accountData = accountUtil
-                    .accountInfo(securityContext.getAuthentication());
+            UserDetails principal = (UserDetails) SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getPrincipal();
+
+            AccountContext account = (AccountContext) this.accountService
+                    .loadUserByUsername(principal.getUsername());
 
             valid = passwordEncoder.matches(
                     passwordCheck[2],
-                    accountData.get().getPassword()
+                    account.getAccount().getPassword()
             );
 
             if (!valid) {

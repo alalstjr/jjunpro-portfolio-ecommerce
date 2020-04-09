@@ -4,31 +4,44 @@
 <mapper namespace="com.jjunpro.shop.mapper.ProductOrderMapper">
 
   <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-    INSERT INTO
-        product_order (ip, enabled, createddate, modifiedDate, orderName, orderEmail, orderPhone, postcode,
-        addr1, addr2, memo, payment, cupon, point, totalAmount, productIds, productQuantitys, productAmounts, accountId)
-    VALUES (
-        #{ip},
-        #{enabled},
-        CURRENT_TIMESTAMP,
-        CURRENT_TIMESTAMP,
-
-        #{orderName},
-        #{orderEmail},
-        #{orderPhone},
-        #{postcode},
-        #{addr1},
-        #{addr2},
-        #{memo},
-
-        #{payment},
-        #{cupon},
-        #{point},
-        #{totalAmount},
-        #{productIds},
-        #{productQuantitys},
-        #{productAmounts},
-        #{accountId}
-    );
+    INSERT INTO product_order (ip, enabled, createddate, modifiedDate, orderName, orderEmail,
+                               orderPhone, postcode,
+                               addr1, addr2, memo, payment, cupon, point, totalAmount, productIds,
+                               productQuantitys, productAmounts, accountId, orderState)
+    VALUES (#{ip},
+            #{enabled},
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP,
+            #{orderName},
+            #{orderEmail},
+            #{orderPhone},
+            #{postcode},
+            #{addr1},
+            #{addr2},
+            #{memo},
+            #{payment},
+            #{cupon},
+            #{point},
+            #{totalAmount},
+            #{productIds},
+            #{productQuantitys},
+            #{productAmounts},
+            #{accountId},
+            #{orderState});
   </insert>
+
+  <select id="findById" resultType="ProductOrder">
+    SELECT *
+    FROM product_order
+    WHERE enabled = true
+      AND id = #{id};
+  </select>
+
+  <update id="orderCancel">
+    UPDATE product_order
+    SET orderState = 3;
+--     WHERE orderState = 0
+--        OR orderState = 1
+--        OR orderState = 2;
+  </update>
 </mapper>

@@ -4,7 +4,7 @@
   <div class="row">
     <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 grid-margin stretch-card"
          th:each="product : ${productList}">
-      <a th:href="@{/product/view(id=${product.id})}">
+      <a th:href="@{/order/view(id=${product.id})}">
         <div class="card card-statistics">
           <img class="product-list-img img-thumbnail"
                th:src="${product.thumbnail}"

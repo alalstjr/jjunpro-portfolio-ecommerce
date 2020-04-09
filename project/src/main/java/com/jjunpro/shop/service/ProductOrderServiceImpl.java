@@ -35,7 +35,7 @@ public class ProductOrderServiceImpl implements ProductOrderService {
     private Boolean totalPointEnabled = false;
 
     @Override
-    public void set(ProductOrder productOrder) {
+    public ProductOrder set(ProductOrder productOrder) {
         /* 로그인한 유저의 정보를 가져옵니다. */
         Authentication authentication = SecurityContextHolder
                 .getContext()
@@ -112,9 +112,40 @@ public class ProductOrderServiceImpl implements ProductOrderService {
          */
         productOrder.setProductAmounts(originPrice.substring(0, originPrice.length() - 1));
 
+        /*
+         * 주문서의 기본상태 설정
+         * orderState 0 인경우 주문완료
+         * orderState 1 인경우 주문접수(결제확인) 완료
+         * orderState 2 인경우 배송완료 완료
+         * orderState 3 인경우 주문취소 완료
+         */
+        productOrder.setEnabled(true);
+        productOrder.setOrderState((short) 0);
+
         /* 최종 결제금액 설정 */
         productOrder.setTotalAmount(this.totalAmount);
         productOrderMapper.insert(productOrder);
+
+        return productOrder;
+    }
+
+    @Override
+    public Optional<ProductOrder> findById(Long id) {
+        return productOrderMapper.findById(id);
+    }
+
+    @Override
+    public String orderCancel(Long id) {
+        Optional<ProductOrder> dbProductOrder = productOrderMapper.findById(id);
+        if (dbProductOrder.isPresent()) {
+            if (!dbProductOrder.get().getOrderState().equals((short) 3)) {
+                this.productOrderMapper.orderCancel(id);
+
+                return "주문이 취소되었습니다.";
+            }
+        }
+
+        return "주문을 취소할 수 없습니다.";
     }
 
     /* 백분율 계산 메소드 */

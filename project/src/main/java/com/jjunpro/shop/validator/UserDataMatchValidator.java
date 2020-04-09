@@ -2,8 +2,11 @@ package com.jjunpro.shop.validator;
 
 import com.jjunpro.shop.enums.DomainType;
 import com.jjunpro.shop.model.Account;
+import com.jjunpro.shop.model.ProductOrder;
+import com.jjunpro.shop.security.context.AccountContext;
 import com.jjunpro.shop.service.AccountService;
 import com.jjunpro.shop.service.AccountServiceImpl;
+import com.jjunpro.shop.service.ProductOrderServiceImpl;
 import java.lang.reflect.Field;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,7 +19,7 @@ import java.util.Optional;
 /**
  * Spring Security Context 접근하여 로그인된 사용자의 { DATA } 정보를 받아옵니다.
  * <p>
- * AccountUtil 접근한 사용자가 DB 에 존재하는지 확인하는 메소드입니다.
+ * Account 접근한 사용자가 DB 에 존재하는지 확인하는 메소드입니다.
  * <p>
  * 최종적으로 { 접근하려는 DATA id } 그리고 { 접근하는 DB DATA id } 같은지 비교합니다.
  */
@@ -27,7 +30,8 @@ public class UserDataMatchValidator implements ConstraintValidator<UserDataMatch
     private String     id;
     private DomainType domain;
 
-    private final AccountServiceImpl accountService;
+    private final AccountServiceImpl      accountService;
+    private final ProductOrderServiceImpl productOrderService;
 
     @Override
     public void initialize(UserDataMatch constraintAnnotation) {
@@ -42,15 +46,15 @@ public class UserDataMatchValidator implements ConstraintValidator<UserDataMatch
             ConstraintValidatorContext context
     ) {
         boolean valid = true;
-        Long  idCheck;
+        Long    idCheck;
 
         UserDetails principal = (UserDetails) SecurityContextHolder
                 .getContext()
                 .getAuthentication()
                 .getPrincipal();
-        String username = principal.getUsername();
 
-        Account userDetails = (Account) accountService.loadUserByUsername(username);
+        AccountContext userDetails = (AccountContext) this.accountService
+                .loadUserByUsername(principal.getUsername());
 
         try {
             Field declaredField = value.getClass().getDeclaredField(this.id);
@@ -63,7 +67,7 @@ public class UserDataMatchValidator implements ConstraintValidator<UserDataMatch
         if (idCheck != null) {
             valid = this.dbDataMatch(
                     idCheck,
-                    userDetails,
+                    userDetails.getAccount(),
                     this.domain
             );
         }
@@ -92,11 +96,16 @@ public class UserDataMatchValidator implements ConstraintValidator<UserDataMatch
         // 해당 데이터의 작성자 {id} 값을 가져옵니다.
         switch (domainType) {
             case ACCOUNT:
-                Optional<Account> accountDataDB = accountService.findById(id);
-                if (accountDataDB.isPresent()) {
-                    data = accountDataDB
-                            .get()
-                            .getId();
+                Optional<Account> dbAccountData = this.accountService.findById(id);
+                if (dbAccountData.isPresent()) {
+                    data = dbAccountData.get().getId();
+                }
+                break;
+
+            case PRODUCTORDER:
+                Optional<ProductOrder> dbProductOrder = this.productOrderService.findById(id);
+                if (dbProductOrder.isPresent()) {
+                    data = dbProductOrder.get().getId();
                 }
                 break;
 

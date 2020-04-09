@@ -1,6 +1,6 @@
 package com.jjunpro.shop.service;
 
-import com.jjunpro.shop.oauth.kakao.KakaoUser;
+import com.jjunpro.shop.security.oauth.kakao.KakaoUser;
 import java.io.IOException;
 
 public interface KakaoService {

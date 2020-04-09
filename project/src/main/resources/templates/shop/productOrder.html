@@ -3,11 +3,105 @@
 
 <body>
 
-  <div class="product-order container-box">
-    주문서
+<div class="product-order container-order">
+  <div class="order-title">ORDER</div>
+  <form
+      method="post"
+      th:action="@{/order/form}"
+      th:object="${productOrderDTO}"
+  >
+    <input type="hidden" name="productIds" th:value="${productSet.id}">
+    <input type="hidden" name="productQuantitys" th:value="${productSet.quantity}">
 
-    <div th:text="${productSet.id}"></div>
-    <div th:text="${productSet.quantity}"></div>
-  </div>
+    <!-- 구매하는 상품 목록 -->
+    <div class="input-title">주문상품</div>
+    <div th:each="product : ${productList}" class="mb-3">
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th>사진</th>
+            <th>이름</th>
+            <th>수량</th>
+            <th>판매가</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>
+              <img class="product-list-img" th:src="${product.thumbnail}"
+                   onError="this.onerror=null;this.src='/image/none-img.png';" alt="">
+            </td>
+            <td th:text="${product.productName}">상품이름</td>
+            <td class="quantity" th:text="${product.orderQuantity + ' 개'}"
+                th:data-quantity="${product.orderQuantity}">수량
+            </td>
+            <td class="price"
+                th:text="${#numbers.formatDecimal(product.price - (product.price * product.discount / 100), 0, 'COMMA', 0, 'POINT') + ' 원'}"
+                th:data-price="${product.price - (product.price * product.discount / 100)}"
+                th:data-point="${(product.price - (product.price * product.discount / 100)) * product.point / 100}">
+              판매가
+            </td>
+          </tr>
+          </tbody>
+        </table>
+        <div class="none-data" th:if="${productList.size() == 0}">상품이 존재하지 않습니다.</div>
+      </div>
+    </div>
+
+    <!-- 결제금액 -->
+    <div class="row my-3">
+      <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 text-right">총 적립금</div>
+      <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 text-right">
+        <b id="totalPoint">
+          총 적립금
+        </b>
+      </div>
+    </div>
+    <div class="option-line"></div>
+    <div class="row">
+      <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 text-right">총 결제금액</div>
+      <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 text-right">
+        <b id="totalPrice">
+          총 결제금액
+        </b>
+      </div>
+    </div>
+
+    <!-- 주문사 상세입력 -->
+    <div class="input-title">기본정보</div>
+    <input th:replace="~{fragments/inputField :: input ('주문자 성함', 'orderName', 'text')}"/>
+    <input th:replace="~{fragments/inputField :: input ('이메일', 'orderEmail', 'text')}"/>
+    <input th:replace="~{fragments/inputField :: input ('연락처', 'orderPhone', 'text')}"/>
+    <div th:replace="~{fragments/daumPost :: daumPost}"></div>
+    <input th:replace="~{fragments/inputField :: input ('배송메세지', 'memo', 'text')}"/>
+
+    <input th:replace="~{fragments/paymentField :: payment ('payment')}"/>
+
+    <div class="form-btn-wrap">
+      <a th:href="@{/}" class="form-btn">취소</a>
+      <button type="submit" class="form-btn submit">회원가입</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  var priceList = document.getElementsByClassName("price")
+  var quantityList = document.getElementsByClassName("quantity")
+  var totalPrice = 0;
+  var totalPoint = 0;
+
+  for (let i = 0; i < priceList.length; i++) {
+    totalPrice += (priceList[i].dataset.price * 1) * (quantityList[i].dataset.quantity * 1);
+    totalPoint += priceList[i].dataset.point * 1;
+  }
+
+  function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  document.getElementById("totalPrice").innerText = numberWithCommas(totalPrice) + '원';
+  document.getElementById("totalPoint").innerText = numberWithCommas(totalPoint) + '점';
+</script>
 
 </body>
