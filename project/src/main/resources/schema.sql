@@ -71,8 +71,8 @@ CREATE TABLE PRODUCT
     content         VARCHAR,
     summaryInfo     VARCHAR,
     price           INTEGER   NOT NULL,
-    discount        SMALLINT,
-    point           SMALLINT,
+    discount        SMALLINT  NOT NULL,
+    point           SMALLINT  NOT NULL,
     quantity        INTEGER,
     buyMinQuantity  INTEGER,
     buyMaxQuantity  INTEGER,
@@ -150,12 +150,13 @@ CREATE TABLE PRODUCT_ORDER
     memo             VARCHAR   NOT NULL,
 
     payment          SMALLINT  NOT NULL,
-    cupon            VARCHAR,
-    point            INTEGER,
+    useCupon         VARCHAR,
+    usePoint         INTEGER,
     totalAmount      INTEGER,
     productIds       VARCHAR,
     productQuantitys VARCHAR,
     productAmounts   VARCHAR,
     accountId        VARCHAR,
-    orderState       SMALLINT
+    orderState       SMALLINT,
+    receivePoint     INTEGER
 );

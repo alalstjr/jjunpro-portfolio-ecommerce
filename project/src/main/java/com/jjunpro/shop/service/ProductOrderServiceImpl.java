@@ -8,6 +8,7 @@ import com.jjunpro.shop.mapper.ProductOrderMapper;
 import com.jjunpro.shop.model.Account;
 import com.jjunpro.shop.model.Product;
 import com.jjunpro.shop.model.ProductOrder;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
@@ -31,17 +32,12 @@ public class ProductOrderServiceImpl implements ProductOrderService {
     private final AccountMapper      accountMapper;
     private final ProductOrderMapper productOrderMapper;
 
-    private Integer totalAmount       = 0;
-    private Boolean totalPointEnabled = false;
-
     @Override
     public ProductOrder set(ProductOrder productOrder) {
-        /* 로그인한 유저의 정보를 가져옵니다. */
-        Authentication authentication = SecurityContextHolder
-                .getContext()
-                .getAuthentication();
-        UserDetails       userDetails = (UserDetails) authentication.getPrincipal();
-        Optional<Account> account     = accountMapper.findByEmail(userDetails.getUsername());
+        Integer totalAmount       = 0;
+        Boolean totalPointEnabled = false;
+
+        Optional<Account> account = getAccount();
 
         /* 상품의 id, 갯수를 가져와 계산합니다. */
         Map<Long, Integer> productList = productOrder.getProductList();
@@ -57,51 +53,76 @@ public class ProductOrderServiceImpl implements ProductOrderService {
 
             Optional<Product> dbProduct = this.productMapper.findById(id);
             if (dbProduct.isPresent()) {
-                if (dbProduct.get().getQuantity() > 0) {
+                /* 상품의 수량체크와 구매가능 상태를 체크합니다. */
+                if (dbProduct.get().getQuantity() > 0 && dbProduct.get().getEnabled()) {
                     Integer price        = dbProduct.get().getPrice();
                     Short   discount     = dbProduct.get().getDiscount();
                     Boolean pointEnabled = dbProduct.get().getPointEnabled();
+                    Short   point        = dbProduct.get().getPoint();
+
+                    /* 적립금 계산 */
+                    Integer receivePoint = (price - (price * discount / 100)) * point / 100;
+                    productOrder.setReceivePoint(receivePoint);
 
                     /* 상품의 기본가격을 {,} 구분하여 저장합니다. */
                     originPrice.append(price).append(",");
 
                     /* 해당 상품의 할인률 계산 */
-                    if (discount != null) {
-                        this.totalAmount += this.percentage(price, discount) * quantity;
+                    if (discount > 0) {
+                        totalAmount += (price - (price * discount / 100)) * quantity;
                     } else {
-                        this.totalAmount += price * quantity;
+                        totalAmount += price * quantity;
                     }
 
                     /* 상품의 포인트 사용이 하나라도 허용되있는 경우 true */
                     if (pointEnabled) {
-                        this.totalPointEnabled = true;
+                        totalPointEnabled = true;
                     }
 
                     /* 구매한 상품 갯수만큼 기존상품 갯수 차감 */
                     Integer afterQuantity = dbProduct.get().getQuantity() - quantity;
-                    productMapper.updateQuantity(dbProduct.get().getId(), afterQuantity);
+                    this.productMapper.updateQuantity(dbProduct.get().getId(), afterQuantity);
                 } else {
-                    throw new ProductOrderException("상품의 수량이 존재하지 않습니다.");
+                    throw new ProductOrderException("상품의 수량이 존재하지 않거나 구매할수 없는 상품입니다.");
                 }
             } else {
                 throw new DataNullException("상품이 존재하지 않습니다.");
             }
         }
 
-        /* 유저의 적립금 사용 계산 */
-        if (this.totalPointEnabled && productOrder.getPoint() != null) {
-            if (account.isPresent()) {
-                Integer point = account.get().getPoint();
+        /*
+         * 유저의 적립금 사용 or 적립금 추가 계산
+         * 적립금사용이 허용되있고 & 사용하는 포인트가 존재하며 & 구매하려는 상품의 가격이 10000원 이상인지 확인합니다.
+         */
+        if (account.isPresent()) {
+            Integer point = account.get().getPoint();
+
+            if (totalPointEnabled && productOrder.getUsePoint() != null
+                    && productOrder.getUsePoint() > 0
+                    && totalAmount >= 10000) {
 
                 /* 사용하려는 적립금과 유저의 적립금 차이가 있는지 확인합니다. */
-                if (point != null && point >= productOrder.getPoint()) {
-                    this.totalAmount = this.totalAmount - productOrder.getPoint();
-                    /* 사용자의 포인트 감소 */
-                    int afterPoint = point - productOrder.getPoint();
-                    accountMapper.updatePoint(account.get().getId(), afterPoint);
+                if (point != null && point >= productOrder.getUsePoint()) {
+                    totalAmount = totalAmount - productOrder.getUsePoint();
+
+                    /* 사용자의 적립금 감소 */
+                    int afterPoint = point - productOrder.getUsePoint();
+                    this.accountMapper.updatePoint(account.get().getId(), afterPoint);
+
+                    productOrder.setReceivePoint(0);
                 }
+            } else {
+                /* 적립금을 사용하지 않는경우 0 으로 초기화 null 방지 */
+                productOrder.setUsePoint(0);
+
+                /* 사용자의 적립금 증가 */
+                int afterPoint = point + productOrder.getReceivePoint();
+                this.accountMapper.updatePoint(account.get().getId(), afterPoint);
             }
         }
+
+        /* 구매하는 상품의 종류와 갯수를 저장합니다. */
+        productOrder.idsAndQuantitysSet(productList);
 
         /* 구매하는 유저의 정보를 저장합니다. */
         account.ifPresent(value -> productOrder.setAccountId(value.getId()));
@@ -123,22 +144,65 @@ public class ProductOrderServiceImpl implements ProductOrderService {
         productOrder.setOrderState((short) 0);
 
         /* 최종 결제금액 설정 */
-        productOrder.setTotalAmount(this.totalAmount);
-        productOrderMapper.insert(productOrder);
+        productOrder.setTotalAmount(totalAmount);
+        this.productOrderMapper.insert(productOrder);
 
         return productOrder;
     }
 
     @Override
     public Optional<ProductOrder> findById(Long id) {
-        return productOrderMapper.findById(id);
+        return this.productOrderMapper.findById(id);
     }
 
     @Override
     public String orderCancel(Long id) {
-        Optional<ProductOrder> dbProductOrder = productOrderMapper.findById(id);
+        Optional<ProductOrder> dbProductOrder = this.productOrderMapper.findById(id);
+
         if (dbProductOrder.isPresent()) {
+            Optional<Account> account = getAccount();
+
+            /* 구매한 상품의 수량, 포인트 회수 */
+            Map<Long, Integer> productMap  = new HashMap<>();
+            String[]           idArr       = dbProductOrder.get().getProductIds().split(",");
+            String[]           quantityArr = dbProductOrder.get().getProductQuantitys().split(",");
+
+            /* 상품 수량 반환 */
+            int i = 0;
+            for (String productId : idArr) {
+                productMap.put(Long.parseLong(productId), Integer.parseInt(quantityArr[i]));
+                i++;
+            }
+
+            for (Long productId : productMap.keySet()) {
+                Integer           quantity  = productMap.get(productId);
+                Optional<Product> dbProduct = this.productMapper.findById(productId);
+
+                if (dbProduct.isPresent()) {
+                    /* DB 존재하는 상품의 수량 + 취소하는 상품의 수량 */
+                    int afterQuantity = dbProduct.get().getQuantity() + quantity;
+                    dbProduct.get().setQuantity(afterQuantity);
+                    this.productMapper.update(dbProduct.get());
+                }
+            }
+
+            /* 사용한 포인트 반환 */
+            if (account.isPresent()) {
+                Integer point      = account.get().getPoint();
+                int     afterPoint = 0;
+
+                if (dbProductOrder.get().getUsePoint() == 0) {
+                    afterPoint = point - dbProductOrder.get().getReceivePoint();
+                } else {
+                    afterPoint = point + dbProductOrder.get().getUsePoint();
+                }
+
+                accountMapper.updatePoint(account.get().getId(), afterPoint);
+            }
+
+            /* 주문서의 상태변경 */
             if (!dbProductOrder.get().getOrderState().equals((short) 3)) {
+                /* 주문의 상태를 취소로 변경합니다. */
                 this.productOrderMapper.orderCancel(id);
 
                 return "주문이 취소되었습니다.";
@@ -148,8 +212,12 @@ public class ProductOrderServiceImpl implements ProductOrderService {
         return "주문을 취소할 수 없습니다.";
     }
 
-    /* 백분율 계산 메소드 */
-    private Integer percentage(Integer price, Short percent) {
-        return price - (price * percent / 100);
+    /* 로그인한 유저의 정보를 가져옵니다. */
+    private Optional<Account> getAccount() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails    userDetails    = (UserDetails) authentication.getPrincipal();
+        return this.accountMapper
+                .findByEmail(userDetails.getUsername());
     }
+
 }

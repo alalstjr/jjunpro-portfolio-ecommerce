@@ -30,7 +30,7 @@ public class NaverController {
     @GetMapping("/login")
     public RedirectView login() {
         RedirectView redirectView = new RedirectView();
-        String       url          = naverService.login();
+        String       url          = this.naverService.login();
 
         redirectView.setUrl(url);
 
@@ -45,7 +45,7 @@ public class NaverController {
             Model model
     ) throws IOException {
         /* 네이버에서 받아온 사용자의 정보 */
-        NaverUser    userProfile  = naverService.getUserProfile(code);
+        NaverUser    userProfile  = this.naverService.getUserProfile(code);
         NaverAccount naverAccount = userProfile.getResponse();
         String       birthday     = null;
         String       ageRange     = null;
@@ -61,11 +61,12 @@ public class NaverController {
         }
         /* 사용자의 성별정보가 존재하는 경우 */
         if (naverAccount.getGender() != null) {
-            gender = naverAccount.getGender().equals("M") ? 1 : naverAccount.getGender().equals("F") ? 2 : 0;
+            gender = naverAccount.getGender().equals("M") ? 1
+                    : naverAccount.getGender().equals("F") ? 2 : 0;
         }
 
         /* DB 내부에 사용자가 이미 가입되어 있는지 체크합니다. */
-        Optional<Account> accountDB = accountService
+        Optional<Account> accountDB = this.accountService
                 .findByEmail(naverAccount.getEmail());
 
         UserRole userrole;
@@ -78,7 +79,7 @@ public class NaverController {
             accountDB.get().setGender(gender);
             userrole = accountDB.get().getUserRole();
 
-            accountService.updateAccount(accountDB.get());
+            this.accountService.updateAccount(accountDB.get());
 
             model.addAttribute("user", accountDB.get());
         } else {
@@ -93,12 +94,12 @@ public class NaverController {
                     .build();
             userrole = account.getUserRole();
 
-            accountService.insertAccount(account);
+            this.accountService.insertAccount(account);
 
             model.addAttribute("user", account);
         }
 
-        securityService.autologin(
+        this.securityService.autologin(
                 naverAccount.getEmail(),
                 null,
                 userrole,

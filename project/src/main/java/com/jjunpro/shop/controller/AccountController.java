@@ -59,9 +59,9 @@ public class AccountController {
         }
 
         /* 사용자의 IP 를 등록합니다. */
-        userFormDTO.setIp(ipUtil.getUserIp(request));
+        userFormDTO.setIp(this.ipUtil.getUserIp(request));
 
-        Account account = accountService.insertAccount(userFormDTO.toEntity());
+        Account account = this.accountService.insertAccount(userFormDTO.toEntity());
 
         model.addAttribute("join", true);
         model.addAttribute("email", account.getEmail());
@@ -105,7 +105,7 @@ public class AccountController {
             return "account/findByEmail";
         }
 
-        Optional<Account> account = accountService
+        Optional<Account> account = this.accountService
                 .findEmailByUsernameAndPhoneNumber(findByEmailDTO.getUsername(),
                         findByEmailDTO.getPhoneNumber());
 

@@ -44,25 +44,27 @@ public class ProductDTO {
 
     private String summaryInfo;
 
-    @Min(value = 0, message = "0 이하로 작성할 수 없습니다.")
+    @Min(value = 0, message = "0 미만으로 작성할 수 없습니다.")
     @NotNull(message = "상품 가격은 필수로 작성해야 합니다.")
     private Integer price;
 
-    private Short discount;
+    @Min(value = 0, message = "0 미만으로 작성할 수 없습니다.")
+    @Max(value = 100, message = "100 을 초과하여 작성할 수 없습니다.")
+    private Short discount = 0;
 
-    @Min(value = 0, message = "0 이하로 작성할 수 없습니다.")
-    @Max(value = 100, message = "100 이상 작성할 수 없습니다.")
-    private Short point;
+    @Min(value = 0, message = "0 미만으로 작성할 수 없습니다.")
+    @Max(value = 100, message = "100 을 초과하여 작성할 수 없습니다.")
+    private Short point = 0;
 
-    @Min(value = 0, message = "0 이하로 작성할 수 없습니다.")
+    @Min(value = 0, message = "0 미만으로 작성할 수 없습니다.")
     @NotNull(message = "상품 수량 필수로 작성해야 합니다.")
     private Integer quantity;
 
-    @Min(value = 0, message = "0 이하로 작성할 수 없습니다.")
+    @Min(value = 0, message = "0 미만으로 작성할 수 없습니다.")
     @NotNull(message = "최소상품 구입수량은 필수로 작성해야 합니다.")
     private Integer buyMinQuantity = 1;
 
-    @Min(value = 0, message = "0 이하로 작성할 수 없습니다.")
+    @Min(value = 0, message = "0 미만으로 작성할 수 없습니다.")
     @NotNull(message = "최대상품 구입수량은 필수로 작성해야 합니다.")
     private Integer buyMaxQuantity = 9999;
 

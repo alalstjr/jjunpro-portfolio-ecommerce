@@ -10,24 +10,22 @@
       th:action="@{/order/form}"
       th:object="${productOrderDTO}"
   >
-    <input type="hidden" name="productIds" th:value="${productSet.id}">
-    <input type="hidden" name="productQuantitys" th:value="${productSet.quantity}">
-
     <!-- 구매하는 상품 목록 -->
     <div class="input-title">주문상품</div>
-    <div th:each="product : ${productList}" class="mb-3">
+    <div class="mb-3">
       <div class="table-responsive">
         <table class="table table-striped">
           <thead>
-          <tr>
+          <tr class="text-center">
             <th>사진</th>
             <th>이름</th>
             <th>수량</th>
             <th>판매가</th>
+            <th>총 상품구매금액</th>
           </tr>
           </thead>
           <tbody>
-          <tr>
+          <tr th:each="product : ${productList}" class="text-center">
             <td>
               <img class="product-list-img" th:src="${product.thumbnail}"
                    onError="this.onerror=null;this.src='/image/none-img.png';" alt="">
@@ -42,6 +40,9 @@
                 th:data-point="${(product.price - (product.price * product.discount / 100)) * product.point / 100}">
               판매가
             </td>
+            <td th:text="${#numbers.formatDecimal((product.price - (product.price * product.discount / 100) ) * product.orderQuantity, 0, 'COMMA', 0, 'POINT') + ' 원'}">
+              총 상품구매금액
+            </td>
           </tr>
           </tbody>
         </table>
@@ -50,17 +51,8 @@
     </div>
 
     <!-- 결제금액 -->
-    <div class="row my-3">
-      <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 text-right">총 적립금</div>
-      <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 text-right">
-        <b id="totalPoint">
-          총 적립금
-        </b>
-      </div>
-    </div>
-    <div class="option-line"></div>
     <div class="row">
-      <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 text-right">총 결제금액</div>
+      <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 text-right">총 금액</div>
       <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 text-right">
         <b id="totalPrice">
           총 결제금액
@@ -78,16 +70,59 @@
 
     <input th:replace="~{fragments/paymentField :: payment ('payment')}"/>
 
+    <!-- 적립금사용 -->
+    <div th:style="${product.pointEnabled ? 'display:block' : 'display:none'}">
+      <div class="input-title">적립금사용</div>
+      <input th:replace="~{fragments/inputField :: input ('적립금', 'usePoint', 'number')}"/>
+      <div style="padding: 10px 5px;">현재 보유하고있는 적립금
+        <b th:text="${#numbers.formatDecimal(productOrderDTO.accountPoint, 0, 'COMMA', 0, 'POINT')}"
+           th:data-accountpoint="${productOrderDTO.accountPoint}" id="account-point"></b>
+        점
+      </div>
+      <div class="point-ex">
+        <div>- 적립금은 10,000원 이상일 때 결제가 가능합니다.</div>
+        <div>- 최대 사용금액은 제한이 없습니다.</div>
+        <div>- 적립금 사용 시 배송비는 적립금으로 사용 할 수 없습니다.</div>
+        <div>- 적립금 사용 시 해당 상품에 대한 적립금은 적립되지 않습니다.</div>
+        <div>- 적립금으로만 결제할 경우, 결제금액이 0으로 보여지는 것은 정상이며 [결제하기] 버튼을 누르면 주문이 완료됩니다.</div>
+      </div>
+    </div>
+
+    <div class="input-title">결제예정금액</div>
+    <div class="row my-4">
+      <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 text-right">추가 적립금</div>
+      <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 text-right">
+        <b class="text-success">
+          +
+          <span id="totalPoint">
+          추가 적립금
+          </span>
+        </b>
+      </div>
+    </div>
+    <div class="option-line"></div>
+    <div class="row my-4">
+      <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 text-right">총 결제금액</div>
+      <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 text-right">
+        <b id="allTotalPrice">
+          총 결제금액
+        </b>
+      </div>
+    </div>
+
     <div class="form-btn-wrap">
       <a th:href="@{/}" class="form-btn">취소</a>
-      <button type="submit" class="form-btn submit">회원가입</button>
+      <button type="submit" class="form-btn submit">주문하기</button>
     </div>
   </form>
 </div>
 
 <script>
-  var priceList = document.getElementsByClassName("price")
-  var quantityList = document.getElementsByClassName("quantity")
+  /* 상품 모든금액 */
+  var priceList = document.getElementsByClassName("price");
+  var quantityList = document.getElementsByClassName("quantity");
+  var userPoint = document.getElementById("usePoint").value * 1;
+  var accountPoint = document.getElementById("account-point").dataset.accountpoint * 1;
   var totalPrice = 0;
   var totalPoint = 0;
 
@@ -102,6 +137,37 @@
 
   document.getElementById("totalPrice").innerText = numberWithCommas(totalPrice) + '원';
   document.getElementById("totalPoint").innerText = numberWithCommas(totalPoint) + '점';
+  document.getElementById("allTotalPrice").innerText = numberWithCommas(totalPrice - userPoint)
+      + '원';
+
+  /* 적립금 반영 함수 */
+  document.getElementById("usePoint").onchange = changePrice;
+
+  function changePrice(e) {
+    if (accountPoint < e.target.value) {
+      alert("보유하고있는 포인트보다 많습니다.");
+      return false;
+    }
+
+    userPoint = document.getElementById("usePoint").value;
+    document.getElementById("allTotalPrice").innerText = numberWithCommas(
+        abszero(totalPrice - userPoint)) + '원';
+
+    /* 적립금을 사용하면 부여되는 적립금 0 처리 */
+    if (userPoint > 0) {
+      document.getElementById("totalPoint").innerText = "0";
+    } else {
+      document.getElementById("totalPoint").innerText = numberWithCommas(totalPoint);
+    }
+  }
+
+  function abszero(price) {
+    if (price < 0) {
+      return 0;
+    }
+
+    return price;
+  }
 </script>
 
 </body>

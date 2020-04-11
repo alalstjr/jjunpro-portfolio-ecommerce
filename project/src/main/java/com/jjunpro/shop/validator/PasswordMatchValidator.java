@@ -22,8 +22,8 @@ import javax.validation.ConstraintValidatorContext;
 @RequiredArgsConstructor
 public class PasswordMatchValidator implements ConstraintValidator<PasswordMatch, Object> {
 
-    private String  message;
-    private String  password;
+    private String message;
+    private String password;
     private String  passwordRe;
     private String  oldPassword;
     private boolean encoder;

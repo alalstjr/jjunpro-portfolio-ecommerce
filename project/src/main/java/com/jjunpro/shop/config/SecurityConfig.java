@@ -27,7 +27,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configureGlobal(AuthenticationManagerBuilder managerBuilder) throws Exception {
         managerBuilder
                 .userDetailsService(this.accountService)
-                .passwordEncoder(passwordEncoder);
+                .passwordEncoder(this.passwordEncoder);
     }
 
     @Bean

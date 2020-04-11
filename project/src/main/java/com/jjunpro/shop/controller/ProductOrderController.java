@@ -7,15 +7,22 @@ import com.jjunpro.shop.dto.ProductSetDTO;
 import com.jjunpro.shop.dto.ReceiptDTO;
 import com.jjunpro.shop.model.Product;
 import com.jjunpro.shop.model.ProductOrder;
+import com.jjunpro.shop.security.context.AccountContext;
+import com.jjunpro.shop.service.AccountServiceImpl;
 import com.jjunpro.shop.service.ProductOrderServiceImpl;
 import com.jjunpro.shop.service.ProductServiceImpl;
 import com.jjunpro.shop.util.IpUtil;
+import com.nimbusds.jose.proc.SecurityContext;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -31,19 +38,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/order")
 @RequiredArgsConstructor
-@SessionAttributes({"productList", "productSet"})
+@SessionAttributes({"product", "productList", "productOrderDTO", "productSet"})
 public class ProductOrderController {
 
     private final IpUtil                  ipUtil;
     private final ProductServiceImpl      productService;
     private final ProductOrderServiceImpl productOrderService;
+    private final AccountServiceImpl      accountService;
 
     /* Test Code */
     @PostMapping("/set")
     public void set(
-            ProductOrderDTO productOrderDTO,
-            BindingResult bindingResult,
-            Model model
+            ProductOrderDTO productOrderDTO
     ) {
         this.productOrderService.set(productOrderDTO.toEntity());
     }
@@ -53,11 +59,13 @@ public class ProductOrderController {
             @RequestParam Long id,
             Model model
     ) {
-        Optional<Product> product = productService.findById(id);
+        Optional<Product> product = this.productService.findById(id);
+
         if (product.isPresent()) {
             model.addAttribute("product", product.get());
         }
 
+        /* 클라이언트에서 전달받는 상품의 { id, 수량 } 정보를 저장하는 DTO */
         model.addAttribute("productSet", new ProductSetDTO());
 
         return SHOP.concat("/productView");
@@ -65,39 +73,52 @@ public class ProductOrderController {
 
     @PostMapping("/view")
     public String viewSet(
-            @Valid @ModelAttribute Product product,
+            @Valid Product product,
             @Valid @ModelAttribute ProductSetDTO productSet,
             BindingResult bindingResult,
             Model model
     ) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("product", product);
-            model.addAttribute("ProductSetDTO", productSet);
+            model.addAttribute("productSet", productSet);
 
             return SHOP.concat("/productView");
         }
 
-        /* Session 저장소에 상품 id, 수량 등등 기타정보를 담아서 주문서로 넘깁니다. */
-        model.addAttribute("productSet", productSet);
+        /* Session 저장소에 상품 { id, 수량 } 정보를 담아서 주문서로 넘깁니다. */
+        ProductOrderDTO productOrderDTO = new ProductOrderDTO();
+        productOrderDTO.setProductIds(productSet.getSetId());
+        productOrderDTO.setProductQuantitys(productSet.getSetQuantity());
+        model.addAttribute("productOrderDTO", productOrderDTO);
 
         return "redirect:/order/form";
     }
 
     @GetMapping("/form")
     public String order(
+            @ModelAttribute ProductOrderDTO productOrderDTO,
             Model model
     ) {
-        ProductOrderDTO productOrderDTO = new ProductOrderDTO();
-        ProductSetDTO   productSet      = (ProductSetDTO) model.getAttribute("productSet");
-        assert productSet != null;
-        String[]      productArr  = productSet.getId().split(",");
-        String[]      quantityArr = productSet.getQuantity().split(",");
+        /* 클라이언트에서 전달받은 주문하려는 상품 목록과 수량으로 상품 DB 탐색 */
+        String[]      productArr  = productOrderDTO.getProductIds().split(",");
+        String[]      quantityArr = productOrderDTO.getProductQuantitys().split(",");
         List<Product> productList = new ArrayList<>();
 
         this.getProduct(productArr, quantityArr, productList);
 
-        model.addAttribute("productOrderDTO", productOrderDTO);
+        /* 클라이언트가 보유한 포인트를 탐색 */
+        UserDetails principal = (UserDetails) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+        AccountContext userDetails = (AccountContext) this.accountService
+                .loadUserByUsername(principal.getUsername());
+
+        /* 클라이언트 사용자의 보유한 포인트를 저장 */
+        productOrderDTO.setAccountPoint(userDetails.getAccount().getPoint());
+
         model.addAttribute("productList", productList);
+        model.addAttribute("productOrderDTO", productOrderDTO);
 
         return SHOP.concat("/productOrder");
     }
@@ -144,12 +165,13 @@ public class ProductOrderController {
         }
 
         Optional<ProductOrder> dbProductOrder = this.productOrderService.findById(id.getId());
+
         if (dbProductOrder.isPresent()) {
-            String[]      productArr  = dbProductOrder.get().getProductIds().split(",");
+            String[]      idArr       = dbProductOrder.get().getProductIds().split(",");
             String[]      quantityArr = dbProductOrder.get().getProductQuantitys().split(",");
             List<Product> productList = new ArrayList<>();
 
-            this.getProduct(productArr, quantityArr, productList);
+            this.getProduct(idArr, quantityArr, productList);
 
             model.addAttribute("productOrder", dbProductOrder.get());
             model.addAttribute("productList", productList);
@@ -162,7 +184,6 @@ public class ProductOrderController {
     @PostMapping("/receipt")
     public String receiptSet(
             @Valid ReceiptDTO id,
-            Model model,
             BindingResult bindingResult,
             RedirectAttributes redirectAttributes
     ) {
@@ -178,20 +199,25 @@ public class ProductOrderController {
         return "redirect:/order/receipt";
     }
 
-    /* 구매한 상품의 목록 & 수량을 가져옵니다. */
-    private void getProduct(String[] productArr, String[] quantityArr, List<Product> productList) {
+    /* 구매하려는 상품의 목록 & 수량을 DB 에서 가져옵니다. */
+    private void getProduct(String[] idArr, String[] quantityArr, List<Product> productList) {
+        Map<Long, Integer> productMap = new HashMap<>();
+
         int i = 0;
-        for (String product : productArr) {
-            /* 주문상품을 조회합니다. */
-            Optional<Product> dbProduct = this.productService.findById(Long.parseLong(product));
+        for (String id : idArr) {
+            productMap.put(Long.parseLong(id.trim()), Integer.parseInt(quantityArr[i].trim()));
+            i++;
+        }
+
+        for (Long id : productMap.keySet()) {
+            Integer           quantity  = productMap.get(id);
+            Optional<Product> dbProduct = this.productService.findById(id);
 
             if (dbProduct.isPresent()) {
                 /* 주문수량을 개별상품에 담습니다. */
-                dbProduct.get().setOrderQuantity(quantityArr[i]);
+                dbProduct.get().setOrderQuantity(quantity);
                 productList.add(dbProduct.get());
             }
-
-            i++;
         }
     }
 }

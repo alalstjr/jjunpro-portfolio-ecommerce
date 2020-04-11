@@ -29,7 +29,7 @@ public class FacebookController {
     @GetMapping("/login")
     public RedirectView login() {
         RedirectView redirectView = new RedirectView();
-        String       url          = facebookService.login();
+        String       url          = this.facebookService.login();
 
         redirectView.setUrl(url);
 
@@ -38,7 +38,7 @@ public class FacebookController {
 
     @GetMapping("")
     public String facebook(@RequestParam("code") String code) {
-        String accessToken = facebookService.getAccessToken(code);
+        String accessToken = this.facebookService.getAccessToken(code);
 
         return "redirect:/facebook/profileData/" + accessToken;
     }
@@ -50,7 +50,7 @@ public class FacebookController {
             HttpServletRequest request
     ) {
         /* 페이스북에서 받아온 사용자의 정보 */
-        User   userProfile = facebookService.getUserProfile(accessToken);
+        User   userProfile = this.facebookService.getUserProfile(accessToken);
         String birthday    = null;
         String ageRange    = null;
         int    gender      = 0;
@@ -70,7 +70,7 @@ public class FacebookController {
         }
 
         /* DB 내부에 사용자가 이미 가입되어 있는지 체크합니다. */
-        Optional<Account> accountDB = accountService.findByEmail(userProfile.getEmail());
+        Optional<Account> accountDB = this.accountService.findByEmail(userProfile.getEmail());
 
         UserRole userrole;
 
@@ -83,7 +83,7 @@ public class FacebookController {
             accountDB.get().setGender(gender);
             userrole = accountDB.get().getUserRole();
 
-            accountService.updateAccount(accountDB.get());
+            this.accountService.updateAccount(accountDB.get());
 
             model.addAttribute("user", accountDB.get());
         } else {
@@ -98,12 +98,12 @@ public class FacebookController {
                     .build();
             userrole = account.getUserRole();
 
-            accountService.insertAccount(account);
+            this.accountService.insertAccount(account);
 
             model.addAttribute("user", account);
         }
 
-        securityService.autologin(
+        this.securityService.autologin(
                 userProfile.getEmail(),
                 null,
                 userrole,

@@ -17,7 +17,7 @@ public class MainController {
 
     @GetMapping("/")
     public String main(Model model) {
-        List<Product> productList = productService.findAll(false);
+        List<Product> productList = this.productService.findAll(false);
         model.addAttribute("productList", productList);
 
         return "main/main";

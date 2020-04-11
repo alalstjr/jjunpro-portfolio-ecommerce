@@ -6,8 +6,10 @@
   <insert id="insert" useGeneratedKeys="true" keyProperty="id">
     INSERT INTO product_order (ip, enabled, createddate, modifiedDate, orderName, orderEmail,
                                orderPhone, postcode,
-                               addr1, addr2, memo, payment, cupon, point, totalAmount, productIds,
-                               productQuantitys, productAmounts, accountId, orderState)
+                               addr1, addr2, memo, payment, useCupon, usePoint, totalAmount,
+                               productIds,
+                               productQuantitys, productAmounts, accountId, orderState,
+                               receivePoint)
     VALUES (#{ip},
             #{enabled},
             CURRENT_TIMESTAMP,
@@ -20,14 +22,15 @@
             #{addr2},
             #{memo},
             #{payment},
-            #{cupon},
-            #{point},
+            #{useCupon},
+            #{usePoint},
             #{totalAmount},
             #{productIds},
             #{productQuantitys},
             #{productAmounts},
             #{accountId},
-            #{orderState});
+            #{orderState},
+            #{receivePoint});
   </insert>
 
   <select id="findById" resultType="ProductOrder">
@@ -40,7 +43,7 @@
   <update id="orderCancel">
     UPDATE product_order
     SET orderState = 3;
---     WHERE orderState = 0
+    --     WHERE orderState = 0
 --        OR orderState = 1
 --        OR orderState = 2;
   </update>

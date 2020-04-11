@@ -3,6 +3,7 @@ package com.jjunpro.shop.dto;
 import com.jjunpro.shop.model.ProductOrder;
 import java.util.HashMap;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.Builder;
@@ -45,9 +46,10 @@ public class ProductOrderDTO {
     @NotNull(message = "주문결제 방법은 필수로 선택해야 합니다.")
     private Short payment;
 
-    private String cupon;
+    private String useCupon;
 
-    private Integer point;
+    @Min(value = 0, message = "0 포인트 이상만 작성 가능합니다.")
+    private Integer usePoint;
 
     @NotBlank(message = "상품정보는 필수입니다.")
     private String productIds;
@@ -57,10 +59,12 @@ public class ProductOrderDTO {
 
     private Integer totalAmount;
 
+    private Integer accountPoint;
+
     @Builder
     public ProductOrderDTO(Long id, String ip, Boolean enabled, String orderName,
             String orderEmail, String orderPhone, String postcode, String addr1, String addr2,
-            String memo, Short payment, String cupon, Integer point,
+            String memo, Short payment, String useCupon, Integer usePoint,
             String productIds, Integer totalAmount) {
         this.id = id;
         this.ip = ip;
@@ -73,8 +77,8 @@ public class ProductOrderDTO {
         this.addr2 = addr2;
         this.memo = memo;
         this.payment = payment;
-        this.cupon = cupon;
-        this.point = point;
+        this.useCupon = useCupon;
+        this.usePoint = usePoint;
         this.productIds = productIds;
         this.totalAmount = totalAmount;
     }
@@ -93,8 +97,8 @@ public class ProductOrderDTO {
                 .memo(memo)
                 .payment(payment)
                 .productQuantitys(productQuantitys)
-                .cupon(cupon)
-                .point(point)
+                .useCupon(useCupon)
+                .usePoint(usePoint)
                 .productIds(productIds)
                 .totalAmount(totalAmount)
                 .productList(this.productHashMap())
@@ -109,7 +113,7 @@ public class ProductOrderDTO {
 
         int i = 0;
         for (String productId : productIdArr) {
-            productMap.put(Long.parseLong(productId), Integer.parseInt(productQuantitysArr[i]));
+            productMap.put(Long.parseLong(productId.trim()), Integer.parseInt(productQuantitysArr[i].trim()));
             i++;
         }
 

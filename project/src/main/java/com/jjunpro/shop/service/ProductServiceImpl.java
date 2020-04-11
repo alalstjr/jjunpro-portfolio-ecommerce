@@ -29,15 +29,15 @@ public class ProductServiceImpl implements ProductService {
         }
 
         if (product.getId() == null) {
-            productMapper.insert(product);
+            this.productMapper.insert(product);
         } else {
-            productMapper.update(product);
+            this.productMapper.update(product);
         }
     }
 
     @Override
     public String delete(Long id) {
-        productMapper.delete(id);
+        this.productMapper.delete(id);
 
         return "삭제 완료";
     }
@@ -51,9 +51,9 @@ public class ProductServiceImpl implements ProductService {
         List<Product> productList;
 
         if (ignore) {
-            productList = productMapper.findAllAdmin();
+            productList = this.productMapper.findAllAdmin();
         } else {
-            productList = productMapper.findAll();
+            productList = this.productMapper.findAll();
         }
 
         Iterator<Product> iterator = productList.iterator();
@@ -66,7 +66,7 @@ public class ProductServiceImpl implements ProductService {
                 Arrays.sort(groupIdArr);
 
                 for (String groupId : groupIdArr) {
-                    ShopGroup shopGroup = shopGroupMapper
+                    ShopGroup shopGroup = this.shopGroupMapper
                             .findById(Long.parseLong(groupId));
 
                     product.getShopGroupList().add(shopGroup);
@@ -86,13 +86,12 @@ public class ProductServiceImpl implements ProductService {
         }
 
         /* 상품 목록에서 보려주는 대문 이미지 탐색 */
-
         return productList;
     }
 
     @Override
     public Optional<Product> findById(Long id) {
-        Optional<Product> product = productMapper.findById(id);
+        Optional<Product> product = this.productMapper.findById(id);
         product.ifPresent(this::imageSet);
 
         return product;
@@ -100,7 +99,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Integer findCountByShopGroupId(Long shopGroupId) {
-        return productMapper.findCountByShopGroupId(shopGroupId.toString());
+        return this.productMapper.findCountByShopGroupId(shopGroupId.toString());
     }
 
     /* 상품 목록에서 보려주는 썸네일 이미지 처리 */

@@ -46,7 +46,7 @@ public class GoogleController {
             Model model
     ) throws IOException {
         /* 구글에서 받아온 사용자의 정보 */
-        Person       userProfile  = googleService.getUserProfile(code);
+        Person       userProfile  = this.googleService.getUserProfile(code);
         Name         userName     = userProfile.getNames().iterator().next();
         EmailAddress emailAddress = userProfile.getEmailAddresses().iterator().next();
         String       ageRange     = null;
@@ -88,7 +88,7 @@ public class GoogleController {
         }
 
         /* DB 내부에 사용자가 이미 가입되어 있는지 체크합니다. */
-        Optional<Account> accountDB = accountService
+        Optional<Account> accountDB = this.accountService
                 .findByEmail(emailAddress.getValue());
 
         UserRole userrole;
@@ -101,7 +101,7 @@ public class GoogleController {
             accountDB.get().setBirthday(birthday.toString());
             userrole = accountDB.get().getUserRole();
 
-            accountService.updateAccount(accountDB.get());
+            this.accountService.updateAccount(accountDB.get());
 
             model.addAttribute("user", accountDB.get());
         } else {
@@ -116,7 +116,7 @@ public class GoogleController {
                     .build();
             userrole = account.getUserRole();
 
-            accountService.insertAccount(account);
+            this.accountService.insertAccount(account);
 
             model.addAttribute("user", account);
         }

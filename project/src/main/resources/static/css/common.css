@@ -45,7 +45,7 @@ a {
 }
 
 a:hover {
-  color: #111111 !important;
+  color: #999999 !important;
 }
 
 img {
@@ -649,4 +649,21 @@ footer .right-box > div li {
 .message {
   display: block;
   font-size: 21px;
+}
+
+.point-ex {
+  margin-top: 10px;
+  color: #999;
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 20px;
+  letter-spacing: -0.5px;
+}
+
+.product-enalbed-f {
+  text-align: center;
+  background-color: #111;
+  color: #fff;
+  padding: 20px 0;
+  font-weight: bold;
 }

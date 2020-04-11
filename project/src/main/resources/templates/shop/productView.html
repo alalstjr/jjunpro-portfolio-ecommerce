@@ -17,7 +17,7 @@
           th:action="@{/order/view}"
           th:object="${productSet}"
       >
-        <input type="hidden" name="id" th:value="${product.id}">
+        <input type="hidden" name="setId" th:value="${product.id}">
 
         <h2 class="product-title" th:text="${product.productName}"></h2>
         <div class="product-price">
@@ -25,30 +25,35 @@
               th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + 'WON'}"></span>
         </div>
         <div class="option-line"></div>
-        <div th:text="${product.explanation}" class="product-desc"></div>
-        <div class="option-line"></div>
-        <div class="row">
-          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">할인</div>
-          <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
-            <b th:text="${product.discount + '%'}"></b>
+        <th:block th:if="${product.discount > 0}">
+          <div th:text="${product.explanation}" class="product-desc"></div>
+          <div class="option-line"></div>
+          <div class="row">
+            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">할인</div>
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
+              <b th:text="${product.discount + '%'}"></b>
+            </div>
           </div>
-        </div>
+        </th:block>
+        <th:block th:if="${product.pointEnabled}">
+          <div class="row my-3">
+            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">적립금</div>
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
+              <b>
+                [
+                <th:block th:text="${product.point}"></th:block>
+                %]
+                <th:block
+                    th:text="${#numbers.formatDecimal((product.price - (product.price * product.discount / 100)) * product.point / 100, 0, 'COMMA', 0, 'POINT') + ' WON'}"></th:block>
+              </b>
+            </div>
+          </div>
+        </th:block>
         <div class="row my-3">
-          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">적립금</div>
-          <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
-            <b>
-              [
-              <th:block th:text="${product.point}"></th:block>
-              %]
-              <th:block
-                  th:text="${#numbers.formatDecimal((product.price - (product.price * product.discount / 100)) * product.point / 100, 0, 'COMMA', 0, 'POINT') + ' WON'}"></th:block>
-            </b>
-          </div>
-        </div>
-        <div class="row">
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">수량</div>
           <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
-            <input type="number" name="quantity" class="quantity-input" value="1">
+            <input type="number" name="setQuantity" class="quantity-input" value="1">
+            <div class="my-3">최대 <b th:text="${product.quantity}"></b>개 까지 구매 가능합니다.</div>
           </div>
         </div>
         <div class="option-line"></div>
@@ -57,13 +62,23 @@
           <span class="float-right"
                 th:text="${#numbers.formatDecimal(product.price - (product.price * product.discount / 100), 0, 'COMMA', 0, 'POINT') + ' WON'}">0</span>
         </div>
-        <div class="row">
-          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-            <button type="button" class="product-btn cart-btn">장바구니</button>
+        <th:block th:if="${product.quantity > 0}">
+          <th:block th:if="${product.enabled}">
+            <div class="row">
+              <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                <button type="button" class="product-btn cart-btn">장바구니</button>
+              </div>
+              <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                <button type="submit" class="product-btn buy-btn">바로구매</button>
+              </div>
+            </div>
+          </th:block>
+          <div th:if="${!product.enabled}" class="product-enalbed-f">
+            구매할 수 없는 상품입니다.
           </div>
-          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-            <button type="submit" class="product-btn buy-btn">바로구매</button>
-          </div>
+        </th:block>
+        <div th:if="${product.quantity <= 0}" class="product-enalbed-f">
+          품절된 상품입니다.
         </div>
     </div>
     </form>

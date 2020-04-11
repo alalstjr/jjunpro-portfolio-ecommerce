@@ -36,7 +36,7 @@ public class FileController {
             HttpServletRequest request
     ) {
         // Load file as Resource
-        Resource resource = fileStorageService.loadFileAsResource(domain + '/' + fileName);
+        Resource resource = this.fileStorageService.loadFileAsResource(domain + '/' + fileName);
 
         // Try to determine file's content type
         String contentType = null;

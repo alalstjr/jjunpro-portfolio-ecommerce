@@ -64,7 +64,7 @@ public class Product {
     private String thumbnail;
 
     /* 주문목록에서 보여지는 수량 */
-    private String orderQuantity;
+    private Integer orderQuantity;
 
     @Builder
     public Product(Long id, String ip, LocalDateTime createdDate, LocalDateTime modifiedDate,

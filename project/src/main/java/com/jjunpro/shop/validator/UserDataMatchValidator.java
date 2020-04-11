@@ -105,7 +105,7 @@ public class UserDataMatchValidator implements ConstraintValidator<UserDataMatch
             case PRODUCTORDER:
                 Optional<ProductOrder> dbProductOrder = this.productOrderService.findById(id);
                 if (dbProductOrder.isPresent()) {
-                    data = dbProductOrder.get().getId();
+                    data = dbProductOrder.get().getAccountId();
                 }
                 break;
 

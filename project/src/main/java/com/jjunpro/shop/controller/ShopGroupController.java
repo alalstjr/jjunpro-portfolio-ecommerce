@@ -4,10 +4,8 @@ import static com.jjunpro.shop.util.ClassPathUtil.ADMINGROUP;
 
 import com.jjunpro.shop.dto.ShopGroupDTO;
 import com.jjunpro.shop.model.ShopGroup;
-import com.jjunpro.shop.service.ProductServiceImpl;
 import com.jjunpro.shop.service.ShopGroupServiceImpl;
 import com.jjunpro.shop.util.IpUtil;
-import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -31,14 +29,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class ShopGroupController {
 
     private final ShopGroupServiceImpl shopGroupService;
-    private final ProductServiceImpl   productService;
     private final IpUtil               ipUtil;
 
     @GetMapping("")
     public String index(
             Model model
     ) {
-        List<ShopGroup> shopGroupList = shopGroupService.findByIsNullParentShopGroupId();
+        List<ShopGroup> shopGroupList = this.shopGroupService.findByIsNullParentShopGroupId();
         model.addAttribute("shopGroupList", shopGroupList);
 
         return ADMINGROUP.concat("/index");
@@ -54,7 +51,7 @@ public class ShopGroupController {
 
         /* 수정 id */
         if (id != null) {
-            ShopGroup shopGroup = shopGroupService.findById(id);
+            ShopGroup shopGroup = this.shopGroupService.findById(id);
             shopGroupDTO.setId(id);
             shopGroupDTO.setEnabled(shopGroup.getEnabled());
             shopGroupDTO.setShopName(shopGroup.getShopName());
@@ -86,7 +83,7 @@ public class ShopGroupController {
         }
 
         shopGroupDTO.setIp(ipUtil.getUserIp(request));
-        shopGroupService.set(shopGroupDTO.toEntity());
+        this.shopGroupService.set(shopGroupDTO.toEntity());
 
         return "redirect:/shopgroup";
     }
@@ -94,7 +91,7 @@ public class ShopGroupController {
     /* RedirectAttributes 사용하여 그룹 index 페이지에 상태 메세지 Attributes 전달합니다.  */
     @PostMapping("/delete")
     public String delete(Long id, RedirectAttributes model) {
-        model.addFlashAttribute("message", shopGroupService.delete(id));
+        model.addFlashAttribute("message", this.shopGroupService.delete(id));
 
         return "redirect:/shopgroup";
     }
