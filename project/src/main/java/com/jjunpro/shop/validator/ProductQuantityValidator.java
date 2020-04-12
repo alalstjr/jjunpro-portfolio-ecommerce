@@ -2,6 +2,7 @@ package com.jjunpro.shop.validator;
 
 import com.jjunpro.shop.model.Product;
 import com.jjunpro.shop.service.ProductServiceImpl;
+import com.jjunpro.shop.util.StringBuilderUtil;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +20,7 @@ public class ProductQuantityValidator implements ConstraintValidator<ProductQuan
     private String quantity;
 
     private final ProductServiceImpl productService;
+    private final StringBuilderUtil  stringBuilderUtil;
 
     @Override
     public void initialize(ProductQuantity constraintAnnotation) {
@@ -44,8 +46,8 @@ public class ProductQuantityValidator implements ConstraintValidator<ProductQuan
          * { 1, 2, 3 } 문자열을 배열로 변환 후 짝을 지어서 Map 담아서 관리하도록 합니다.
          * 순환 기준이되는 값은 id 입니다.
          */
-        String[]           idArr         = idVal.split(",");
-        String[]           quantityArr   = quantityVal.split(",");
+        String[]           idArr         = this.stringBuilderUtil.classifyUnData(idVal);
+        String[]           quantityArr   = this.stringBuilderUtil.classifyUnData(quantityVal);
         boolean            quantityCheck = true;
         boolean            enabledCheck  = true;
         Map<Long, Integer> productMap    = new HashMap<>();
@@ -54,7 +56,7 @@ public class ProductQuantityValidator implements ConstraintValidator<ProductQuan
         for (String id : idArr) {
             /* 상품과 수량값이 존재하는지 확인 후 map 생성 */
             if (!id.isEmpty() && !quantityArr[i].isEmpty()) {
-                productMap.put(Long.parseLong(id.trim()), Integer.parseInt(quantityArr[i].trim()));
+                productMap.put(Long.parseLong(id), Integer.parseInt(quantityArr[i]));
                 i++;
             } else {
                 quantityCheck = false;
@@ -64,7 +66,7 @@ public class ProductQuantityValidator implements ConstraintValidator<ProductQuan
         for (Long id : productMap.keySet()) {
             Integer quantity = productMap.get(id);
 
-            Optional<Product> dbProduct = productService.findById(id);
+            Optional<Product> dbProduct = this.productService.findById(id);
 
             if (dbProduct.isPresent()) {
                 /* 상품이 판매가능 상태인지 체크합니다. */

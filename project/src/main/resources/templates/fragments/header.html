@@ -24,7 +24,14 @@
       </nav>
     </div>
     <div class="header-bottom">
-      아래메뉴
+
+      <div class="group-menu col-box">
+        <!-- 분류 리스트 재귀함수 출력 -->
+        <th:block th:if="${shopGroupList.size() > 0}"
+                  th:include="@{fragments/menu/shopGroup} :: list (0)"
+                  th:with="group=${shopGroupList}"></th:block>
+      </div>
+
     </div>
   </div>
 </header>

@@ -106,7 +106,7 @@
     SELECT COUNT(*) FROM
         product
     WHERE
-        shopGroupIds LIKE '%'||#{shopGroupId}||'%';
+        shopGroupIds LIKE '%,'||#{shopGroupId}||',%';
   </select>
 
   <update id="updateQuantity">
@@ -116,5 +116,15 @@
     WHERE
         id = #{id};
   </update>
+
+  <select id="findByShopGroupId" resultType="Product">
+    SELECT * FROM
+        product
+    WHERE
+        enabled = true
+    AND
+        shopGroupIds LIKE '%,'||#{shopGroupId}||',%'
+    ORDER BY createddate DESC;
+  </select>
 
 </mapper>

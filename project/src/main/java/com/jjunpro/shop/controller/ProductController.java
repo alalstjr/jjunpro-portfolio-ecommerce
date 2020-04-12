@@ -1,6 +1,8 @@
 package com.jjunpro.shop.controller;
 
+import static com.jjunpro.shop.util.ClassPathUtil.ADMINGROUP;
 import static com.jjunpro.shop.util.ClassPathUtil.ADMINPRODUCT;
+import static com.jjunpro.shop.util.ClassPathUtil.SHOP;
 
 import com.jjunpro.shop.dto.ProductDTO;
 import com.jjunpro.shop.enums.DomainType;
@@ -13,6 +15,7 @@ import com.jjunpro.shop.service.ProductServiceImpl;
 import com.jjunpro.shop.service.ShopGroupServiceImpl;
 import com.jjunpro.shop.util.FileUtil;
 import com.jjunpro.shop.util.IpUtil;
+import com.jjunpro.shop.util.StringBuilderUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +42,7 @@ public class ProductController {
     private final ShopGroupServiceImpl   shopGroupService;
     private final FileStorageServiceImpl fileStorageService;
     private final FileUtil               fileUtil;
+    private final StringBuilderUtil      stringBuilderUtil;
 
     @GetMapping("")
     public String index(
@@ -76,11 +80,12 @@ public class ProductController {
                 if (product.get().getFileStorageIds() != null) {
                     List<FileStorage> dbFile = new ArrayList<>();
 
-                    String[] fileStorageArr = product.get().getFileStorageIds().split(",");
+                    String[] fileStorageArr = stringBuilderUtil
+                            .classifyUnData(product.get().getFileStorageIds());
 
                     for (String fileStorage : fileStorageArr) {
                         Optional<FileStorage> serviceById = this.fileStorageService
-                                .findById(Long.parseLong(fileStorage.trim()));
+                                .findById(Long.parseLong(fileStorage));
 
                         serviceById.ifPresent(dbFile::add);
                     }
@@ -130,7 +135,8 @@ public class ProductController {
 
         if (dbProduct.isPresent()) {
             if (dbProduct.get().getFileStorageIds() != null) {
-                String[] fileStorageArr = dbProduct.get().getFileStorageIds().split(",");
+                String[] fileStorageArr = stringBuilderUtil
+                        .classifyUnData(dbProduct.get().getFileStorageIds());
                 this.fileStorageService.delete(fileStorageArr, DomainType.PRODUCT);
             }
         } else {
@@ -140,6 +146,18 @@ public class ProductController {
         model.addFlashAttribute("message", this.productService.delete(id));
 
         return "redirect:/product";
+    }
+
+    /* 분류의 id 을 기준으로 상품 리스트를 불러옵니다. */
+    @GetMapping("/list")
+    public String getList(
+            @RequestParam Long id,
+            Model model
+    ) {
+        List<Product> productList = this.productService.findByShopGroupId(id);
+        model.addAttribute("productList", productList);
+
+        return SHOP.concat("/productList");
     }
 
     /* 분류 리스트를 불러옵니다. */

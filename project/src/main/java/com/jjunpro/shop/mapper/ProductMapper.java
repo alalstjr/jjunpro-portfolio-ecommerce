@@ -23,4 +23,6 @@ public interface ProductMapper {
     Integer findCountByShopGroupId(String shopGroupId);
 
     void updateQuantity(Long id, Integer afterQuantity);
+
+    List<Product> findByShopGroupId(Long id);
 }

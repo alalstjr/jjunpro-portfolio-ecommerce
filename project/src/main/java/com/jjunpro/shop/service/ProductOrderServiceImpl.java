@@ -8,6 +8,7 @@ import com.jjunpro.shop.mapper.ProductOrderMapper;
 import com.jjunpro.shop.model.Account;
 import com.jjunpro.shop.model.Product;
 import com.jjunpro.shop.model.ProductOrder;
+import com.jjunpro.shop.util.StringBuilderUtil;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -31,11 +32,12 @@ public class ProductOrderServiceImpl implements ProductOrderService {
     private final ProductMapper      productMapper;
     private final AccountMapper      accountMapper;
     private final ProductOrderMapper productOrderMapper;
+    private final StringBuilderUtil  stringBuilderUtil;
 
     @Override
     public ProductOrder set(ProductOrder productOrder) {
-        Integer totalAmount       = 0;
-        Boolean totalPointEnabled = false;
+        int     totalAmount       = 0;
+        boolean totalPointEnabled = false;
 
         Optional<Account> account = getAccount();
 
@@ -163,9 +165,11 @@ public class ProductOrderServiceImpl implements ProductOrderService {
             Optional<Account> account = getAccount();
 
             /* 구매한 상품의 수량, 포인트 회수 */
-            Map<Long, Integer> productMap  = new HashMap<>();
-            String[]           idArr       = dbProductOrder.get().getProductIds().split(",");
-            String[]           quantityArr = dbProductOrder.get().getProductQuantitys().split(",");
+            Map<Long, Integer> productMap = new HashMap<>();
+            String[] idArr = this.stringBuilderUtil
+                    .classifyUnData(dbProductOrder.get().getProductIds());
+            String[] quantityArr = this.stringBuilderUtil
+                    .classifyUnData(dbProductOrder.get().getProductQuantitys());
 
             /* 상품 수량 반환 */
             int i = 0;
@@ -197,7 +201,7 @@ public class ProductOrderServiceImpl implements ProductOrderService {
                     afterPoint = point + dbProductOrder.get().getUsePoint();
                 }
 
-                accountMapper.updatePoint(account.get().getId(), afterPoint);
+                this.accountMapper.updatePoint(account.get().getId(), afterPoint);
             }
 
             /* 주문서의 상태변경 */

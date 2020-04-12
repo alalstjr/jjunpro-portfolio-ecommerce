@@ -42,7 +42,6 @@ public class UserFormDTO {
 
     private String addr2;
 
-    @NotBlank(message = "휴대폰번호는 필수로 작성해야 합니다.")
     private String phoneNumber;
 
     private String birthday;

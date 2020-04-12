@@ -136,7 +136,7 @@ public class FileStorageServiceImpl implements FileStorageService {
                     .fileDownloadUri(fileDownloadUri)
                     .build();
 
-            fileStorageMapper.insert(fileStorage);
+            this.fileStorageMapper.insert(fileStorage);
 
             return fileStorage.getId();
         } catch (IOException ex) {
@@ -177,14 +177,14 @@ public class FileStorageServiceImpl implements FileStorageService {
 
     @Override
     public Optional<FileStorage> findById(Long id) {
-        return fileStorageMapper.findById(id);
+        return this.fileStorageMapper.findById(id);
     }
 
     @Override
     public void delete(String[] deleteFileArr, DomainType domainType) {
         for (String deleteFile : deleteFileArr) {
             try {
-                Optional<FileStorage> dbFileStorage = fileStorageMapper
+                Optional<FileStorage> dbFileStorage = this.fileStorageMapper
                         .findById(Long.parseLong(deleteFile.trim()));
 
                 if (dbFileStorage.isPresent()) {
@@ -200,7 +200,7 @@ public class FileStorageServiceImpl implements FileStorageService {
                             .resolve("thumb-" + dbFileStorage.get().getFileName()).normalize();
                     Files.delete(filePathThumb);
 
-                    fileStorageMapper.delete(dbFileStorage.get().getId());
+                    this.fileStorageMapper.delete(dbFileStorage.get().getId());
                 }
             } catch (MalformedURLException ex) {
                 throw new MyFileNotFoundException("File not found", ex);

@@ -1,5 +1,7 @@
 package com.jjunpro.shop.controller;
 
+import static com.jjunpro.shop.util.ClassPathUtil.ADMINPRODUCT;
+
 import com.jjunpro.shop.security.oauth.naver.NaverAccount;
 import com.jjunpro.shop.security.oauth.naver.NaverUser;
 import com.jjunpro.shop.enums.UserRole;
@@ -7,6 +9,7 @@ import com.jjunpro.shop.model.Account;
 import com.jjunpro.shop.service.AccountServiceImpl;
 import com.jjunpro.shop.service.NaverServiceImpl;
 import com.jjunpro.shop.service.SecurityServiceImpl;
+import com.jjunpro.shop.util.IpUtil;
 import java.io.IOException;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +26,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequestMapping("/naver")
 public class NaverController {
 
+    private final IpUtil              ipUtil;
     private final NaverServiceImpl    naverService;
     private final AccountServiceImpl  accountService;
     private final SecurityServiceImpl securityService;
@@ -72,6 +76,7 @@ public class NaverController {
         UserRole userrole;
 
         if (accountDB.isPresent()) {
+            accountDB.get().setIp(ipUtil.getUserIp(request));
             accountDB.get().setEmail(naverAccount.getEmail());
             accountDB.get().setUsername(naverAccount.getName());
             accountDB.get().setAgeRange(ageRange);
@@ -84,6 +89,7 @@ public class NaverController {
             model.addAttribute("user", accountDB.get());
         } else {
             Account account = Account.builder()
+                    .ip(ipUtil.getUserIp(request))
                     .email(naverAccount.getEmail())
                     .username(naverAccount.getName())
                     .enabled(true)
@@ -91,6 +97,7 @@ public class NaverController {
                     .ageRange(ageRange)
                     .birthday(birthday)
                     .gender(gender)
+                    .point(10000)
                     .build();
             userrole = account.getUserRole();
 
@@ -106,6 +113,6 @@ public class NaverController {
                 request
         );
 
-        return "account/userProfile";
+        return "redirect:/";
     }
 }

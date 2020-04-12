@@ -1,6 +1,7 @@
 package com.jjunpro.shop.dto;
 
 import com.jjunpro.shop.model.ProductOrder;
+import com.jjunpro.shop.util.StringBuilderUtil;
 import java.util.HashMap;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
@@ -15,7 +16,6 @@ import lombok.ToString;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
 public class ProductOrderDTO {
 
     private Long id;
@@ -107,13 +107,17 @@ public class ProductOrderDTO {
 
     /* 주문하는 상품의 id, 갯수 정보를 Map 담습니다. */
     public HashMap<Long, Integer> productHashMap() {
-        HashMap<Long, Integer> productMap          = new HashMap<>();
-        String[]               productIdArr        = this.productIds.split(",");
-        String[]               productQuantitysArr = this.productQuantitys.split(",");
+        StringBuilderUtil      stringBuilderUtil = new StringBuilderUtil();
+        HashMap<Long, Integer> productMap        = new HashMap<>();
+        String[] productIdArr = stringBuilderUtil
+                .classifyUnData(this.productIds);
+        String[] productQuantitysArr = stringBuilderUtil
+                .classifyUnData(this.productQuantitys);
 
         int i = 0;
         for (String productId : productIdArr) {
-            productMap.put(Long.parseLong(productId.trim()), Integer.parseInt(productQuantitysArr[i].trim()));
+            productMap.put(Long.parseLong(productId.trim()),
+                    Integer.parseInt(productQuantitysArr[i].trim()));
             i++;
         }
 

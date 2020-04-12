@@ -4,7 +4,7 @@
 <mapper namespace="com.jjunpro.shop.mapper.AccountMapper">
 
   <select id="findById" resultType="account">
-        SELECT  id
+        SELECT  id,
                 username,
                 email,
                 createddate
@@ -38,7 +38,7 @@
 
   <insert id="insertAccount" useGeneratedKeys="true" keyProperty="id">
     INSERT INTO account (
-        ip, enabled, createddate, modifiedDate, username, email, password, userRole, ageRange, birthday, gender, postcode, addr1, addr2, phoneNumber
+        ip, enabled, createddate, modifiedDate, username, email, password, userRole, ageRange, birthday, gender, postcode, addr1, addr2, phoneNumber, point
     )
     VALUES (
         #{ip},
@@ -55,14 +55,15 @@
         #{postcode},
         #{addr1},
         #{addr2},
-        #{phoneNumber}
+        #{phoneNumber},
+        #{point}
     )
   </insert>
 
   <update id="updateAccount" useGeneratedKeys="true" keyProperty="id">
     UPDATE account
     SET
-      ip = #{ip}
+      ip = #{ip},
       username = #{username},
       email = #{email},
       password = #{password},
@@ -70,7 +71,7 @@
       userRole = #{userRole},
       ageRange = #{ageRange},
       birthday = #{birthday},
-      gender = #{gender}
+      gender = #{gender},
       modifiedDate = CURRENT_TIMESTAMP
     WHERE id = #{id}
   </update>

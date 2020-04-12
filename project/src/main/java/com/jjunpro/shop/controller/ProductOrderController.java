@@ -12,6 +12,7 @@ import com.jjunpro.shop.service.AccountServiceImpl;
 import com.jjunpro.shop.service.ProductOrderServiceImpl;
 import com.jjunpro.shop.service.ProductServiceImpl;
 import com.jjunpro.shop.util.IpUtil;
+import com.jjunpro.shop.util.StringBuilderUtil;
 import com.nimbusds.jose.proc.SecurityContext;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +46,7 @@ public class ProductOrderController {
     private final ProductServiceImpl      productService;
     private final ProductOrderServiceImpl productOrderService;
     private final AccountServiceImpl      accountService;
+    private final StringBuilderUtil       stringBuilderUtil;
 
     /* Test Code */
     @PostMapping("/set")
@@ -100,8 +102,10 @@ public class ProductOrderController {
             Model model
     ) {
         /* 클라이언트에서 전달받은 주문하려는 상품 목록과 수량으로 상품 DB 탐색 */
-        String[]      productArr  = productOrderDTO.getProductIds().split(",");
-        String[]      quantityArr = productOrderDTO.getProductQuantitys().split(",");
+        String[] productArr = this.stringBuilderUtil
+                .classifyUnData(productOrderDTO.getProductIds());
+        String[] quantityArr = this.stringBuilderUtil
+                .classifyUnData(productOrderDTO.getProductQuantitys());
         List<Product> productList = new ArrayList<>();
 
         this.getProduct(productArr, quantityArr, productList);
@@ -167,8 +171,10 @@ public class ProductOrderController {
         Optional<ProductOrder> dbProductOrder = this.productOrderService.findById(id.getId());
 
         if (dbProductOrder.isPresent()) {
-            String[]      idArr       = dbProductOrder.get().getProductIds().split(",");
-            String[]      quantityArr = dbProductOrder.get().getProductQuantitys().split(",");
+            String[] idArr = this.stringBuilderUtil
+                    .classifyUnData(dbProductOrder.get().getProductIds());
+            String[] quantityArr = this.stringBuilderUtil
+                    .classifyUnData(dbProductOrder.get().getProductQuantitys());
             List<Product> productList = new ArrayList<>();
 
             this.getProduct(idArr, quantityArr, productList);

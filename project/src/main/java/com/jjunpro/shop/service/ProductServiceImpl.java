@@ -6,6 +6,7 @@ import com.jjunpro.shop.mapper.ShopGroupMapper;
 import com.jjunpro.shop.model.FileStorage;
 import com.jjunpro.shop.model.Product;
 import com.jjunpro.shop.model.ShopGroup;
+import com.jjunpro.shop.util.StringBuilderUtil;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -20,6 +21,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper     productMapper;
     private final ShopGroupMapper   shopGroupMapper;
     private final FileStorageMapper fileStorageMapper;
+    private final StringBuilderUtil stringBuilderUtil;
 
     @Override
     public void set(Product product) {
@@ -27,6 +29,10 @@ public class ProductServiceImpl implements ProductService {
         if (product.getFileStorageIds().isEmpty()) {
             product.setFileStorageIds(null);
         }
+
+        String dataClassification = this.stringBuilderUtil
+                .classifyData(product.getShopGroupIds());
+        product.setShopGroupIds(dataClassification);
 
         if (product.getId() == null) {
             this.productMapper.insert(product);
@@ -62,8 +68,9 @@ public class ProductServiceImpl implements ProductService {
             Product product = iterator.next();
 
             if (product.getShopGroupIds() != null) {
-                String[] groupIdArr = product.getShopGroupIds().split(",");
-                Arrays.sort(groupIdArr);
+
+                String[] groupIdArr = this.stringBuilderUtil
+                        .classifyUnData(product.getShopGroupIds());
 
                 for (String groupId : groupIdArr) {
                     ShopGroup shopGroup = this.shopGroupMapper
@@ -102,12 +109,25 @@ public class ProductServiceImpl implements ProductService {
         return this.productMapper.findCountByShopGroupId(shopGroupId.toString());
     }
 
+    @Override
+    public List<Product> findByShopGroupId(Long id) {
+        List<Product> productList = this.productMapper.findByShopGroupId(id);
+
+        for(Product product : productList) {
+            this.imageSet(product);
+        }
+
+        return productList;
+    }
+
     /* 상품 목록에서 보려주는 썸네일 이미지 처리 */
     private void imageSet(Product product) {
-        if (product.getFileStorageIds() != null) {
-            String[] fileStorageArr = product.getFileStorageIds().split(",");
+        if (product.getFileStorageIds() != null && !product.getFileStorageIds().isEmpty()) {
+            String[] fileStorageArr = this.stringBuilderUtil
+                    .classifyUnData(product.getFileStorageIds());
+
             Optional<FileStorage> fileStorage = this.fileStorageMapper
-                    .findById(Long.parseLong(fileStorageArr[0].trim()));
+                    .findById(Long.parseLong(fileStorageArr[0]));
 
             if (fileStorage.isPresent()) {
                 String fileDownloadUri = fileStorage.get().getFileDownloadUri();

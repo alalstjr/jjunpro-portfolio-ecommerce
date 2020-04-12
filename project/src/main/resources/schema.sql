@@ -1,9 +1,12 @@
+/* https://brownbears.tistory.com/162 postgresql 문법 */
+
 DROP TABLE IF EXISTS ID_SEQUENCE;
 CREATE TABLE ID_SEQUENCE
 (
     colname SERIAL
 );
 
+/* ALTER TABLE account MODIFY (phoneNumber VARCHAR UNIQUE); null 제거 */
 /* ACCONT */
 DROP TABLE IF EXISTS ACCOUNT;
 CREATE TABLE ACCOUNT
@@ -25,7 +28,7 @@ CREATE TABLE ACCOUNT
     postcode     VARCHAR,
     addr1        VARCHAR,
     addr2        VARCHAR,
-    phoneNumber  VARCHAR   NOT NULL UNIQUE,
+    phoneNumber  VARCHAR UNIQUE,
 
     point        INTEGER
 );

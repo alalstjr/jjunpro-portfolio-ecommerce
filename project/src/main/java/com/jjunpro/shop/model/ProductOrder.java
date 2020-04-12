@@ -89,11 +89,14 @@ public class ProductOrder {
         for (Long id : productList.keySet()) {
             Integer quantity = productList.get(id);
 
-            idBuffer.append(id).append(',');
-            quantityBuffer.append(quantity).append(',');
+            idBuffer.append(',').append(id);
+            quantityBuffer.append(',').append(quantity);
         }
 
-        this.productIds = idBuffer.substring(0, idBuffer.length() - 1);
-        this.productQuantitys = quantityBuffer.substring(0, quantityBuffer.length() - 1);
+        idBuffer.append(",");
+        quantityBuffer.append(',');
+
+        this.productIds = idBuffer.toString();
+        this.productQuantitys = quantityBuffer.toString();
     }
 }

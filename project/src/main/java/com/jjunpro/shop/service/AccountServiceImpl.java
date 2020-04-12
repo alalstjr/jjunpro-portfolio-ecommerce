@@ -79,6 +79,11 @@ public class AccountServiceImpl implements AccountService {
 
         /* 가입된 유저가 존재하는 경우 */
         if (account.isPresent()) {
+            /* OAuth2 로그인 접근으로 password 존재하지 않는경우 생성자 null 접근 못하도록 처리 */
+            if (account.get().getPassword() == null || account.get().getPassword().isEmpty()) {
+                account.get().setPassword("default password");
+            }
+
             return new AccountContext(account.get());
         } else {
             throw new UsernameNotFoundException(username + "정보를 찾을 수 없습니다.");

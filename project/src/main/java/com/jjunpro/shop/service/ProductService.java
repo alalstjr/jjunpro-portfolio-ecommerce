@@ -18,4 +18,5 @@ public interface ProductService {
 
     Integer findCountByShopGroupId(Long shopGroupId);
 
+    List<Product> findByShopGroupId(Long id);
 }

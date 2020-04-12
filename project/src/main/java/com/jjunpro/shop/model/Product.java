@@ -2,6 +2,7 @@ package com.jjunpro.shop.model;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -53,7 +54,7 @@ public class Product {
     /* Storage Value */
 
     /* shopGroupIds 조회하여 List 를 저장하는 임시변수 */
-    private Set<ShopGroup> shopGroupList = new HashSet<>();
+    private List<ShopGroup> shopGroupList = new ArrayList<>();
 
     private MultipartFile[] fileStorage;
 
@@ -74,7 +75,7 @@ public class Product {
             Short discount, Short point, Integer quantity, Integer buyMinQuantity,
             Integer buyMaxQuantity, Boolean reviewState, LocalDateTime reservationSale,
             LocalDateTime endSale, Integer priority, String shopGroupIds,
-            String fileStorageIds, Set<ShopGroup> shopGroupList,
+            String fileStorageIds, List<ShopGroup> shopGroupList,
             MultipartFile[] fileStorage) {
         this.id = id;
         this.ip = ip;

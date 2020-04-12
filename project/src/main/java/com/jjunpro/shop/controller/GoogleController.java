@@ -1,5 +1,7 @@
 package com.jjunpro.shop.controller;
 
+import static com.jjunpro.shop.util.ClassPathUtil.ADMINPRODUCT;
+
 import com.google.api.services.people.v1.model.EmailAddress;
 import com.google.api.services.people.v1.model.Name;
 import com.google.api.services.people.v1.model.Person;
@@ -8,6 +10,7 @@ import com.jjunpro.shop.model.Account;
 import com.jjunpro.shop.service.AccountServiceImpl;
 import com.jjunpro.shop.service.GoogleServiceImpl;
 import com.jjunpro.shop.service.SecurityServiceImpl;
+import com.jjunpro.shop.util.IpUtil;
 import java.io.IOException;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +27,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequestMapping("/google")
 public class GoogleController {
 
+    private final IpUtil              ipUtil;
     private final GoogleServiceImpl   googleService;
     private final AccountServiceImpl  accountService;
     private final SecurityServiceImpl securityService;
@@ -94,6 +98,7 @@ public class GoogleController {
         UserRole userrole;
 
         if (accountDB.isPresent()) {
+            accountDB.get().setIp(ipUtil.getUserIp(request));
             accountDB.get().setEmail(emailAddress.getValue());
             accountDB.get().setUsername(userName.getGivenName() + userName.getFamilyName());
             accountDB.get().setAgeRange(ageRange);
@@ -106,6 +111,7 @@ public class GoogleController {
             model.addAttribute("user", accountDB.get());
         } else {
             Account account = Account.builder()
+                    .ip(ipUtil.getUserIp(request))
                     .email(emailAddress.getValue())
                     .username(userName.getGivenName() + userName.getFamilyName())
                     .enabled(true)
@@ -113,6 +119,7 @@ public class GoogleController {
                     .ageRange(ageRange)
                     .gender(gender)
                     .birthday(birthday.toString())
+                    .point(10000)
                     .build();
             userrole = account.getUserRole();
 
@@ -128,6 +135,6 @@ public class GoogleController {
                 request
         );
 
-        return "account/userProfile";
+        return "redirect:/";
     }
 }

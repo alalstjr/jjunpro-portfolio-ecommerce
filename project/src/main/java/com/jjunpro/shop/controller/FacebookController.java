@@ -1,10 +1,13 @@
 package com.jjunpro.shop.controller;
 
+import static com.jjunpro.shop.util.ClassPathUtil.ADMINPRODUCT;
+
 import com.jjunpro.shop.enums.UserRole;
 import com.jjunpro.shop.model.Account;
 import com.jjunpro.shop.service.AccountServiceImpl;
 import com.jjunpro.shop.service.FacebookServiceImpl;
 import com.jjunpro.shop.service.SecurityServiceImpl;
+import com.jjunpro.shop.util.IpUtil;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +25,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequestMapping("/facebook")
 public class FacebookController {
 
+    private final IpUtil              ipUtil;
     private final FacebookServiceImpl facebookService;
     private final AccountServiceImpl  accountService;
     private final SecurityServiceImpl securityService;
@@ -75,6 +79,7 @@ public class FacebookController {
         UserRole userrole;
 
         if (accountDB.isPresent()) {
+            accountDB.get().setIp(ipUtil.getUserIp(request));
             accountDB.get().setEmail(userProfile.getEmail());
             accountDB.get().setUsername(userProfile.getFirstName() + userProfile.getLastName());
             accountDB.get().setBirthday(birthday);
@@ -88,6 +93,7 @@ public class FacebookController {
             model.addAttribute("user", accountDB.get());
         } else {
             Account account = Account.builder()
+                    .ip(ipUtil.getUserIp(request))
                     .email(userProfile.getEmail())
                     .username(userProfile.getFirstName() + userProfile.getLastName())
                     .enabled(true)
@@ -95,6 +101,7 @@ public class FacebookController {
                     .birthday(birthday)
                     .ageRange(ageRange)
                     .gender(gender)
+                    .point(10000)
                     .build();
             userrole = account.getUserRole();
 
@@ -110,6 +117,6 @@ public class FacebookController {
                 request
         );
 
-        return "account/userProfile";
+        return "redirect:/";
     }
 }

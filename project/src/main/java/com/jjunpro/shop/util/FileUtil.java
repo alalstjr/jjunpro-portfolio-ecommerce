@@ -33,6 +33,7 @@ public class FileUtil {
     private String          deleteFileStorageIds;
 
     private final FileStorageServiceImpl fileStorageService;
+    private final StringBuilderUtil      stringBuilderUtil;
 
     private void setFieldHandler(Object obj) throws NoSuchFieldException, IllegalAccessException {
         Class<?> clazz                     = obj.getClass();
@@ -49,6 +50,7 @@ public class FileUtil {
         this.deleteFileStorageIds = (String) fieldDeleteFileStorageIds.get(obj);
     }
 
+    /* 변경을 원하는 Object 의 변수값을 찾아서 value 값을 변경해주는 메소드*/
     private void setFileStorageIds(Object obj, String value)
             throws NoSuchFieldException, IllegalAccessException {
         Class<?> clazz               = obj.getClass();
@@ -69,12 +71,13 @@ public class FileUtil {
          * - file remove
          */
         if (!this.deleteFileStorageIds.isEmpty()) {
-            String[] dbFileArr     = {};
-            String[] deleteFileArr = this.deleteFileStorageIds.split(",");
+            String[] dbFileArr = {};
+            String[] deleteFileArr = this.stringBuilderUtil
+                    .classifyUnData(this.deleteFileStorageIds);
 
             /* 업로드없이 삭제만 있는경우 Null 체크 */
             if (this.fileStorageIds != null) {
-                dbFileArr = this.fileStorageIds.split(",");
+                dbFileArr = this.stringBuilderUtil.classifyUnData(this.fileStorageIds);
             }
 
             /*
@@ -95,24 +98,18 @@ public class FileUtil {
             for (String dbFile : dbFileArr) {
                 boolean equalsCheck = true;
                 for (String deleteFile : deleteFileArr) {
-                    if (dbFile.trim().equals(deleteFile.trim())) {
+                    if (dbFile.equals(deleteFile)) {
                         equalsCheck = false;
                         break;
                     }
                 }
 
                 if (equalsCheck) {
-                    uploadFile.append(dbFile.trim()).append(",");
+                    uploadFile.append(dbFile).append(",");
                 }
             }
 
-            if (uploadFile.length() != 0) {
-                /*
-                 * uploadFile 변수 끝자리에 오는 문자 ',' 콤마를 삭제합니다.
-                 * ex) { 1, 2, 3, } => { 1, 2, 3 }
-                 */
-                this.setFileStorageIds(dto, uploadFile.substring(0, uploadFile.length() - 1));
-            }
+            this.setFileStorageIds(dto, stringBuilderUtil.classifyData(uploadFile.toString()));
 
             this.fileStorageService.delete(deleteFileArr, domain);
         }
@@ -141,10 +138,11 @@ public class FileUtil {
             List<Long> longs = fileStorageService
                     .uploadMultipleFiles(this.fileStorage, domain);
 
+            /* List 포함되어있는 문자열 '[', ']' 가로 삭제 */
             String replaceAll = longs.toString().replaceAll("[\\[\\]]", "");
             uploadFile.append(replaceAll);
 
-            this.setFileStorageIds(dto, uploadFile.toString());
+            this.setFileStorageIds(dto, stringBuilderUtil.classifyData(uploadFile.toString()));
         }
     }
 }

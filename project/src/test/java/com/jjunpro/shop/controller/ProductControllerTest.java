@@ -63,7 +63,8 @@ public class ProductControllerTest {
                 .param("enabled", "true")
                 .param("productName", "닌텐도 DS")
                 .param("price", "10000")
-                .param("shopGroupIds", shopGroup.getId().toString() + ",")
+                .param("quantity", "10")
+                .param("shopGroupIds", ","+ shopGroup.getId().toString() + ",")
                 .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andDo(print());

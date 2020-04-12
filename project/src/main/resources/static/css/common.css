@@ -139,7 +139,8 @@ input[type="radio"]:checked {
 
 .col-box > div,
 .col-box > nav,
-.col-box > label {
+.col-box > label,
+.col-box > ul {
   float: left;
 }
 
@@ -636,7 +637,7 @@ footer .right-box > div li {
 }
 
 .product-order .order-title,
-.product-receipt .receipt-title{
+.product-receipt .receipt-title {
   font-family: 'Rubik', sans-serif;
   text-align: center;
   padding: 60px 0 15px;
@@ -666,4 +667,75 @@ footer .right-box > div li {
   color: #fff;
   padding: 20px 0;
   font-weight: bold;
+}
+
+.group-menu {
+  margin-left: -20px;
+}
+
+.group-menu .viewsub {
+  text-align: center;
+  display: inline-block;
+  position: relative;
+  vertical-align: middle;
+}
+
+.group-menu .viewsub:after {
+  display: none;
+  position: absolute;
+  left: 50%;
+  bottom: 13px;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  background: #000;
+  content: '';
+}
+
+.group-menu .viewsub:hover:after {
+  display: block;
+}
+
+.group-menu .viewsub > ul {
+  display: none;
+  position: absolute;
+  left: 50%;
+  top: 64px;
+  z-index: 15;
+  width: 126px;
+  margin-left: -63px;
+  padding: 15px 5px 15px;
+  background: #fff;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.group-menu .viewsub:hover > ul {
+  display: block;
+}
+
+.group-menu .viewsub > div a {
+  display: block;
+  position: relative;
+  height: 65px;
+  padding: 0 20px;
+  font-size: 15px;
+  line-height: 65px;
+  letter-spacing: -1px;
+}
+
+.group-menu .viewsub > ul a {
+  display: inline-block;
+  position: relative;
+  margin: 2px 0;
+  padding: 2px 0;
+  color: #888;
+  font-size: 14px;
+  font-weight: 300;
+  letter-spacing: -0.5px;
 }

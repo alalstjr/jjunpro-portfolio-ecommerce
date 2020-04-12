@@ -1,0 +1,12 @@
+<html xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout (~{::body},'product-list')}">
+<head>
+  <meta charset="UTF-8">
+  <title>상품 리스트</title>
+</head>
+<body>
+
+<th:block th:replace="widget/productList/index"></th:block>
+
+</body>
+</html>

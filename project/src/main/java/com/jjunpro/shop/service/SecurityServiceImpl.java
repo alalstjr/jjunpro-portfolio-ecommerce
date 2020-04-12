@@ -31,12 +31,13 @@ public class SecurityServiceImpl implements SecurityService {
     public void autologin(String email, String password, UserRole userRole,
             HttpServletRequest request) {
         /* StringUtils Null 검사 */
+        UserDetails userDetails = accountService.loadUserByUsername(email);
+
         if (StringUtils.hasText(password)) {
             /* 서버에 접근하려는 유저의 정보를 찾아서 인증 객체를 생성합니다. */
-            UserDetails userDetails = accountService.loadUserByUsername(email);
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            email,
+                            userDetails,
                             password,
                             userDetails.getAuthorities()
                     )
@@ -48,10 +49,10 @@ public class SecurityServiceImpl implements SecurityService {
                     .setAuthentication(authentication);
         } else {
             HashSet<GrantedAuthority> grantedAuthorities = new HashSet<>();
-            grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + userRole));
+            grantedAuthorities.add(new SimpleGrantedAuthority(userRole.getValue()));
 
             Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    email,
+                    userDetails,
                     null,
                     grantedAuthorities
             );

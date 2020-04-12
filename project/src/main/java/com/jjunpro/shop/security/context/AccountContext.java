@@ -13,19 +13,11 @@ public class AccountContext extends User {
         super(
                 account.getEmail(),
                 account.getPassword(),
-                List.of(new SimpleGrantedAuthority("ROLE_" + account.getUserRole()))
+                List.of(new SimpleGrantedAuthority(account.getUserRole().getValue()))
         );
 
         /* Domain account 접근할 수 있도록 추가 */
         this.account = account;
-    }
-
-    public AccountContext(String username, String role) {
-        super(
-                username,
-                "default password",
-                List.of(new SimpleGrantedAuthority("ROLE_" + role))
-        );
     }
 
     public Account getAccount() {

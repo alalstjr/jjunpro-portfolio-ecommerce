@@ -1,0 +1,40 @@
+<html xmlns:th="https://www.thymeleaf.org">
+
+  <!-- count 분류 구별용 공백 화살표 표시판단 변수 -->
+  <th:block th:fragment="list (count)">
+    <th:block th:each="item : ${group}">
+      <th:block th:if="${count == 0}">
+        <div class="viewsub">
+      </th:block>
+
+      <th:block th:if="${count == 0}">
+      <div>
+      </th:block>
+      <th:block th:if="${count != 0}">
+        <li>
+      </th:block>
+        <a th:href="@{/product/list(id=${item.id})}" th:text="${item.shopName}">분류이름</a>
+      <th:block th:if="${count != 0}">
+        </li>
+      </th:block>
+      <th:block th:if="${count == 0}">
+        </div>
+      </th:block>
+
+      <th:block th:if="${count == 0}">
+        <ul>
+      </th:block>
+
+      <th:block
+          th:include="@{fragments/menu/shopGroup} :: list (*{__${count + 1}__})"
+          th:with="group=${item.getChildrenShopGroupList()}"></th:block>
+
+      <th:block th:if="${group.size() == count}">
+        </ul>
+      </th:block>
+
+      <th:block th:if="${count == 0}">
+        </div>
+      </th:block>
+    </th:block>
+  </th:block>
