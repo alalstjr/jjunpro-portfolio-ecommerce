@@ -88,7 +88,7 @@ public class ProductServiceImpl implements ProductService {
                     }
                 }
 
-                this.imageSet(product);
+                this.thumbnailSet(product);
             }
         }
 
@@ -99,7 +99,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Optional<Product> findById(Long id) {
         Optional<Product> product = this.productMapper.findById(id);
-        product.ifPresent(this::imageSet);
+        product.ifPresent(this::fileSet);
 
         return product;
     }
@@ -113,25 +113,41 @@ public class ProductServiceImpl implements ProductService {
     public List<Product> findByShopGroupId(Long id) {
         List<Product> productList = this.productMapper.findByShopGroupId(id);
 
-        for(Product product : productList) {
-            this.imageSet(product);
+        for (Product product : productList) {
+            this.thumbnailSet(product);
         }
 
         return productList;
     }
 
     /* 상품 목록에서 보려주는 썸네일 이미지 처리 */
-    private void imageSet(Product product) {
+    private void thumbnailSet(Product product) {
         if (product.getFileStorageIds() != null && !product.getFileStorageIds().isEmpty()) {
             String[] fileStorageArr = this.stringBuilderUtil
                     .classifyUnData(product.getFileStorageIds());
 
-            Optional<FileStorage> fileStorage = this.fileStorageMapper
+            Optional<FileStorage> dbFileStorage = this.fileStorageMapper
                     .findById(Long.parseLong(fileStorageArr[0]));
 
-            if (fileStorage.isPresent()) {
-                String fileDownloadUri = fileStorage.get().getFileDownloadUri();
+            if (dbFileStorage.isPresent()) {
+                String fileDownloadUri = dbFileStorage.get().getFileDownloadUri();
                 product.setThumbnail(fileDownloadUri);
+            }
+        }
+    }
+
+    private void fileSet(Product product) {
+        if (product.getFileStorageIds() != null && !product.getFileStorageIds().isEmpty()) {
+            String[] fileStorageArr = this.stringBuilderUtil
+                    .classifyUnData(product.getFileStorageIds());
+
+            for (String fileStorage : fileStorageArr) {
+                Optional<FileStorage> dbFileStorage = this.fileStorageMapper
+                        .findById(Long.parseLong(fileStorage));
+
+                if (dbFileStorage.isPresent()) {
+                    product.getFileStorageList().add(dbFileStorage.get());
+                }
             }
         }
     }

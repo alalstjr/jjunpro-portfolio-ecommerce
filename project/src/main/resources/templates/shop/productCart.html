@@ -1,0 +1,294 @@
+<html xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout (~{::body},'product-cart')}">
+
+<body>
+
+<div class="product-order container-order">
+  <div class="order-title">CART</div>
+  <form
+      method="post"
+      th:action="@{/order/view}"
+      th:object="${productSet}"
+  >
+    <input type="hidden" name="setId" id="cartId">
+    <input type="hidden" name="setQuantity" id="cartQuantity" class="quantity-input">
+
+    <!-- 구매하는 상품 목록 -->
+    <div class="input-title">주문상품</div>
+    <div class="mb-3">
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+          <tr class="text-center">
+            <th>사진</th>
+            <th>이름</th>
+            <th>수량</th>
+            <th>판매가</th>
+            <th>총 상품구매금액</th>
+            <th>삭제</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="product : ${productList}" class="text-center"
+              th:id="${'cart-' + product.id}">
+            <td>
+              <img class="product-list-img"
+                   th:src="${product.getFileStorageList().get(0).fileDownloadUri}"
+                   onError="this.onerror=null;this.src='/image/none-img.png';" alt="">
+            </td>
+            <td th:text="${product.productName}">상품이름</td>
+            <td class="quantity"
+                th:data-quantity="${product.orderQuantity}" th:id="${'quantity-' + product.id}">
+              <input type="number" th:value="${product.orderQuantity}"
+                     style="width: 50px;height: 35px;text-align: center;"
+                     th:onchange="'cartQuantityEdit(\''+ ${product.id} +'\', this)'">
+            </td>
+            <td class="price"
+                th:id="${'price-' + product.id}"
+                th:text="${#numbers.formatDecimal(product.price - (product.price * product.discount / 100), 0, 'COMMA', 0, 'POINT') + ' 원'}"
+                th:data-price="${product.price - (product.price * product.discount / 100)}"
+                th:data-point="${(product.price - (product.price * product.discount / 100)) * product.point / 100}">
+              판매가
+            </td>
+            <td th:id="${'each-price-' + product.id}"
+                th:text="${#numbers.formatDecimal((product.price - (product.price * product.discount / 100) ) * product.orderQuantity, 0, 'COMMA', 0, 'POINT') + ' 원'}">
+              총 상품구매금액
+            </td>
+            <td>
+              <button type="button" class="btn btn-danger mr-2"
+                      th:onclick="'cartDelete(\''+ ${product.id} +'\')'">삭제
+              </button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+        <div id="data-state">
+          <div class="none-data" th:if="${productList.size() == 0}">상품이 존재하지 않습니다.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 결제금액 -->
+    <div class="option-line"></div>
+    <div class="row">
+      <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 text-right">총 금액</div>
+      <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 text-right">
+        <b id="totalPrice">
+          총 결제금액
+        </b>
+      </div>
+    </div>
+
+    <div class="input-title">결제예정금액</div>
+    <div class="row my-4">
+      <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 text-right">추가 적립금</div>
+      <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 text-right">
+        <b class="text-success">
+          +
+          <span id="totalPoint">
+          추가 적립금
+          </span>
+        </b>
+      </div>
+    </div>
+    <div class="option-line"></div>
+    <div class="row my-4">
+      <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 text-right">총 결제금액</div>
+      <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 text-right">
+        <b id="allTotalPrice">
+          총 결제금액
+        </b>
+      </div>
+    </div>
+
+    <div class="form-btn-wrap">
+      <a href="#none" class="form-btn" onclick="cartReset()">장바구니 비우기</a>
+      <button type="submit" class="form-btn submit">주문하기</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  function init() {
+    /* 상품 모든금액 */
+    var priceList = document.getElementsByClassName("price");
+    var quantityList = document.getElementsByClassName("quantity");
+    var totalPrice = 0;
+    var totalPoint = 0;
+
+    for (let i = 0; i < priceList.length; i++) {
+      totalPrice += (priceList[i].dataset.price * 1) * (quantityList[i].dataset.quantity * 1);
+      totalPoint += priceList[i].dataset.point * 1;
+    }
+
+    document.getElementById("totalPrice").innerText = numberWithCommas(totalPrice) + '원';
+    document.getElementById("totalPoint").innerText = numberWithCommas(totalPoint) + '점';
+    document.getElementById("allTotalPrice").innerText = numberWithCommas(totalPrice)
+        + '원';
+  }
+
+  init();
+
+  function quantityInit(id) {
+    var priceEl = document.getElementById("price-" + id);
+    var quantityEl = document.getElementById("quantity-" + id);
+    var eachTotalPrice = 0;
+
+    if (id !== undefined) {
+      eachTotalPrice = (priceEl.dataset.price * 1) * (quantityEl.dataset.quantity * 1);
+      document.getElementById("each-price-" + id).innerText = numberWithCommas(eachTotalPrice) + '원';
+    }
+  }
+
+  /* 장바구니 비우기 버튼 */
+  function setCookie(cookie_name, value, days) {
+    var exdate = new Date();
+    exdate.setDate(exdate.getDate() + days);
+    // 설정 일수만큼 현재시간에 만료값으로 지정
+
+    var cookie_value = escape(value) + ((days == null) ? '' : ';    expires='
+        + exdate.toUTCString());
+    document.cookie = cookie_name + '=' + cookie_value;
+  }
+
+  function getCookie(cookie_name) {
+    var x, y;
+    var val = document.cookie.split(';');
+
+    for (var i = 0; i < val.length; i++) {
+      x = val[i].substr(0, val[i].indexOf('='));
+      y = val[i].substr(val[i].indexOf('=') + 1);
+      x = x.replace(/^\s+|\s+$/g, ''); // 앞과 뒤의 공백 제거하기
+      if (x == cookie_name) {
+        return unescape(y); // unescape로 디코딩 후 값 리턴
+      }
+    }
+  }
+
+  function delete_cookie(name) {
+    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+  }
+
+  /* 장바구니 전송 인풋값 초기화 */
+  var cartCookie = getCookie("Cart");
+  var cartJson = JSON.parse(cartCookie);
+  document.getElementById("cartId").value = cartJson.setId;
+  document.getElementById("cartQuantity").value = cartJson.setQuantity;
+
+  function cartReset() {
+    delete_cookie('Cart');
+    location.reload();
+  }
+
+  function classifyUnData(target) {
+    var split = target.split(",");
+    var temp = "";
+
+    for (var i = 0; split.length > i; i++) {
+      if (split[i] !== "") {
+        temp += "," + split[i];
+      }
+    }
+
+    return temp;
+  }
+
+  function cartDelete(target) {
+    var item = JSON.parse(getCookie("Cart"));
+
+    if (item !== null) {
+
+      /* 추가하려는 장바구니 상품이 이미 존재하는경우 수량만 변경 */
+      var idArr = classifyUnData(item.setId).split(",");
+      var quantityArr = classifyUnData(item.setQuantity).split(",");
+
+      var idCheck = idArr.indexOf(target);
+
+      if (idCheck !== -1) {
+        idArr[idCheck] = "";
+        quantityArr[idCheck] = "";
+
+        var idArrs = idArr.join(",");
+        var quantityArrs = quantityArr.join(",");
+
+        /* 장바구니 아이탬이 하나라도 존재하는 경우 */
+
+        if (idArrs.length > 1) {
+          var jsonData = {
+            "setId": idArrs,
+            "setQuantity": quantityArrs
+          };
+
+          var stringify = JSON.stringify(jsonData);
+
+          document.getElementById("cartId").value = jsonData.setId;
+          document.getElementById("cartQuantity").value = jsonData.setQuantity;
+
+          setCookie('Cart', stringify, '3');
+        } else {
+          document.getElementById("cartId").value = "";
+          document.getElementById("cartQuantity").value = "";
+
+          document.getElementById("data-state").className = "none-data";
+          document.getElementById("data-state").innerText = "상품이 존재하지 않습니다.";
+
+          delete_cookie('Cart');
+        }
+
+        document.getElementById("cart-" + target).remove();
+
+        init();
+      }
+    }
+  }
+
+  function cartQuantityEdit(id, e) {
+    if (e.value <= 0) {
+      alert("수량을 1개 이상 작성해 주세여.")
+      return false;
+    }
+
+    var editValue = Math.abs(e.value);
+    var item = JSON.parse(getCookie("Cart"));
+
+    if (item !== null && editValue !== '') {
+      var idArr = classifyUnData(item.setId).split(",");
+      var quantityArr = classifyUnData(item.setQuantity).split(",");
+      var idCheck = idArr.indexOf(id);
+
+      if (idCheck !== -1) {
+        quantityArr[idCheck] = editValue;
+
+        var idArrs = idArr.join(",");
+        var quantityArrs = quantityArr.join(",");
+
+        if (idArrs.length > 1) {
+          var jsonData = {
+            "setId": idArrs,
+            "setQuantity": quantityArrs
+          };
+
+          document.getElementById("cartId").value = jsonData.setId;
+          document.getElementById("cartQuantity").value = jsonData.setQuantity;
+
+          /* 총 결제금액 계산식을 위한 data-set 변경 */
+          var quantityEl = document.getElementById("quantity-" + id);
+          quantityEl.dataset.quantity = editValue;
+
+          var stringify = JSON.stringify(jsonData);
+
+          setCookie('Cart', stringify, '3');
+
+          init();
+          quantityInit(id);
+        }
+      }
+    }
+  }
+</script>
+
+</body>

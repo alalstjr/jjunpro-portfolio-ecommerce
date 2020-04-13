@@ -7,7 +7,7 @@
   <div class="row">
     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
       <img class="product-list-img img-thumbnail"
-           th:src="${product.thumbnail}"
+           th:src="${product.getFileStorageList().get(0).fileDownloadUri}"
            onError="this.onerror=null;this.src='/image/none-img.png';"
            alt="상품이미지">
     </div>
@@ -17,7 +17,7 @@
           th:action="@{/order/view}"
           th:object="${productSet}"
       >
-        <input type="hidden" name="setId" th:value="${product.id}">
+        <input type="hidden" name="setId" id="setId" th:value="${product.id}">
 
         <h2 class="product-title" th:text="${product.productName}"></h2>
         <div class="product-price">
@@ -25,9 +25,10 @@
               th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + 'WON'}"></span>
         </div>
         <div class="option-line"></div>
+        <div th:utext="${#strings.replace(#strings.escapeXml(product.explanation),'&#10;','<br>')}"
+             class="product-desc"></div>
+        <div class="option-line"></div>
         <th:block th:if="${product.discount > 0}">
-          <div th:text="${product.explanation}" class="product-desc"></div>
-          <div class="option-line"></div>
           <div class="row">
             <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">할인</div>
             <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
@@ -52,7 +53,8 @@
         <div class="row my-3">
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">수량</div>
           <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
-            <input type="number" name="setQuantity" class="quantity-input" value="1">
+            <input type="number" name="setQuantity" id="setQuantity" class="quantity-input"
+                   value="1">
             <div class="my-3">최대 <b th:text="${product.quantity}"></b>개 까지 구매 가능합니다.</div>
           </div>
         </div>
@@ -66,7 +68,7 @@
           <th:block th:if="${product.enabled}">
             <div class="row">
               <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                <button type="button" class="product-btn cart-btn">장바구니</button>
+                <button type="button" class="product-btn cart-btn" onclick="cartAdd()">장바구니</button>
               </div>
               <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
                 <button type="submit" class="product-btn buy-btn">바로구매</button>
@@ -82,8 +84,120 @@
         </div>
     </div>
     </form>
+
+    <!-- 장바구니 -->
+    <form
+        method="post"
+        th:action="@{/order/cart}"
+        th:object="${productSet}"
+        name="cart"
+    >
+      <input type="hidden" name="setId" id="cartId" th:value="${product.id}">
+      <input type="hidden" name="setQuantity" id="cartQuantity" class="quantity-input"
+             value="1">
+    </form>
+  </div>
+
+  <div class="content">
+    <th:block th:each="file, index : ${product.fileStorageList}">
+      <th:block th:if="${index.index > 0}">
+        <img class="product-list-img img-thumbnail"
+             th:src="${#strings.replace(#strings.escapeXml(file.fileDownloadUri),'/thumb-','/')}"
+             onError="this.onerror=null;this.src='/image/none-img.png';"
+             alt="상품이미지">
+      </th:block>
+    </th:block>
+    <div class="view-text"
+         th:utext="${#strings.replace(#strings.escapeXml(product.content),'&#10;','<br>')}"></div>
   </div>
 </div>
+
+<!-- 장바구니 추가 -->
+<script>
+  function setCookie(cookie_name, value, days) {
+    var exdate = new Date();
+    exdate.setDate(exdate.getDate() + days);
+    // 설정 일수만큼 현재시간에 만료값으로 지정
+
+    var cookie_value = escape(value) + ((days == null) ? '' : ';    expires='
+        + exdate.toUTCString());
+    document.cookie = cookie_name + '=' + cookie_value;
+  }
+
+  function getCookie(cookie_name) {
+    var x, y;
+    var val = document.cookie.split(';');
+
+    for (var i = 0; i < val.length; i++) {
+      x = val[i].substr(0, val[i].indexOf('='));
+      y = val[i].substr(val[i].indexOf('=') + 1);
+      x = x.replace(/^\s+|\s+$/g, ''); // 앞과 뒤의 공백 제거하기
+      if (x == cookie_name) {
+        return unescape(y); // unescape로 디코딩 후 값 리턴
+      }
+    }
+  }
+
+  function cartAdd() {
+    var setId = document.getElementById("setId").value;
+    var setQuantity = document.getElementById("setQuantity").value;
+
+    if (setId === '' || setQuantity === '') {
+      alert("수량을 작성해 주세요.");
+      return false;
+    }
+
+    /* 장바구니 쿠키 초기화 */
+    if (getCookie("Cart") === undefined) {
+      var jsonData = {
+        "setId": "",
+        "setQuantity": ""
+      };
+
+      var stringify = JSON.stringify(jsonData);
+      setCookie('Cart', stringify, '3');
+    }
+
+    var item = JSON.parse(getCookie("Cart"));
+
+    if (item !== null) {
+      /* 추가하려는 장바구니 상품이 이미 존재하는경우 수량만 변경 */
+      var idArr = item.setId.split(",");
+      var quantityArr = item.setQuantity.split(",");
+
+      if (idArr.indexOf(setId) !== -1) {
+        quantityArr[idArr.indexOf(setId)] = setQuantity;
+        var strings = quantityArr.join(",");
+
+        var jsonData = {
+          "setId": item.setId,
+          "setQuantity": strings
+        };
+      } else {
+        var jsonData = {
+          "setId": ',' + setId + item.setId,
+          "setQuantity": ',' + setQuantity + item.setQuantity
+        };
+      }
+    } else {
+      var jsonData = {
+        "setId": ',' + setId + ',',
+        "setQuantity": ',' + setQuantity + ','
+      };
+    }
+
+    document.getElementById("cartId").value = jsonData.setId;
+    document.getElementById("cartQuantity").value = jsonData.setQuantity;
+
+    var stringify = JSON.stringify(jsonData);
+
+    setCookie('Cart', stringify, '3');
+
+    /* 장바구니 전송 */
+    var cart = document.cart;
+    cart.submit();
+  }
+</script>
 
 </body>
 </html>

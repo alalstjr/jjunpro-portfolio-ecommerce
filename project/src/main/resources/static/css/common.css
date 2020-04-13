@@ -195,7 +195,7 @@ input[type="radio"]:checked {
 
 .form-btn-wrap {
   text-align: center;
-  margin-top: 40px;
+  margin-top: 60px;
 }
 
 .form-btn {
@@ -525,6 +525,10 @@ footer .right-box > div li {
   width: 150px;
 }
 
+.user-form.table-box .left-box input[type="checkbox"] {
+  position: unset;
+}
+
 .user-form.has-error .input-css {
   border-color: #d93025;
 }
@@ -634,6 +638,19 @@ footer .right-box > div li {
   padding: 5px 10px;
   font-size: 12px;
   line-height: 1.5;
+}
+
+.product-view .content {
+  margin-top: 150px;
+  text-align: center;
+}
+
+.product-view .view-text {
+  text-align: left;
+  max-width: 600px;
+  width: 100%;
+  margin: 80px auto;
+  letter-spacing: -1.5px;
 }
 
 .product-order .order-title,

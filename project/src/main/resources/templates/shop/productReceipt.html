@@ -26,7 +26,7 @@
         <tbody>
         <tr th:each="product : ${productList}" class="text-center">
           <td>
-            <img class="product-list-img" th:src="${product.thumbnail}"
+            <img class="product-list-img" th:src="${product.getFileStorageList().get(0).fileDownloadUri}"
                  onError="this.onerror=null;this.src='/image/none-img.png';" alt="">
           </td>
           <td th:text="${product.productName}">상품이름</td>

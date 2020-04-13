@@ -2,6 +2,8 @@ package com.jjunpro.shop.controller;
 
 import static com.jjunpro.shop.util.ClassPathUtil.SHOP;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jjunpro.shop.dto.ProductOrderDTO;
 import com.jjunpro.shop.dto.ProductSetDTO;
 import com.jjunpro.shop.dto.ReceiptDTO;
@@ -14,12 +16,17 @@ import com.jjunpro.shop.service.ProductServiceImpl;
 import com.jjunpro.shop.util.IpUtil;
 import com.jjunpro.shop.util.StringBuilderUtil;
 import com.nimbusds.jose.proc.SecurityContext;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -157,6 +164,8 @@ public class ProductOrderController {
         return "redirect:/order/receipt";
     }
 
+    /* 구매 후 영수증 */
+
     @GetMapping("/receipt")
     public String receipt(
             @Valid ReceiptDTO id,
@@ -203,6 +212,59 @@ public class ProductOrderController {
         redirectAttributes.addAttribute("message", orderCancel);
 
         return "redirect:/order/receipt";
+    }
+
+    /* 장바구니 */
+
+    @GetMapping("/cart")
+    public String cart(
+            Model model,
+            HttpServletRequest request
+    ) throws JsonProcessingException {
+        ObjectMapper  objectMapper = new ObjectMapper();
+        Cookie[]      myCookies    = request.getCookies();
+        ProductSetDTO productSet   = null;
+
+        /* 클라이언트에 저장된 Cookie 값을 확인하여 장바구니 정보를 가져옵니다. */
+        for (Cookie myCookie : myCookies) {
+            if (myCookie.getName().equals("Cart") && !myCookie.getValue().isEmpty()) {
+                String cookie = URLDecoder.decode(myCookie.getValue(), StandardCharsets.UTF_8);
+                productSet = objectMapper.readValue(cookie, ProductSetDTO.class);
+            }
+        }
+
+        List<Product> productList = new ArrayList<>();
+
+        if (productSet != null) {
+            /* 클라이언트에서 전달받은 주문하려는 상품 목록과 수량으로 상품 DB 탐색 */
+            String[] productArr = this.stringBuilderUtil
+                    .classifyUnData(productSet.getSetId());
+            String[] quantityArr = this.stringBuilderUtil
+                    .classifyUnData(productSet.getSetQuantity());
+
+            this.getProduct(productArr, quantityArr, productList);
+
+        }
+
+        model.addAttribute("productList", productList);
+
+        return SHOP.concat("/productCart");
+    }
+
+    @PostMapping("/cart")
+    public String cartSet(
+            @Valid Product product,
+            @ModelAttribute ProductSetDTO productSet,
+            BindingResult bindingResult,
+            Model model
+    ) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("product", product);
+
+            return SHOP.concat("/productView");
+        }
+
+        return "redirect:/order/cart";
     }
 
     /* 구매하려는 상품의 목록 & 수량을 DB 에서 가져옵니다. */

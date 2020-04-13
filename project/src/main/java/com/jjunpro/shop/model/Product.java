@@ -64,6 +64,9 @@ public class Product {
     /* 목록에서 보여지는 썸네일 이미지 파일 */
     private String thumbnail;
 
+    /* 상품이 가지고있는 파일 리스트 */
+    private List<FileStorage> fileStorageList = new ArrayList<>();
+
     /* 주문목록에서 보여지는 수량 */
     private Integer orderQuantity;
 
