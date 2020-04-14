@@ -79,7 +79,8 @@ public class Product {
             Integer buyMaxQuantity, Boolean reviewState, LocalDateTime reservationSale,
             LocalDateTime endSale, Integer priority, String shopGroupIds,
             String fileStorageIds, List<ShopGroup> shopGroupList,
-            MultipartFile[] fileStorage) {
+            MultipartFile[] fileStorage, String deleteFileStorageIds, String thumbnail,
+            List<FileStorage> fileStorageList, Integer orderQuantity) {
         this.id = id;
         this.ip = ip;
         this.createdDate = createdDate;
@@ -108,5 +109,9 @@ public class Product {
         this.fileStorageIds = fileStorageIds;
         this.shopGroupList = shopGroupList;
         this.fileStorage = fileStorage;
+        this.deleteFileStorageIds = deleteFileStorageIds;
+        this.thumbnail = thumbnail;
+        this.fileStorageList = fileStorageList;
+        this.orderQuantity = orderQuantity;
     }
 }

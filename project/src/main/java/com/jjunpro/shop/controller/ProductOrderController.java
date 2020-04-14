@@ -7,10 +7,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jjunpro.shop.dto.ProductOrderDTO;
 import com.jjunpro.shop.dto.ProductSetDTO;
 import com.jjunpro.shop.dto.ReceiptDTO;
+import com.jjunpro.shop.model.FileStorage;
 import com.jjunpro.shop.model.Product;
 import com.jjunpro.shop.model.ProductOrder;
 import com.jjunpro.shop.security.context.AccountContext;
 import com.jjunpro.shop.service.AccountServiceImpl;
+import com.jjunpro.shop.service.FileStorageServiceImpl;
 import com.jjunpro.shop.service.ProductOrderServiceImpl;
 import com.jjunpro.shop.service.ProductServiceImpl;
 import com.jjunpro.shop.util.IpUtil;
@@ -53,6 +55,7 @@ public class ProductOrderController {
     private final ProductServiceImpl      productService;
     private final ProductOrderServiceImpl productOrderService;
     private final AccountServiceImpl      accountService;
+    private final FileStorageServiceImpl  fileStorageService;
     private final StringBuilderUtil       stringBuilderUtil;
 
     /* Test Code */
@@ -180,16 +183,7 @@ public class ProductOrderController {
         Optional<ProductOrder> dbProductOrder = this.productOrderService.findById(id.getId());
 
         if (dbProductOrder.isPresent()) {
-            String[] idArr = this.stringBuilderUtil
-                    .classifyUnData(dbProductOrder.get().getProductIds());
-            String[] quantityArr = this.stringBuilderUtil
-                    .classifyUnData(dbProductOrder.get().getProductQuantitys());
-            List<Product> productList = new ArrayList<>();
-
-            this.getProduct(idArr, quantityArr, productList);
-
             model.addAttribute("productOrder", dbProductOrder.get());
-            model.addAttribute("productList", productList);
             model.addAttribute("message", message);
         }
 
@@ -212,6 +206,23 @@ public class ProductOrderController {
         redirectAttributes.addAttribute("message", orderCancel);
 
         return "redirect:/order/receipt";
+    }
+
+    @GetMapping("/receipt/list")
+    public String receiptList(Model model) {
+        UserDetails principal = (UserDetails) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+        AccountContext userDetails = (AccountContext) this.accountService
+                .loadUserByUsername(principal.getUsername());
+
+        List<ProductOrder> dbProductOrderList = this.productOrderService
+                .findByAccountIdList(userDetails.getAccount().getId());
+
+        model.addAttribute("productOrderList", dbProductOrderList);
+
+        return SHOP.concat("/productReceiptList");
     }
 
     /* 장바구니 */
@@ -273,7 +284,7 @@ public class ProductOrderController {
 
         int i = 0;
         for (String id : idArr) {
-            productMap.put(Long.parseLong(id.trim()), Integer.parseInt(quantityArr[i].trim()));
+            productMap.put(Long.parseLong(id), Integer.parseInt(quantityArr[i]));
             i++;
         }
 

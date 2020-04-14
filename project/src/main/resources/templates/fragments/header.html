@@ -18,7 +18,10 @@
           <li sec:authorize="!isAuthenticated()">
             <a th:href="@{/join}">회원가입</a>
           </li>
-          <li><a href="">나의쇼핑</a></li>
+          <li><a th:href="@{/order/cart}">장바구니</a></li>
+          <li sec:authorize="isAuthenticated()">
+            <a th:href="@{/order/receipt/list}">나의 구매</a>
+          </li>
           <li><a href="">고객센터</a></li>
         </ul>
       </nav>

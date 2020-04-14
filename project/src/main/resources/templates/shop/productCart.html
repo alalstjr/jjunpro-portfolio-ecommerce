@@ -41,7 +41,7 @@
                 th:data-quantity="${product.orderQuantity}" th:id="${'quantity-' + product.id}">
               <input type="number" th:value="${product.orderQuantity}"
                      style="width: 50px;height: 35px;text-align: center;"
-                     th:onchange="'cartQuantityEdit(\''+ ${product.id} +'\', this)'">
+                     th:onchange="'cartQuantityEdit(\''+ ${product.id} +'\', this, \''+ ${product.quantity} +'\')'">
             </td>
             <td class="price"
                 th:id="${'price-' + product.id}"
@@ -246,9 +246,15 @@
     }
   }
 
-  function cartQuantityEdit(id, e) {
+  function cartQuantityEdit(id, e, maxQuantity) {
     if (e.value <= 0) {
       alert("수량을 1개 이상 작성해 주세여.")
+      return false;
+    }
+
+    /* 상품의 재고를 확인하여 수량을 확인시켜 줍니다. */
+    if (maxQuantity * 1 < e.value) {
+      alert("정해진 수량 " + maxQuantity + "개 보다 많습니다.");
       return false;
     }
 

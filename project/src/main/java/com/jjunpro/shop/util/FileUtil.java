@@ -1,10 +1,19 @@
 package com.jjunpro.shop.util;
 
 import com.jjunpro.shop.enums.DomainType;
+import com.jjunpro.shop.mapper.FileStorageMapper;
+import com.jjunpro.shop.model.FileStorage;
+import com.jjunpro.shop.model.Product;
 import com.jjunpro.shop.service.FileStorageServiceImpl;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,6 +43,7 @@ public class FileUtil {
 
     private final FileStorageServiceImpl fileStorageService;
     private final StringBuilderUtil      stringBuilderUtil;
+    private final FileStorageMapper      fileStorageMapper;
 
     private void setFieldHandler(Object obj) throws NoSuchFieldException, IllegalAccessException {
         Class<?> clazz                     = obj.getClass();
@@ -50,7 +60,7 @@ public class FileUtil {
         this.deleteFileStorageIds = (String) fieldDeleteFileStorageIds.get(obj);
     }
 
-    /* 변경을 원하는 Object 의 변수값을 찾아서 value 값을 변경해주는 메소드*/
+    /* 변경을 원하는 Object 의 변수값을 찾아서 value 값을 변경해주는 메소드 */
     private void setFileStorageIds(Object obj, String value)
             throws NoSuchFieldException, IllegalAccessException {
         Class<?> clazz               = obj.getClass();
@@ -144,5 +154,69 @@ public class FileUtil {
 
             this.setFileStorageIds(dto, stringBuilderUtil.classifyData(uploadFile.toString()));
         }
+    }
+
+    /* 상품 목록에서 보려주는 썸네일 이미지 처리 최상위 파일만 저장하는 메소드 */
+    public String thumbnailSet(String fileStorageIds) {
+        if (fileStorageIds != null && !fileStorageIds.isEmpty()) {
+            String[] fileStorageArr = this.stringBuilderUtil
+                    .classifyUnData(fileStorageIds);
+
+            Optional<FileStorage> dbFileStorage = this.fileStorageMapper
+                    .findById(Long.parseLong(fileStorageArr[0]));
+
+            if (dbFileStorage.isPresent()) {
+                return dbFileStorage.get().getFileDownloadUri();
+            }
+
+        }
+
+        return null;
+    }
+
+    /* 상품에 등록되어있는 이미지 전부를 Product 객체에 저장하는 메소드 */
+    public void fileSet(Product product) {
+        if (product.getFileStorageIds() != null && !product.getFileStorageIds().isEmpty()) {
+            String[] fileStorageArr = this.stringBuilderUtil
+                    .classifyUnData(product.getFileStorageIds());
+
+            for (String fileStorage : fileStorageArr) {
+                Optional<FileStorage> dbFileStorage = this.fileStorageMapper
+                        .findById(Long.parseLong(fileStorage));
+
+                if (dbFileStorage.isPresent()) {
+                    product.getFileStorageList().add(dbFileStorage.get());
+                }
+            }
+        }
+    }
+
+    /*
+     * product img[0] 첫번째 이미지를 productOrder 주문 썸네일로 복사 저장합니다.
+     *
+     * preDomain : 복사하려는 대상의 위치
+     * postDomain : 저장하는 폴더명
+     */
+    public Long thumbnailCreate(
+            String fileStorageIds,
+            DomainType preDomain,
+            DomainType postDomain
+    ) {
+        if (fileStorageIds != null && !fileStorageIds.isEmpty()) {
+            String[] fileStorageArr = this.stringBuilderUtil
+                    .classifyUnData(fileStorageIds);
+
+            Optional<FileStorage> dbFileStorage = this.fileStorageMapper
+                    .findById(Long.parseLong(fileStorageArr[0]));
+
+            if (dbFileStorage.isPresent()) {
+                String   fileUrl  = preDomain.getValue() + "/" + dbFileStorage.get().getFileName();
+                Resource resource = this.fileStorageService.loadFileAsResource(fileUrl);
+
+                return this.fileStorageService.storeResource(resource, postDomain);
+            }
+        }
+
+        return null;
     }
 }

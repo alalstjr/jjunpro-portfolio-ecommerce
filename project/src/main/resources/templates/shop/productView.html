@@ -54,7 +54,7 @@
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">수량</div>
           <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
             <input type="number" name="setQuantity" id="setQuantity" class="quantity-input"
-                   value="1">
+                   value="1" th:onchange="'maxQuantityCheck(\''+ ${product.quantity} +'\', this)'">
             <div class="my-3">최대 <b th:text="${product.quantity}"></b>개 까지 구매 가능합니다.</div>
           </div>
         </div>
@@ -83,18 +83,6 @@
           품절된 상품입니다.
         </div>
     </div>
-    </form>
-
-    <!-- 장바구니 -->
-    <form
-        method="post"
-        th:action="@{/order/cart}"
-        th:object="${productSet}"
-        name="cart"
-    >
-      <input type="hidden" name="setId" id="cartId" th:value="${product.id}">
-      <input type="hidden" name="setQuantity" id="cartQuantity" class="quantity-input"
-             value="1">
     </form>
   </div>
 
@@ -186,16 +174,23 @@
       };
     }
 
-    document.getElementById("cartId").value = jsonData.setId;
-    document.getElementById("cartQuantity").value = jsonData.setQuantity;
-
     var stringify = JSON.stringify(jsonData);
 
     setCookie('Cart', stringify, '3');
 
-    /* 장바구니 전송 */
-    var cart = document.cart;
-    cart.submit();
+    var local = confirm("장바구니로 이동하시겠습니까?");
+
+    if (local) {
+      window.location = "/order/cart";
+    }
+  }
+
+  /* 상품의 재고를 확인하여 수량을 확인시켜 줍니다. */
+  function maxQuantityCheck(maxQuantity, e) {
+    if (maxQuantity * 1 < e.value) {
+      alert("정해진 수량 " + maxQuantity + "개 보다 많습니다.");
+      return false;
+    }
   }
 </script>
 

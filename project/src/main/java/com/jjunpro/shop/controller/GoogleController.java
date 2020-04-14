@@ -14,6 +14,7 @@ import com.jjunpro.shop.util.IpUtil;
 import java.io.IOException;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -135,6 +136,10 @@ public class GoogleController {
                 request
         );
 
-        return "redirect:/";
+        /* 로그인 후 이전페이지로 이동합니다. */
+        HttpSession session  = request.getSession();
+        String      prevPage = (String) session.getAttribute("prevPage");
+
+        return "redirect:" + prevPage;
     }
 }

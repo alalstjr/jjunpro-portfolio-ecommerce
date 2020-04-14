@@ -101,11 +101,14 @@ public class ProductOrderDTO {
                 .usePoint(usePoint)
                 .productIds(productIds)
                 .totalAmount(totalAmount)
-                .productList(this.productHashMap())
+                .orderInfo(this.productHashMap())
                 .build();
     }
 
-    /* 주문하는 상품의 id, 갯수 정보를 Map 담습니다. */
+    /*
+     * 주문하는 상품의 id, 갯수 정보를 Map 담습니다.
+     * 주문하는 상품의 { id = 갯수 } 짝이 맞아야 결제가 가능하도록 HashMap 으로 구현
+     */
     public HashMap<Long, Integer> productHashMap() {
         StringBuilderUtil      stringBuilderUtil = new StringBuilderUtil();
         HashMap<Long, Integer> productMap        = new HashMap<>();

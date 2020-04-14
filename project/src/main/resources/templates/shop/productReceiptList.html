@@ -1,0 +1,32 @@
+<html xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout (~{::body},'product-receipt-list')}">
+
+<body>
+
+<div class="product-receipt-list container-order">
+  <div class="receipt-title">
+    RECEIPT LIST
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th>사진</th>
+        <th>주문이름</th>
+        <th>주문가격</th>
+        <th>주문상태</th>
+        <th>주문날짜</th>
+      </tr>
+      </thead>
+      <tbody>
+      <th:block th:if="${productOrderList.size() > 0}"
+                th:include="@{fragments/shop/productOrderList} :: list"
+                th:with="group=${productOrderList}"></th:block>
+      </tbody>
+    </table>
+    <div class="none-data" th:if="${productOrderList.size() == 0}">상품이 존재하지 않습니다.</div>
+  </div>
+</div>
+
+</body>

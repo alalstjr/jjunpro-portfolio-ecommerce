@@ -6,6 +6,7 @@ import com.jjunpro.shop.mapper.ShopGroupMapper;
 import com.jjunpro.shop.model.FileStorage;
 import com.jjunpro.shop.model.Product;
 import com.jjunpro.shop.model.ShopGroup;
+import com.jjunpro.shop.util.FileUtil;
 import com.jjunpro.shop.util.StringBuilderUtil;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -20,8 +21,8 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductMapper     productMapper;
     private final ShopGroupMapper   shopGroupMapper;
-    private final FileStorageMapper fileStorageMapper;
     private final StringBuilderUtil stringBuilderUtil;
+    private final FileUtil          fileUtil;
 
     @Override
     public void set(Product product) {
@@ -88,7 +89,8 @@ public class ProductServiceImpl implements ProductService {
                     }
                 }
 
-                this.thumbnailSet(product);
+                /* 상품의 썸네일을 지정합니다. */
+                product.setThumbnail(this.fileUtil.thumbnailSet(product.getFileStorageIds()));
             }
         }
 
@@ -99,7 +101,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Optional<Product> findById(Long id) {
         Optional<Product> product = this.productMapper.findById(id);
-        product.ifPresent(this::fileSet);
+        product.ifPresent(this.fileUtil::fileSet);
 
         return product;
     }
@@ -111,44 +113,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> findByShopGroupId(Long id) {
-        List<Product> productList = this.productMapper.findByShopGroupId(id);
+        List<Product> dbProductList = this.productMapper.findByShopGroupId(id);
 
-        for (Product product : productList) {
-            this.thumbnailSet(product);
+        for (Product product : dbProductList) {
+            product.setThumbnail(this.fileUtil.thumbnailSet(product.getFileStorageIds()));
         }
 
-        return productList;
-    }
-
-    /* 상품 목록에서 보려주는 썸네일 이미지 처리 */
-    private void thumbnailSet(Product product) {
-        if (product.getFileStorageIds() != null && !product.getFileStorageIds().isEmpty()) {
-            String[] fileStorageArr = this.stringBuilderUtil
-                    .classifyUnData(product.getFileStorageIds());
-
-            Optional<FileStorage> dbFileStorage = this.fileStorageMapper
-                    .findById(Long.parseLong(fileStorageArr[0]));
-
-            if (dbFileStorage.isPresent()) {
-                String fileDownloadUri = dbFileStorage.get().getFileDownloadUri();
-                product.setThumbnail(fileDownloadUri);
-            }
-        }
-    }
-
-    private void fileSet(Product product) {
-        if (product.getFileStorageIds() != null && !product.getFileStorageIds().isEmpty()) {
-            String[] fileStorageArr = this.stringBuilderUtil
-                    .classifyUnData(product.getFileStorageIds());
-
-            for (String fileStorage : fileStorageArr) {
-                Optional<FileStorage> dbFileStorage = this.fileStorageMapper
-                        .findById(Long.parseLong(fileStorage));
-
-                if (dbFileStorage.isPresent()) {
-                    product.getFileStorageList().add(dbFileStorage.get());
-                }
-            }
-        }
+        return dbProductList;
     }
 }

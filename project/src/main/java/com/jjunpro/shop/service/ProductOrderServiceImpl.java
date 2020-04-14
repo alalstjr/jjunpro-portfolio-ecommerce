@@ -1,16 +1,23 @@
 package com.jjunpro.shop.service;
 
+import com.jjunpro.shop.enums.DomainType;
 import com.jjunpro.shop.exception.DataNullException;
 import com.jjunpro.shop.exception.ProductOrderException;
 import com.jjunpro.shop.mapper.AccountMapper;
+import com.jjunpro.shop.mapper.FileStorageMapper;
 import com.jjunpro.shop.mapper.ProductMapper;
 import com.jjunpro.shop.mapper.ProductOrderMapper;
 import com.jjunpro.shop.model.Account;
+import com.jjunpro.shop.model.FileStorage;
 import com.jjunpro.shop.model.Product;
 import com.jjunpro.shop.model.ProductOrder;
+import com.jjunpro.shop.util.FileUtil;
 import com.jjunpro.shop.util.StringBuilderUtil;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +38,10 @@ public class ProductOrderServiceImpl implements ProductOrderService {
 
     private final ProductMapper      productMapper;
     private final AccountMapper      accountMapper;
+    private final FileStorageMapper  fileStorageMapper;
     private final ProductOrderMapper productOrderMapper;
     private final StringBuilderUtil  stringBuilderUtil;
+    private final FileUtil           fileUtil;
 
     @Override
     public ProductOrder set(ProductOrder productOrder) {
@@ -42,16 +51,22 @@ public class ProductOrderServiceImpl implements ProductOrderService {
         Optional<Account> account = getAccount();
 
         /* 상품의 id, 갯수를 가져와 계산합니다. */
-        Map<Long, Integer> productList = productOrder.getProductList();
-        Iterator<Long>     iterator    = productList.keySet().iterator();
+        Map<Long, Integer> orderInfo = productOrder.getOrderInfo();
+        Iterator<Long>     iterator  = orderInfo.keySet().iterator();
 
-        /* 상품의 기본가격 저장변수 */
-        StringBuilder originPrice = new StringBuilder();
+        /*
+         * 상품의 기본가격, 구매하는 상품이름, 썸네일 저장변수
+         *
+         * ex) { 1000, 2000, 3000 } or { "마우스", "키보드", "모니터" }
+         */
+        StringBuilder originPrice   = new StringBuilder();
+        StringBuilder productNames  = new StringBuilder();
+        StringBuilder productThumbs = new StringBuilder();
 
         /* 구매하는 상품 수 만큼 반복처리 */
         while (iterator.hasNext()) {
             Long    id       = iterator.next();
-            Integer quantity = productList.get(id);
+            Integer quantity = orderInfo.get(id);
 
             Optional<Product> dbProduct = this.productMapper.findById(id);
             if (dbProduct.isPresent()) {
@@ -62,18 +77,35 @@ public class ProductOrderServiceImpl implements ProductOrderService {
                     Boolean pointEnabled = dbProduct.get().getPointEnabled();
                     Short   point        = dbProduct.get().getPoint();
 
+                    /* 구매하는 상품의 이름을 정리하여 주문서 제목을 생성합니다. */
+                    productNames
+                            .append(dbProduct.get().getProductName())
+                            .append(',');
+
+                    /* 상품의 썸네일을 지정합니다. */
+                    productThumbs
+                            .append(fileUtil.thumbnailCreate(
+                                    dbProduct.get().getFileStorageIds(),
+                                    DomainType.PRODUCT,
+                                    DomainType.PRODUCTORDER
+                            ))
+                            .append(',');
+
                     /* 적립금 계산 */
                     Integer receivePoint = (price - (price * discount / 100)) * point / 100;
                     productOrder.setReceivePoint(receivePoint);
 
-                    /* 상품의 기본가격을 {,} 구분하여 저장합니다. */
-                    originPrice.append(price).append(",");
-
                     /* 해당 상품의 할인률 계산 */
                     if (discount > 0) {
                         totalAmount += (price - (price * discount / 100)) * quantity;
+
+                        /* 상품의 기본가격을 {,} 구분하여 저장합니다. (할인이 적용된 기본가격) */
+                        originPrice.append(price - (price * discount / 100)).append(',');
                     } else {
                         totalAmount += price * quantity;
+
+                        /* 상품의 기본가격을 {,} 구분하여 저장합니다. */
+                        originPrice.append(price).append(',');
                     }
 
                     /* 상품의 포인트 사용이 하나라도 허용되있는 경우 true */
@@ -123,17 +155,21 @@ public class ProductOrderServiceImpl implements ProductOrderService {
             }
         }
 
+        /* 상품의 썸네일을 주문서에 저장합니다. */
+
+
         /* 구매하는 상품의 종류와 갯수를 저장합니다. */
-        productOrder.idsAndQuantitysSet(productList);
+        productOrder.idsAndQuantitysSet(orderInfo);
 
         /* 구매하는 유저의 정보를 저장합니다. */
         account.ifPresent(value -> productOrder.setAccountId(value.getId()));
 
         /*
-         * 상품의 기본가격의 마지막 {,} 문자를 제거합니다.
-         * 상품의 기본가격을 저장합니다.
+         * 상품의 { 기본가격, 상품이름, 상품썸네일 } 을 저장합니다.
          */
-        productOrder.setProductAmounts(originPrice.substring(0, originPrice.length() - 1));
+        productOrder.setProductAmounts(originPrice.toString());
+        productOrder.setProductNames(productNames.toString());
+        productOrder.setProductThumbs(productThumbs.toString());
 
         /*
          * 주문서의 기본상태 설정
@@ -154,7 +190,69 @@ public class ProductOrderServiceImpl implements ProductOrderService {
 
     @Override
     public Optional<ProductOrder> findById(Long id) {
-        return this.productOrderMapper.findById(id);
+        Optional<ProductOrder> dbProductOrder = this.productOrderMapper.findById(id);
+
+        /* 주문한 상품의 정보 ProductOrder -> Product 객체에 저장 */
+        if (dbProductOrder.isPresent()) {
+            List<Product> productList = new ArrayList<>();
+            String[] nameArr = this.stringBuilderUtil
+                    .classifyUnData(dbProductOrder.get().getProductNames());
+            String[] quantityArr = this.stringBuilderUtil
+                    .classifyUnData(dbProductOrder.get().getProductQuantitys());
+            String[] amountArr = this.stringBuilderUtil
+                    .classifyUnData(dbProductOrder.get().getProductAmounts());
+            String[] thumbArr = this.stringBuilderUtil
+                    .classifyUnData(dbProductOrder.get().getProductThumbs());
+
+            int i = 0;
+            for (String name : nameArr) {
+                Integer productQuantity = Integer.parseInt(quantityArr[i]);
+                Integer productAmount   = Integer.parseInt(amountArr[i]);
+                Long    productThumb    = Long.parseLong(thumbArr[i]);
+
+                Product product = Product
+                        .builder()
+                        .productName(name)
+                        .quantity(productQuantity)
+                        .price(productAmount)
+                        .build();
+
+                Optional<FileStorage> dbFileStorage = this.fileStorageMapper
+                        .findById(productThumb);
+
+                dbFileStorage.ifPresent(
+                        fileStorage -> product.setThumbnail(fileStorage.getFileDownloadUri())
+                );
+
+                productList.add(product);
+
+                i++;
+            }
+
+            dbProductOrder.get().setProductList(productList);
+        }
+
+        return dbProductOrder;
+    }
+
+    @Override
+    public List<ProductOrder> findByAccountIdList(Long accountId) {
+        List<ProductOrder> dbProductOrder = this.productOrderMapper.findByAccountIdList(accountId);
+
+        /* Product 각각의 썸네일 이미지를 불러옵니다. */
+        for (ProductOrder productOrder : dbProductOrder) {
+            String[] thumbArr = this.stringBuilderUtil
+                    .classifyUnData(productOrder.getProductThumbs());
+
+            Optional<FileStorage> dbFileStorage = this.fileStorageMapper
+                    .findById(Long.parseLong(thumbArr[0]));
+
+            dbFileStorage.ifPresent(
+                    fileStorage -> productOrder.setProductThumb(fileStorage.getFileDownloadUri())
+            );
+        }
+
+        return this.productOrderMapper.findByAccountIdList(accountId);
     }
 
     @Override

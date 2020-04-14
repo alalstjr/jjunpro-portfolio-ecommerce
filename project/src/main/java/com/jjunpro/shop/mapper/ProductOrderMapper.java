@@ -1,6 +1,7 @@
 package com.jjunpro.shop.mapper;
 
 import com.jjunpro.shop.model.ProductOrder;
+import java.util.List;
 import java.util.Optional;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -12,4 +13,6 @@ public interface ProductOrderMapper {
     Optional<ProductOrder> findById(Long id);
 
     void orderCancel(Long id);
+
+    List<ProductOrder> findByAccountIdList(Long accountId);
 }

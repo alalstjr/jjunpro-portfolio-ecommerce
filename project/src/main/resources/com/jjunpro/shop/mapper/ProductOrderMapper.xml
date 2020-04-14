@@ -7,8 +7,8 @@
     INSERT INTO product_order (ip, enabled, createddate, modifiedDate, orderName, orderEmail,
                                orderPhone, postcode,
                                addr1, addr2, memo, payment, useCupon, usePoint, totalAmount,
-                               productIds,
-                               productQuantitys, productAmounts, accountId, orderState,
+                               productNames, productIds,
+                               productQuantitys, productAmounts, productThumbs, accountId, orderState,
                                receivePoint)
     VALUES (#{ip},
             #{enabled},
@@ -25,9 +25,11 @@
             #{useCupon},
             #{usePoint},
             #{totalAmount},
+            #{productNames},
             #{productIds},
             #{productQuantitys},
             #{productAmounts},
+            #{productThumbs},
             #{accountId},
             #{orderState},
             #{receivePoint});
@@ -38,6 +40,13 @@
     FROM product_order
     WHERE enabled = true
       AND id = #{id};
+  </select>
+
+  <select id="findByAccountIdList" resultType="ProductOrder">
+    SELECT *
+    FROM product_order
+    WHERE enabled = true
+      AND accountId = #{accountId};
   </select>
 
   <update id="orderCancel">

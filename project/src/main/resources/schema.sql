@@ -156,10 +156,12 @@ CREATE TABLE PRODUCT_ORDER
     useCupon         VARCHAR,
     usePoint         INTEGER,
     totalAmount      INTEGER,
+    productNames     VARCHAR,
     productIds       VARCHAR,
     productQuantitys VARCHAR,
     productAmounts   VARCHAR,
-    accountId        VARCHAR,
+    productThumbs    VARCHAR,
+    accountId        BIGINT,
     orderState       SMALLINT,
     receivePoint     INTEGER
 );

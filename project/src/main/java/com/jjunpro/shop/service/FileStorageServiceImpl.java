@@ -1,6 +1,5 @@
 package com.jjunpro.shop.service;
 
-import com.google.api.client.util.DateTime;
 import com.jjunpro.shop.enums.DomainType;
 import com.jjunpro.shop.exception.FileStorageException;
 import com.jjunpro.shop.exception.MyFileNotFoundException;
@@ -10,6 +9,7 @@ import com.jjunpro.shop.properties.FileStorageProperties;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -55,15 +55,17 @@ public class FileStorageServiceImpl implements FileStorageService {
                     this.fileStorageLocation.resolve(DomainType.ACCOUNT.getValue()));
             Files.createDirectories(
                     this.fileStorageLocation.resolve(DomainType.PRODUCT.getValue()));
+            Files.createDirectories(
+                    this.fileStorageLocation.resolve(DomainType.PRODUCTORDER.getValue()));
         } catch (Exception ex) {
             throw new FileStorageException(
                     "Could not create the directory where the uploaded files will be stored.", ex);
         }
     }
 
+    /* MultipartFile file 전용 메소드 주로 새로운 파일을 업로드 할때 처리 */
     @Override
     public Long storeFile(MultipartFile file, DomainType domain) {
-        // Normalize file name
         String fileOriName = StringUtils
                 .cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         String fileType = fileOriName.substring(fileOriName.lastIndexOf(".")).replace(".", "");
@@ -133,6 +135,93 @@ public class FileStorageServiceImpl implements FileStorageService {
                     .fileName(fileName)
                     .fileType(file.getContentType())
                     .fileSize(file.getSize())
+                    .fileDownloadUri(fileDownloadUri)
+                    .build();
+
+            this.fileStorageMapper.insert(fileStorage);
+
+            return fileStorage.getId();
+        } catch (IOException ex) {
+            throw new FileStorageException(
+                    "Could not store file " + fileName + ". Please try again!",
+                    ex);
+        }
+    }
+
+    /*
+     * Resource file 전용 메소드 주로 이미 업로드된 파일의 URI 파악하려 복사 업로드 할때 처리
+     * ex) product img -> productOrder img 복사 업로드
+     */
+    @Override
+    public Long storeResource(Resource resource, DomainType domain) {
+        File file = null;
+        try {
+            file = resource.getFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Normalize file name
+        String fileOriName = StringUtils.cleanPath(Objects.requireNonNull(
+                Objects.requireNonNull(file).getName()));
+        String fileType      = fileOriName.substring(fileOriName.lastIndexOf(".")).replace(".", "");
+        String fileThumbName = "thumb." + fileType;
+
+        String fileName = this.setFileName(fileThumbName);
+
+        try {
+            // Check if the file's name contains invalid characters
+            if (fileName.contains("..")) {
+                throw new FileStorageException(
+                        "Sorry! Filename contains invalid path sequence " + fileName);
+            }
+
+            /*
+             * 썸네일 생성
+             *
+             * resizeWidth, resizeHeight 줄이는 이미지 크기
+             * resizeContent 이미지 이름에 들어가는 사이즈 크기 문자열
+             */
+            int resizeWidth  = 100;
+            int resizeHeight = 100;
+
+            BufferedImage resizeImage = ImageLib.handleThumbnail(
+                    resource.getInputStream().readAllBytes(),
+                    resizeWidth,
+                    resizeHeight
+            );
+
+            /* Bufferedimage to Inputstream */
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            ImageIO.write(
+                    resizeImage,
+                    fileType,
+                    os
+            );
+
+            /* 대상 위치로 파일 복사(같은 이름으로 기존 파일 바꾸기) */
+            InputStream thumbnail = new ByteArrayInputStream(os.toByteArray());
+
+            Path targetLocationThumb = this.fileStorageLocation
+                    .resolve(domain.getValue())
+                    .resolve(fileName);
+
+            Files.copy(
+                    thumbnail,
+                    targetLocationThumb,
+                    StandardCopyOption.REPLACE_EXISTING
+            );
+
+            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/file/")
+                    .path("/" + domain.getValue() + "/")
+                    .path(fileName)
+                    .toUriString();
+
+            FileStorage fileStorage = FileStorage.builder()
+                    .fileName(fileName)
+                    .fileType(fileType)
+                    .fileSize((long) os.size())
                     .fileDownloadUri(fileDownloadUri)
                     .build();
 

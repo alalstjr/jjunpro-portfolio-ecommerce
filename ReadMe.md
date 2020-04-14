@@ -187,6 +187,28 @@ public String google(
 }
 ~~~
 
+# 쿼리 예제
+
+~~~
+-- SELECT * FROm account;
+-- SELECT * FROM shop_group;
+-- SELECT * FROM product;
+-- SELECT * FROM filestorage;
+-- SELECT * FROM product_order;
+-- UPDATE product_order SET orderState = 0;
+
+-- UPDATE product SET filestorageids = ',13,' WHERE id = 1;
+
+/* 테이블 컬럼 타입변경 */
+-- ALTER TABLE product_order ALTER COLUMN accountId TYPE integer USING (accountId::BIGINT);
+
+/* JOIN 조회 */
+-- SELECT * FROM product_order INNER JOIN product ON product_order.productIds LIKE '%,'||product.id||',%';
+~~~
+
+http://www.gurubee.net/lecture/2953
+
 # 참고 사이트
 
 [social-login-oauth2 구버전 전체적인 코드 틀만 참고함](#https://github.com/talk2amareswaran/social-login-oauth2-spring-boot)
+

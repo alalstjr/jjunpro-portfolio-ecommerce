@@ -30,7 +30,12 @@ public class AccountController {
     private final IpUtil             ipUtil;
 
     @GetMapping("/login")
-    public String login() {
+    public String login(HttpServletRequest request) {
+
+        /* 로그인 동작 이전에 페이지를 세션에 저장합니다. */
+        String referrer = request.getHeader("Referer");
+        request.getSession().setAttribute("prevPage", referrer);
+
         return "account/login";
     }
 

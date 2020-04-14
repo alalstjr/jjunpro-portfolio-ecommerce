@@ -11,6 +11,8 @@ public interface FileStorageService {
 
     Long storeFile(MultipartFile file, DomainType domain);
 
+    Long storeResource(Resource resource, DomainType domain);
+
     List<Long> uploadMultipleFiles(MultipartFile[] files, DomainType domain);
 
     Resource loadFileAsResource(String fileName);

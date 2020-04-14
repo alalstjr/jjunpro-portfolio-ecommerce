@@ -8767,7 +8767,7 @@ a {
 }
 
 a:hover {
-  color: #0056b3;
+  color: #ffffff;
   text-decoration: underline;
 }
 
@@ -18135,7 +18135,8 @@ input:focus {
 }
 
 .sidebar .nav .nav-item.active > .nav-link {
-  color: #308ee0;
+  color: #333333;
+  font-weight: bold;
 }
 
 .sidebar .nav .nav-item.active > .nav-link .menu-title,
@@ -18204,7 +18205,8 @@ input:focus {
 }
 
 .sidebar .nav.sub-menu .nav-item .nav-link.active {
-  color: #308ee0;
+  color: #333333;
+  font-weight: bold;
   background: transparent;
 }
 
@@ -18338,7 +18340,7 @@ input:focus {
   -webkit-transition: width 0.25s ease, background 0.25s ease;
   -moz-transition: width 0.25s ease, background 0.25s ease;
   -ms-transition: width 0.25s ease, background 0.25s ease;
-  background: #ffffff;
+  background: #333333;
   width: 255px;
   height: 63px;
 }
@@ -18355,6 +18357,7 @@ input:focus {
   display: -webkit-flex;
   display: flex;
   font-family: 'Noto Sans KR', sans-serif;
+  color: #FFFFFF;
 }
 
 .navbar.default-layout .navbar-brand-wrapper .navbar-brand:active, .navbar.default-layout .navbar-brand-wrapper .navbar-brand:focus, .navbar.default-layout .navbar-brand-wrapper .navbar-brand:hover {
@@ -18390,6 +18393,7 @@ input:focus {
   padding-right: 15px;
   width: calc(100% - 255px);
   height: 63px;
+  background-color: #333;
 }
 
 @media (max-width: 991px) {
@@ -21764,7 +21768,7 @@ ul li {
 /* custom css */
 .none-data {
   text-align: center;
-  padding: 150px;
+  padding: 100px;
   font-size: 18px;
 }
 
@@ -21836,4 +21840,10 @@ input[type="checkbox"]:checked {
   width: 100px;
   height: auto;
   border-radius: unset;
+}
+
+.btn-thema {
+  background-color: #333333;
+  color: #FFFFFF;
+  border-color: #333333;
 }

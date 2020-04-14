@@ -10,6 +10,7 @@ import com.jjunpro.shop.service.SecurityServiceImpl;
 import com.jjunpro.shop.util.IpUtil;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.social.facebook.api.User;
 import org.springframework.stereotype.Controller;
@@ -117,6 +118,10 @@ public class FacebookController {
                 request
         );
 
-        return "redirect:/";
+        /* 로그인 후 이전페이지로 이동합니다. */
+        HttpSession session  = request.getSession();
+        String      prevPage = (String) session.getAttribute("prevPage");
+
+        return "redirect:" + prevPage;
     }
 }

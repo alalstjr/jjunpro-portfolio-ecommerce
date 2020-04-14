@@ -1,0 +1,36 @@
+<html xmlns:th="https://www.thymeleaf.org">
+
+<th:block th:fragment="list">
+  <th:block th:each="productOrder : ${group}">
+    <tr>
+      <td>
+        <img class="product-list-img"
+             th:src="${productOrder.productThumb}"
+             onError="this.onerror=null;this.src='/image/none-img.png';" alt="">
+      </td>
+      <td>
+        <a th:href="@{/order/receipt(id=${productOrder.id})}">
+          <th:block th:text="${productOrder.productNames}">주문이름</th:block>
+        </a>
+      </td>
+      <td>
+        <th:block th:text="${#numbers.formatDecimal(productOrder.totalAmount, 0, 'COMMA', 0, 'POINT') + ' 원'}">주문가격</th:block>
+      </td>
+      <td>
+        <b>
+          <th:block th:switch="${productOrder.orderState}">
+            <div th:case="0" class="text-success">주문완료</div>
+            <div th:case="1" class="text-success">주문접수(결제확인) 완료</div>
+            <div th:case="2" class="text-success">배송완료</div>
+            <div th:case="3" class="text-danger">주문취소</div>
+          </th:block>
+        </b>
+      </td>
+      <td>
+        <th:block th:text="${#temporals.format(productOrder.createdDate, 'yyyy-MM-dd HH:mm')}">
+          주문날짜
+        </th:block>
+      </td>
+    </tr>
+  </th:block>
+</th:block>
