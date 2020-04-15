@@ -28,16 +28,16 @@ CREATE TABLE ACCOUNT
     postcode     VARCHAR,
     addr1        VARCHAR,
     addr2        VARCHAR,
-    phoneNumber  VARCHAR UNIQUE,
+    phoneNumber  VARCHAR,
 
     point        INTEGER
 );
 
-INSERT INTO ACCOUNT (username, email, enabled, userRole, password, phoneNumber, createdDate,
+INSERT INTO ACCOUNT (username, email, enabled, userRole, password, createdDate,
                      modifiedDate, ip, point)
-VALUES ('김민석', 'alalstjr@naver.com', true, 'USER',
-        '{bcrypt}$2a$10$LeNw1of.2HNeTi8/8Xp/IO0D9JMcK/Wq.LzvnlOtNzCP3EwESEKFe', '01040211220',
-        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '0.0.0.0', '1000');
+VALUES ('관리자', 'admin', true, 'ADMIN',
+        '{bcrypt}$2a$10$LeNw1of.2HNeTi8/8Xp/IO0D9JMcK/Wq.LzvnlOtNzCP3EwESEKFe',
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '0.0.0.0', '100000');
 
 /* SHOP_GROUP */
 DROP TABLE IF EXISTS SHOP_GROUP;

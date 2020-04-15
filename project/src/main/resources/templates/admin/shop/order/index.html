@@ -1,0 +1,58 @@
+<html xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{fragments/admin/layout :: layout (~{::body},'order')}">
+<head>
+  <meta charset="UTF-8">
+  <title>주문관리</title>
+</head>
+<body>
+
+<div class="col-lg-12 grid-margin stretch-card">
+  <div class="card">
+    <div class="card-body">
+      <h3 class="page-title">주문관리 테이블</h3>
+      <div th:text="${message}" class="text-danger"></div>
+      <div class="mb-5"></div>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th>결제방법</th>
+            <th>이름</th>
+            <th>전화번호</th>
+            <th>이메일</th>
+            <th>주문날짜</th>
+            <th>주문합계금액</th>
+            <th>입금금액</th>
+            <th>사용 포인트</th>
+            <th>적립 포인트</th>
+            <th>주문 상태</th>
+            <th>수정</th>
+          </tr>
+          </thead>
+          <tbody>
+          <th:block th:if="${productOrderList.size() > 0}"
+                    th:include="@{fragments/admin/order/list} :: list"
+                    th:with="group=${productOrderList}"></th:block>
+          </tbody>
+        </table>
+        <div class="none-data" th:if="${productOrderList.size() == 0}">주문이 존재하지 않습니다.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 분류 삭제 스크립트 -->
+<form th:action="@{/product/delete}" method="post" name="groupDelete">
+  <input type="hidden" name="id" id="id">
+</form>
+<script>
+  function delete_confirm(target) {
+    var form = document.groupDelete;
+    document.getElementById("id").value = target.getAttribute("data-target");
+
+    form.submit();
+  }
+</script>
+
+</body>
+</html>

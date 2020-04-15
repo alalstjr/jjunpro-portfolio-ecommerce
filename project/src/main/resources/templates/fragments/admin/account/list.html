@@ -1,0 +1,39 @@
+<html xmlns:th="https://www.thymeleaf.org">
+
+<th:block th:fragment="list">
+  <th:block th:each="account : ${group}">
+    <tr>
+      <td th:text="${account.email}">이메일</td>
+      <td th:text="${account.username}">이름</td>
+      <td th:text="${account.phoneNumber}">전화번호</td>
+      <td th:text="${account.ageRange}">나이</td>
+      <td th:text="${account.birthday}">생일</td>
+      <td>
+        <th:block th:switch="${account.gender}">
+          <th:block th:case="1">남자</th:block>
+          <th:block th:case="2">여자</th:block>
+        </th:block>
+      </td>
+      <td>
+        <th:block th:text="${account.postcode}"></th:block>
+        <th:block th:text="${account.addr1}"></th:block>
+        <th:block th:text="${account.addr2}"></th:block>
+      </td>
+      <td th:text="${#numbers.formatDecimal(account.point, 0, 'COMMA', 0, 'POINT') + ' 점'}">포인트</td>
+      <td th:text="${#temporals.format(account.createdDate, 'yyyy-MM-dd HH:mm')}">가입날짜</td>
+      <td th:text="${account.userRole.getValue()}">권한</td>
+      <td>
+        <th:block th:if="${account.enabled} == false">
+          <span class="material-icons text-danger">close</span>
+        </th:block>
+        <th:block th:if="${account.enabled} == true">
+          <span class="material-icons text-success">check</span>
+        </th:block>
+      </td>
+      <td>
+<!--        <a th:href="@{/admin/order/form(id=${order.id})}" class="btn btn-primary mr-2">수정</a>-->
+        보류
+      </td>
+    </tr>
+  </th:block>
+</th:block>

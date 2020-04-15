@@ -1,0 +1,34 @@
+<html xmlns:th="https://www.thymeleaf.org">
+
+<th:block th:fragment="list">
+  <th:block th:each="order : ${group}">
+    <tr>
+      <td>
+        <th:block th:switch="${order.payment}">
+          <div th:case="1">무통장입금</div>
+        </th:block>
+      </td>
+      <td th:text="${order.orderName}">이름</td>
+      <td th:text="${order.orderPhone}">전화번호</td>
+      <td th:text="${order.orderEmail}">이메일</td>
+      <td th:text="${#temporals.format(order.createdDate, 'yyyy-MM-dd HH:mm')}">주문날짜</td>
+      <td th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT') + ' 원'}">합계금액</td>
+      <td><b class="text-primary">0 원</b></td>
+      <td th:text="${#numbers.formatDecimal(order.usePoint, 0, 'COMMA', 0, 'POINT') + ' 점'}">사용 포인트</td>
+      <td th:text="${#numbers.formatDecimal(order.receivePoint, 0, 'COMMA', 0, 'POINT') + ' 점'}">적립 포인트</td>
+      <td>
+        <b>
+          <th:block th:switch="${order.orderState}">
+            <div th:case="0" class="text-primary">주문완료</div>
+            <div th:case="1" class="text-warning">주문접수(결제확인) 완료</div>
+            <div th:case="2" class="text-success">배송완료</div>
+            <div th:case="3" class="text-danger">주문취소</div>
+          </th:block>
+        </b>
+      </td>
+      <td>
+        <a th:href="@{/admin/order/form(id=${order.id})}" class="btn btn-primary mr-2">수정</a>
+      </td>
+    </tr>
+  </th:block>
+</th:block>

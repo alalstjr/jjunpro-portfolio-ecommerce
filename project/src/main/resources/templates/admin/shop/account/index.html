@@ -1,0 +1,45 @@
+<html xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{fragments/admin/layout :: layout (~{::body},'account')}">
+<head>
+  <meta charset="UTF-8">
+  <title>유저관리</title>
+</head>
+<body>
+
+<div class="col-lg-12 grid-margin stretch-card">
+  <div class="card">
+    <div class="card-body">
+      <h3 class="page-title">유저관리 테이블</h3>
+      <div th:text="${message}" class="text-danger"></div>
+      <div class="mb-5"></div>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th>이메일</th>
+            <th>이름</th>
+            <th>전화번호</th>
+            <th>나이</th>
+            <th>생일</th>
+            <th>성별</th>
+            <th>주소</th>
+            <th>포인트</th>
+            <th>생성날짜</th>
+            <th>권한</th>
+            <th>상태</th>
+          </tr>
+          </thead>
+          <tbody>
+          <th:block th:if="${accountList.size() > 0}"
+                    th:include="@{fragments/admin/account/list} :: list"
+                    th:with="group=${accountList}"></th:block>
+          </tbody>
+        </table>
+        <div class="none-data" th:if="${accountList.size() == 0}">유저가 존재하지 않습니다.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

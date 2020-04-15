@@ -8,7 +8,8 @@
                                orderPhone, postcode,
                                addr1, addr2, memo, payment, useCupon, usePoint, totalAmount,
                                productNames, productIds,
-                               productQuantitys, productAmounts, productThumbs, accountId, orderState,
+                               productQuantitys, productAmounts, productThumbs, accountId,
+                               orderState,
                                receivePoint)
     VALUES (#{ip},
             #{enabled},
@@ -55,5 +56,37 @@
     --     WHERE orderState = 0
 --        OR orderState = 1
 --        OR orderState = 2;
+  </update>
+
+  <select id="findTotalAmountByOrderState" resultType="Integer">
+    SELECT SUM(totalAmount) AS totalAmount
+    FROM product_order
+    WHERE orderstate = 1
+       OR orderstate = 2;
+  </select>
+
+  <select id="findCountByAll" resultType="Integer">
+    SELECT COUNT(*) AS totalCount
+    FROM product_order;
+  </select>
+
+  <select id="findCountByOrderState" resultType="Integer">
+    SELECT COUNT(*) AS totalCount
+    FROM product_order
+    WHERE orderstate = 1
+       OR orderstate = 2;
+  </select>
+
+  <select id="findAllAdmin" resultType="ProductOrder">
+    SELECT *
+    FROM product_order
+    ORDER BY createddate DESC
+    LIMIT 20;
+  </select>
+
+  <update id="updateOrderStateById">
+    UPDATE product_order
+    SET orderState = #{orderState}
+    WHERE id = #{id};
   </update>
 </mapper>

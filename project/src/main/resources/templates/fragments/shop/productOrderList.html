@@ -19,8 +19,8 @@
       <td>
         <b>
           <th:block th:switch="${productOrder.orderState}">
-            <div th:case="0" class="text-success">주문완료</div>
-            <div th:case="1" class="text-success">주문접수(결제확인) 완료</div>
+            <div th:case="0" class="text-primary">주문완료</div>
+            <div th:case="1" class="text-warning">주문접수(결제확인) 완료</div>
             <div th:case="2" class="text-success">배송완료</div>
             <div th:case="3" class="text-danger">주문취소</div>
           </th:block>

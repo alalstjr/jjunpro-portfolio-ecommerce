@@ -83,13 +83,15 @@ public class ProductOrderServiceImpl implements ProductOrderService {
                             .append(',');
 
                     /* 상품의 썸네일을 지정합니다. */
-                    productThumbs
-                            .append(fileUtil.thumbnailCreate(
-                                    dbProduct.get().getFileStorageIds(),
-                                    DomainType.PRODUCT,
-                                    DomainType.PRODUCTORDER
-                            ))
-                            .append(',');
+                    if (dbProduct.get().getFileStorageIds() != null) {
+                        productThumbs
+                                .append(fileUtil.thumbnailCreate(
+                                        dbProduct.get().getFileStorageIds(),
+                                        DomainType.PRODUCT,
+                                        DomainType.PRODUCTORDER
+                                ))
+                                .append(',');
+                    }
 
                     /* 적립금 계산 */
                     Integer receivePoint = (price - (price * discount / 100)) * point / 100;
@@ -208,7 +210,6 @@ public class ProductOrderServiceImpl implements ProductOrderService {
             for (String name : nameArr) {
                 Integer productQuantity = Integer.parseInt(quantityArr[i]);
                 Integer productAmount   = Integer.parseInt(amountArr[i]);
-                Long    productThumb    = Long.parseLong(thumbArr[i]);
 
                 Product product = Product
                         .builder()
@@ -217,12 +218,16 @@ public class ProductOrderServiceImpl implements ProductOrderService {
                         .price(productAmount)
                         .build();
 
-                Optional<FileStorage> dbFileStorage = this.fileStorageMapper
-                        .findById(productThumb);
+                /* 썸네일 저장은 필수항목이 아니므로 존재 체크 후 저장 */
+                if (!thumbArr[i].isEmpty()) {
+                    Long productThumb = Long.parseLong(thumbArr[i]);
+                    Optional<FileStorage> dbFileStorage = this.fileStorageMapper
+                            .findById(productThumb);
 
-                dbFileStorage.ifPresent(
-                        fileStorage -> product.setThumbnail(fileStorage.getFileDownloadUri())
-                );
+                    dbFileStorage.ifPresent(
+                            fileStorage -> product.setThumbnail(fileStorage.getFileDownloadUri())
+                    );
+                }
 
                 productList.add(product);
 
@@ -244,12 +249,16 @@ public class ProductOrderServiceImpl implements ProductOrderService {
             String[] thumbArr = this.stringBuilderUtil
                     .classifyUnData(productOrder.getProductThumbs());
 
-            Optional<FileStorage> dbFileStorage = this.fileStorageMapper
-                    .findById(Long.parseLong(thumbArr[0]));
+            /* 썸네일 저장은 필수항목이 아니므로 존재 체크 후 저장 */
+            if (!thumbArr[0].isEmpty()) {
+                Optional<FileStorage> dbFileStorage = this.fileStorageMapper
+                        .findById(Long.parseLong(thumbArr[0]));
 
-            dbFileStorage.ifPresent(
-                    fileStorage -> productOrder.setProductThumb(fileStorage.getFileDownloadUri())
-            );
+                dbFileStorage.ifPresent(
+                        fileStorage -> productOrder
+                                .setProductThumb(fileStorage.getFileDownloadUri())
+                );
+            }
         }
 
         return this.productOrderMapper.findByAccountIdList(accountId);
@@ -312,6 +321,31 @@ public class ProductOrderServiceImpl implements ProductOrderService {
         }
 
         return "주문을 취소할 수 없습니다.";
+    }
+
+    @Override
+    public Integer findTotalAmountByOrderState() {
+        return productOrderMapper.findTotalAmountByOrderState();
+    }
+
+    @Override
+    public Integer findCountByAll() {
+        return this.productOrderMapper.findCountByAll();
+    }
+
+    @Override
+    public Integer findCountByOrderState() {
+        return this.productOrderMapper.findCountByOrderState();
+    }
+
+    @Override
+    public List<ProductOrder> findAllAdmin() {
+        return this.productOrderMapper.findAllAdmin();
+    }
+
+    @Override
+    public void updateOrderStateById(Long id, short orderState) {
+        this.productOrderMapper.updateOrderStateById(id, orderState);
     }
 
     /* 로그인한 유저의 정보를 가져옵니다. */

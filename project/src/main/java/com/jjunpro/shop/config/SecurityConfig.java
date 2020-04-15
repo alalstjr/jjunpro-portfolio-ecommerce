@@ -2,16 +2,24 @@ package com.jjunpro.shop.config;
 
 import com.jjunpro.shop.service.AccountService;
 import com.jjunpro.shop.service.AccountServiceImpl;
+import java.util.Arrays;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.AccessDecisionManager;
+import org.springframework.security.access.AccessDecisionVoter;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
+import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -36,6 +44,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+    public AccessDecisionManager accessDecisionManager() {
+        // roleHierarchy
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+        roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_USER");
+
+        // DefaultWebSecurityExpressionHandler
+        DefaultWebSecurityExpressionHandler handler = new DefaultWebSecurityExpressionHandler();
+        handler.setRoleHierarchy(roleHierarchy);
+
+        // setExpressionHandler
+        // WebExpressionVoter 를 사용하겠습니다.
+        WebExpressionVoter webExpressionVoter = new WebExpressionVoter();
+        webExpressionVoter.setExpressionHandler(handler);
+
+        // AccessDecisionVoter
+        // Voter 목록을 만듭니다.
+        List<AccessDecisionVoter<? extends Object>> voters = Arrays.asList(webExpressionVoter);
+
+        return new AffirmativeBased(voters);
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         /* 접근권한 */
@@ -49,11 +78,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/join", "/login")
                 .anonymous();
 
+        /* ADMIN / USER 권한 상하관계 설정 */
         http
                 .authorizeRequests()
-                .antMatchers("/order/form")
-//                .antMatchers("/order/form", "/order/receipt/**")
-                .hasRole("USER");
+                .antMatchers("/order/form", "/order/receipt/**")
+                .authenticated()
+                .accessDecisionManager(accessDecisionManager());
+
+        http
+                .authorizeRequests()
+                .antMatchers("/admin/**", "/shopgroup/**", "/product/**")
+                .hasRole("ADMIN");
 
         /* 잘못된 접근인경우 "/" 경로로 이동 */
         http

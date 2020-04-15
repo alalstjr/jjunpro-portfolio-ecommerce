@@ -15,4 +15,14 @@ public interface ProductOrderMapper {
     void orderCancel(Long id);
 
     List<ProductOrder> findByAccountIdList(Long accountId);
+
+    Integer findTotalAmountByOrderState();
+
+    Integer findCountByAll();
+
+    Integer findCountByOrderState();
+
+    List<ProductOrder> findAllAdmin();
+
+    void updateOrderStateById(Long id, short orderState);
 }

@@ -9,7 +9,7 @@
 
     <div class="right-box">
         <span class="radio-gap">
-          <input type="radio" name="payment" id="payment-1" value="1">
+          <input type="radio" name="payment" id="payment-1" value="1" th:checked="*{__${name}__ == 1}">
           <label for="payment-1">무통장입금</label>
         </span>
       <th:block th:if="${!valid}">

@@ -1,0 +1,240 @@
+<html xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{fragments/admin/layout :: layout (~{::body},'setGroupForm')}">
+
+<head>
+  <title>생성</title>
+</head>
+<body>
+
+<div class="row product-receipt">
+  <div class="col-md-8 d-flex align-items-stretch grid-margin">
+    <div class="row flex-grow">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="form-title">
+              주문서 변경
+            </h4>
+            <div th:text="${message}" class="text-danger danger-massage"></div>
+
+            <!-- 구매하는 상품 목록 -->
+            <div class="input-title">주문상품</div>
+            <div class="mb-3">
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                  <tr class="text-center">
+                    <th>사진</th>
+                    <th>이름</th>
+                    <th>수량</th>
+                    <th>판매가</th>
+                    <th>개별 상품구매금액</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr th:each="product : ${productOrder.productList}" class="text-center">
+                    <td>
+                      <img class="product-list-img"
+                           th:src="${product.thumbnail}"
+                           onError="this.onerror=null;this.src='/image/none-img.png';" alt="">
+                    </td>
+                    <td th:text="${product.productName}">상품이름</td>
+                    <td class="quantity" th:text="${product.quantity + ' 개'}">수량
+                    </td>
+                    <td class="price"
+                        th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + ' 원'}">
+                      판매가
+                    </td>
+                    <td th:text="${#numbers.formatDecimal(product.price * product.quantity, 0, 'COMMA', 0, 'POINT') + ' 원'}">
+                      총 상품구매금액
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+                <div class="none-data" th:if="${productOrder.productList.size() == 0}">상품이 존재하지
+                  않습니다.
+                </div>
+              </div>
+            </div>
+
+            <!-- 결제금액 -->
+            <div class="option-line"></div>
+            <div class="row my-3">
+              <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 text-right">추가 적립금</div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 text-right">
+                <b class="text-success">
+                  <th:block th:if="${productOrder.receivePoint > 0}">
+                    +
+                  </th:block>
+                  <th:block
+                      th:text="${#numbers.formatDecimal(productOrder.receivePoint, 0, 'COMMA', 0, 'POINT') + '점'}">
+                    추가 적립금
+                  </th:block>
+                </b>
+              </div>
+            </div>
+            <div class="option-line"></div>
+            <div class="row my-3">
+              <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 text-right">총 상품구매금액</div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 text-right">
+                <b id="totalPrice"
+                   th:text="${#numbers.formatDecimal(productOrder.totalAmount, 0, 'COMMA', 0, 'POINT') + ' 원'}">0</b>
+              </div>
+            </div>
+            <div class="option-line"></div>
+            <div class="row my-3">
+              <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 text-right">사용한 적립금</div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 text-right">
+                <b class="text-danger">
+                  <th:block th:if="${productOrder.usePoint > 0}">
+                    -
+                  </th:block>
+                  <th:block
+                      th:text="${#numbers.formatDecimal(productOrder.usePoint, 0, 'COMMA', 0, 'POINT') + '점'}">
+                    총 적립금
+                  </th:block>
+                </b>
+              </div>
+            </div>
+            <div class="option-line"></div>
+            <div class="row">
+              <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 text-right">총 결제금액</div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 text-right">
+                <b th:text="${#numbers.formatDecimal(productOrder.totalAmount, 0, 'COMMA', 0, 'POINT') + '원'}">
+                  총 결제금액
+                </b>
+              </div>
+            </div>
+
+            <!-- 주문사 상세입력 -->
+            <div class="input-title">기본정보</div>
+
+            <div class="user-form table-box">
+              <label class="left-box">주문자 성함</label>
+              <div class="right-box">
+                <div th:text="${productOrder.orderName}"></div>
+              </div>
+            </div>
+            <div class="user-form table-box">
+              <label class="left-box">이메일</label>
+              <div class="right-box">
+                <div th:text="${productOrder.orderEmail}"></div>
+              </div>
+            </div>
+            <div class="user-form table-box">
+              <label class="left-box">연락처</label>
+              <div class="right-box">
+                <div th:text="${productOrder.orderPhone}"></div>
+              </div>
+            </div>
+            <div class="user-form table-box">
+              <label class="left-box">우편번호</label>
+              <div class="right-box">
+                <div th:text="${productOrder.postcode}"></div>
+              </div>
+            </div>
+            <div class="user-form table-box">
+              <label class="left-box">주소</label>
+              <div class="right-box">
+                <div th:text="${productOrder.addr1}"></div>
+              </div>
+            </div>
+            <div class="user-form table-box">
+              <label class="left-box">상세주소</label>
+              <div class="right-box">
+                <div th:text="${productOrder.addr2}"></div>
+              </div>
+            </div>
+            <div class="user-form table-box">
+              <label class="left-box">배송메세지</label>
+              <div class="right-box">
+                <div th:text="${productOrder.memo}"></div>
+              </div>
+            </div>
+            <div class="user-form table-box">
+              <label class="left-box">결제방법</label>
+              <div class="right-box">
+                <th:block th:switch="${productOrder.payment}">
+                  <div th:case="1">무통장입금</div>
+                </th:block>
+              </div>
+            </div>
+
+            <div class="user-form table-box">
+              <label class="left-box">주문날짜</label>
+              <div class="right-box">
+                <th:block
+                    th:text="${#temporals.format(productOrder.createdDate, 'yyyy-MM-dd HH:mm')}">
+                  주문날짜
+                </th:block>
+              </div>
+            </div>
+            <div class="user-form table-box">
+              <label class="left-box">주문상태</label>
+              <div class="right-box">
+                <b>
+                  <th:block th:switch="${productOrder.orderState}">
+                    <div th:case="0" class="text-primary">주문완료</div>
+                    <div th:case="1" class="text-warning">결제완료</div>
+                    <div th:case="2" class="text-success">배송완료</div>
+                    <div th:case="3" class="text-danger">주문취소</div>
+                  </th:block>
+                </b>
+              </div>
+            </div>
+
+            <th:block th:if="${productOrder.orderState != 3}">
+            <form
+                method="post"
+                th:action="@{/admin/order/form}"
+            >
+              <input type="hidden" name="id" th:value="${productOrder.id}">
+              <div class="user-form table-box">
+                <label class="left-box">결제수단</label>
+                <div class="right-box">
+                  <b>
+                    <span class="radio-gap text-primary">
+                      <input type="radio" name="orderState" id="state-1" value="0"
+                             th:checked="${productOrder.orderState == 0}">
+                      <label for="state-1">주문완료</label>
+                    </span>
+                    <span class="radio-gap text-warning">
+                      <input type="radio" name="orderState" id="state-2" value="1"
+                             th:checked="${productOrder.orderState == 1}">
+                      <label for="state-2">결제완료</label>
+                    </span>
+                    <span class="radio-gap text-success">
+                      <input type="radio" name="orderState" id="state-3" value="2"
+                             th:checked="${productOrder.orderState == 2}">
+                      <label for="state-3">배송완료</label>
+                    </span>
+                  </b>
+                </div>
+              </div>
+              <div class="form-btn-wrap">
+                <button type="submit" class="form-btn submit">수정</button>
+              </div>
+            </form>
+            </th:block>
+
+            <div class="form-btn-wrap">
+              <form
+                  method="post"
+                  th:action="@{/order/receipt}"
+              >
+                <input type="hidden" name="id" th:value="${productOrder.id}">
+                <th:block th:if="${productOrder.orderState != 3}">
+                  <button type="submit" class="form-btn submit">주문취소</button>
+                </th:block>
+              </form>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

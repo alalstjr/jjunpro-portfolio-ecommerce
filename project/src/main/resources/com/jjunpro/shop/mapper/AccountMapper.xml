@@ -4,84 +4,91 @@
 <mapper namespace="com.jjunpro.shop.mapper.AccountMapper">
 
   <select id="findById" resultType="account">
-        SELECT  id,
-                username,
-                email,
-                createddate
-        FROM account
-        WHERE ID = #{id}
-    </select>
+    SELECT id,
+           username,
+           email,
+           createddate
+    FROM account
+    WHERE ID = #{id}
+  </select>
 
   <select id="findAll" resultType="account">
-        SELECT  id,
-                username,
-                email,
-                createddate
-        FROM account
-    </select>
+    SELECT *
+    FROM account;
+  </select>
 
   <select id="findByUsername" resultType="account">
-    SELECT * FROM account WHERE username = #{username}
+    SELECT *
+    FROM account
+    WHERE username = #{username}
   </select>
 
   <select id="findByEmail" resultType="account">
-    SELECT * FROM account WHERE email = #{email}
+    SELECT *
+    FROM account
+    WHERE email = #{email}
   </select>
 
   <select id="findEmailByUsernameAndPhoneNumber" resultType="account">
-    SELECT email, username, createddate FROM account WHERE username = #{username} AND phoneNumber = #{phoneNumber}
+    SELECT email, username, createddate
+    FROM account
+    WHERE username = #{username}
+      AND phoneNumber = #{phoneNumber}
   </select>
 
   <select id="findByEmailAndEnabled" resultType="account">
-    SELECT * FROM account WHERE email = #{email} AND #{enabled} = true
+    SELECT *
+    FROM account
+    WHERE email = #{email}
+      AND #{enabled} = true
   </select>
 
   <insert id="insertAccount" useGeneratedKeys="true" keyProperty="id">
-    INSERT INTO account (
-        ip, enabled, createddate, modifiedDate, username, email, password, userRole, ageRange, birthday, gender, postcode, addr1, addr2, phoneNumber, point
-    )
-    VALUES (
-        #{ip},
-        #{enabled},
-        CURRENT_TIMESTAMP,
-        CURRENT_TIMESTAMP,
-        #{username},
-        #{email},
-        #{password},
-        #{userRole},
-        #{ageRange},
-        #{birthday},
-        #{gender},
-        #{postcode},
-        #{addr1},
-        #{addr2},
-        #{phoneNumber},
-        #{point}
-    )
+    INSERT INTO account (ip, enabled, createddate, modifiedDate, username, email, password,
+                         userRole, ageRange, birthday, gender, postcode, addr1, addr2, phoneNumber,
+                         point)
+    VALUES (#{ip},
+            #{enabled},
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP,
+            #{username},
+            #{email},
+            #{password},
+            #{userRole},
+            #{ageRange},
+            #{birthday},
+            #{gender},
+            #{postcode},
+            #{addr1},
+            #{addr2},
+            #{phoneNumber},
+            #{point})
   </insert>
 
   <update id="updateAccount" useGeneratedKeys="true" keyProperty="id">
     UPDATE account
-    SET
-      ip = #{ip},
-      username = #{username},
-      email = #{email},
-      password = #{password},
-      enabled = #{enabled},
-      userRole = #{userRole},
-      ageRange = #{ageRange},
-      birthday = #{birthday},
-      gender = #{gender},
-      modifiedDate = CURRENT_TIMESTAMP
+    SET ip           = #{ip},
+        username     = #{username},
+        email        = #{email},
+        password     = #{password},
+        enabled      = #{enabled},
+        userRole     = #{userRole},
+        ageRange     = #{ageRange},
+        birthday     = #{birthday},
+        gender       = #{gender},
+        modifiedDate = CURRENT_TIMESTAMP
     WHERE id = #{id}
   </update>
 
   <update id="updatePoint">
     UPDATE account
-    SET
-        point = #{afterPoint}
-    WHERE
-        id = #{id};
+    SET point = #{afterPoint}
+    WHERE id = #{id};
   </update>
+
+  <select id="findCountByAll" resultType="Integer">
+    SELECT COUNT(*) AS users
+    FROM account;
+  </select>
 
 </mapper>

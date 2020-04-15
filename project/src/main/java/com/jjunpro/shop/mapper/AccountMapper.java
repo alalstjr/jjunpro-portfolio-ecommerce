@@ -25,4 +25,6 @@ public interface AccountMapper {
     Optional<Account> findByEmailAndEnabled(String email, boolean enabled);
 
     void updatePoint(Long id, int afterPoint);
+
+    Integer findCountByAll();
 }

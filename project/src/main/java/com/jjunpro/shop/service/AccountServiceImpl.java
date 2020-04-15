@@ -53,6 +53,7 @@ public class AccountServiceImpl implements AccountService {
     public Account insertAccount(Account account) {
         account.setEnabled(true);
         account.setUserRole(UserRole.USER);
+        account.setPoint(10000);
         if (account.getPassword() != null) {
             account.encodePassword(passwordEncoder);
         }
@@ -88,5 +89,10 @@ public class AccountServiceImpl implements AccountService {
         } else {
             throw new UsernameNotFoundException(username + "정보를 찾을 수 없습니다.");
         }
+    }
+
+    @Override
+    public Integer findCountByAll() {
+        return this.accountMapper.findCountByAll();
     }
 }

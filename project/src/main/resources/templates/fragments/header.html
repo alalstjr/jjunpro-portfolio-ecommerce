@@ -9,6 +9,9 @@
       </div>
       <nav class="nav-bar col-50">
         <ul>
+          <li sec:authorize="hasRole('ROLE_ADMIN')">
+            <a th:href="@{/admin}">관리자페이지</a>
+          </li>
           <li sec:authorize="!isAuthenticated()">
             <a th:href="@{/login}">로그인</a>
           </li>

@@ -27,8 +27,10 @@
           <tbody>
           <tr th:each="product : ${productList}" class="text-center">
             <td>
-              <img class="product-list-img" th:src="${product.getFileStorageList().get(0).fileDownloadUri}"
-                   onError="this.onerror=null;this.src='/image/none-img.png';" alt="">
+              <img class="product-list-img"
+                   th:src="${product.getFileStorageList().isEmpty() ? 'none' : product.getFileStorageList().get(0).fileDownloadUri}"
+                   onError="this.onerror=null;this.src='/image/none-img.png';"
+                   alt="상품이미지">
             </td>
             <td th:text="${product.productName}">상품이름</td>
             <td class="quantity" th:text="${product.orderQuantity + ' 개'}"

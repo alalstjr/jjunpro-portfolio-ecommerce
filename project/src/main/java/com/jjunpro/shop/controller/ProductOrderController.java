@@ -131,6 +131,14 @@ public class ProductOrderController {
         /* 클라이언트 사용자의 보유한 포인트를 저장 */
         productOrderDTO.setAccountPoint(userDetails.getAccount().getPoint());
 
+        /* 유저의 정보를 기준으로 Form Init */
+        productOrderDTO.setOrderName(userDetails.getAccount().getUsername());
+        productOrderDTO.setOrderEmail(userDetails.getAccount().getEmail());
+        productOrderDTO.setOrderPhone(userDetails.getAccount().getPhoneNumber());
+        productOrderDTO.setPostcode(userDetails.getAccount().getPostcode());
+        productOrderDTO.setAddr1(userDetails.getAccount().getAddr1());
+        productOrderDTO.setAddr2(userDetails.getAccount().getAddr2());
+
         model.addAttribute("productList", productList);
         model.addAttribute("productOrderDTO", productOrderDTO);
 

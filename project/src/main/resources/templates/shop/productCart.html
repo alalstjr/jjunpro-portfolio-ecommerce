@@ -33,8 +33,9 @@
               th:id="${'cart-' + product.id}">
             <td>
               <img class="product-list-img"
-                   th:src="${product.getFileStorageList().get(0).fileDownloadUri}"
-                   onError="this.onerror=null;this.src='/image/none-img.png';" alt="">
+                   th:src="${product.getFileStorageList().isEmpty() ? 'none' : product.getFileStorageList().get(0).fileDownloadUri}"
+                   onError="this.onerror=null;this.src='/image/none-img.png';"
+                   alt="상품이미지">
             </td>
             <td th:text="${product.productName}">상품이름</td>
             <td class="quantity"

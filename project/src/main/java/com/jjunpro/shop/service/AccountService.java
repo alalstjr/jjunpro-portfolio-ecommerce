@@ -23,4 +23,6 @@ public interface AccountService extends UserDetailsService {
     void updateAccount(Account account);
 
     UserDetails loadUserByUsername(String username);
+
+    Integer findCountByAll();
 }
