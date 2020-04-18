@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.jjunpro'
-version = '1.0.0'
+version = '1.0.1'
 sourceCompatibility = '11'
 
 configurations {
@@ -48,6 +48,9 @@ dependencies {
     implementation fileTree(dir: 'lib', include: ['*.jar'])
     /* 썸네일 제작 라이브러리 */
     implementation 'org.imgscalr:imgscalr-lib:4.2'
+    /* 구글 클라우드 store api */
+    implementation 'com.google.cloud:google-cloud-storage:1.100.0'
+    implementation 'com.google.code.gson:gson:2.8.5'
 }
 
 test {

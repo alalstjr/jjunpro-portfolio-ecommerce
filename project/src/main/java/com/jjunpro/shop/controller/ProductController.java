@@ -157,12 +157,15 @@ public class ProductController {
         List<Product> productList = this.productService.findByShopGroupId(id);
         model.addAttribute("productList", productList);
 
+        ShopGroup dbShopGroup = this.shopGroupService.findById(id);
+        model.addAttribute("title", dbShopGroup.getShopName());
+
         return SHOP.concat("/productList");
     }
 
     /* 분류 리스트를 불러옵니다. */
     private void getShopGroupList(Model model) {
-        List<ShopGroup> shopGroupList = this.shopGroupService.findByIsNullParentShopGroupId();
+        List<ShopGroup> shopGroupList = this.shopGroupService.findByIsNullParentShopGroupId(true);
         model.addAttribute("shopGroupList", shopGroupList);
     }
 }

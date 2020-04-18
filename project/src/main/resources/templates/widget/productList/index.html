@@ -6,14 +6,30 @@
          th:each="product : ${productList}">
       <a th:href="@{/order/view(id=${product.id})}">
         <div class="card card-statistics">
+          <th:block th:if="${product.productType != ''}">
+            <div class="type-con" th:text="${product.productType}"></div>
+          </th:block>
           <img class="product-list-img img-thumbnail"
-               th:src="${product.thumbnail}"
+               th:src="${'https://storage.googleapis.com/jjunpro-storage/' + product.thumbnail}"
                onError="this.onerror=null;this.src='/image/none-img.png';"
                alt="">
           <div th:text="${product.productName}" class="product-title text-truncate"></div>
           <div class="product-content">
-            <span class="real-price"
-                  th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + 'WON'}"></span>
+            <th:block th:if="${product.discount == 0}">
+              <span class="real-price"
+                    th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + 'WON'}"></span>
+            </th:block>
+            <th:block th:if="${product.discount > 0}">
+              <span class="real-price"
+                    th:text="${#numbers.formatDecimal(product.price - (product.price * product.discount / 100), 0, 'COMMA', 0, 'POINT') + ' WON'}">0</span>
+              <strong class="discount"
+                      th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + 'WON'}"></strong>
+              <span class="float-right text-danger">
+                <b>
+                  <th:block th:text="${product.discount}"></th:block>%
+                </b>
+              </span>
+            </th:block>
           </div>
         </div>
       </a>

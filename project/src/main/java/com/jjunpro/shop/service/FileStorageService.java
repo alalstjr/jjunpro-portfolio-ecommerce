@@ -11,7 +11,11 @@ public interface FileStorageService {
 
     Long storeFile(MultipartFile file, DomainType domain);
 
+    /* Local file 생성 */
     Long storeResource(Resource resource, DomainType domain);
+
+    /* 외부 링크 URL file 생성 */
+    Long storeResource(String fileUrl, DomainType domain);
 
     List<Long> uploadMultipleFiles(MultipartFile[] files, DomainType domain);
 

@@ -18,7 +18,11 @@ public interface ShopGroupMapper {
 
     List<ShopGroup> findByparentShopGroupIdList(Long id);
 
+    List<ShopGroup> findByparentShopGroupIdListAdmin(Long id);
+
     List<ShopGroup> findByIsNullParentShopGroupId();
+
+    List<ShopGroup> findByIsNullParentShopGroupIdAdmin();
 
     ShopGroup findById(Long id);
 

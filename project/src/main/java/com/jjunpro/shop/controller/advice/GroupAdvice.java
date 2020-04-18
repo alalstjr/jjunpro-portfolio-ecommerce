@@ -20,7 +20,7 @@ public class GroupAdvice {
     @ModelAttribute
     public void addAttributes(Model model) {
         /* 분류 리스트를 불러옵니다. */
-        List<ShopGroup> shopGroupList = this.shopGroupService.findByIsNullParentShopGroupId();
+        List<ShopGroup> shopGroupList = this.shopGroupService.findByIsNullParentShopGroupId(false);
         model.addAttribute("shopGroupList", shopGroupList);
     }
 }

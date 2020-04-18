@@ -5,7 +5,7 @@
     <tr>
       <td>
         <img class="product-list-img"
-             th:src="${productOrder.productThumb}"
+             th:src="${'https://storage.googleapis.com/jjunpro-storage/' + productOrder.productThumb}"
              onError="this.onerror=null;this.src='/image/none-img.png';" alt="">
       </td>
       <td>

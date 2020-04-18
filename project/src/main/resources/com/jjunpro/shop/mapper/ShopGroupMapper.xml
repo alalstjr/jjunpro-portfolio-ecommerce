@@ -4,74 +4,90 @@
 <mapper namespace="com.jjunpro.shop.mapper.ShopGroupMapper">
 
   <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-    INSERT INTO
-        shop_group (ip, enabled, createddate, modifiedDate, shopName, priority, parentShopGroupId)
-    VALUES (
-        #{ip},
-        #{enabled},
-        CURRENT_TIMESTAMP,
-        CURRENT_TIMESTAMP,
-        #{shopName},
-        #{priority},
-        #{parentShopGroupId}
-    );
+    INSERT INTO shop_group (ip, enabled, createddate, modifiedDate, shopName, priority,
+                            parentShopGroupId)
+    VALUES (#{ip},
+            #{enabled},
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP,
+            #{shopName},
+            #{priority},
+            #{parentShopGroupId});
   </insert>
 
   <update id="update" useGeneratedKeys="true" keyProperty="id">
     UPDATE
-        shop_group
-    SET
-      ip = #{ip},
-      enabled = #{enabled},
-      modifiedDate = CURRENT_TIMESTAMP,
-      shopName = #{shopName},
-      priority = #{priority}
-    WHERE
-        id = #{id};
+      shop_group
+    SET ip           = #{ip},
+        enabled      = #{enabled},
+        modifiedDate = CURRENT_TIMESTAMP,
+        shopName     = #{shopName},
+        priority     = #{priority}
+    WHERE id = #{id};
   </update>
 
   <delete id="delete">
-    DELETE FROM
-        shop_group
-    WHERE
-        id = #{id};
+    DELETE
+    FROM shop_group
+    WHERE id = #{id};
   </delete>
 
   <select id="findOneByparentShopGroupId" resultType="ShopGroup">
-    SELECT * FROM
-        shop_group
-    WHERE
-        parentShopGroupId = #{id}
-    ORDER BY createddate DESC LIMIT 1;
+    SELECT *
+    FROM shop_group
+    WHERE parentShopGroupId = #{id}
+    ORDER BY createddate DESC
+    LIMIT 1;
   </select>
 
   <select id="findByparentShopGroupIdList" resultType="ShopGroup">
-    SELECT * FROM
-        shop_group
-    WHERE
-        parentShopGroupId = #{id}
+    SELECT *
+    FROM shop_group
+    WHERE enabled = true
+      AND parentShopGroupId = #{id}
+    ORDER BY createddate DESC;
+  </select>
+
+  <select id="findByparentShopGroupIdListAdmin" resultType="ShopGroup">
+    SELECT *
+    FROM shop_group
+    WHERE parentShopGroupId = #{id}
     ORDER BY createddate DESC;
   </select>
 
   <select id="findByIsNullParentShopGroupId" resultType="ShopGroup">
-    SELECT
-        id, enabled, shopName, priority, parentShopGroupId
-    FROM
-        shop_group
-    WHERE
-        parentShopGroupId IS NULL
-    ORDER BY createddate DESC LIMIT 10;
+    SELECT id,
+           enabled,
+           shopName,
+           priority,
+           parentShopGroupId
+    FROM shop_group
+    WHERE enabled = true
+      AND parentShopGroupId IS NULL
+    ORDER BY createddate DESC
+    LIMIT 30;
+  </select>
+
+  <select id="findByIsNullParentShopGroupIdAdmin" resultType="ShopGroup">
+    SELECT id,
+           enabled,
+           shopName,
+           priority,
+           parentShopGroupId
+    FROM shop_group
+    WHERE parentShopGroupId IS NULL
+    ORDER BY createddate DESC
+    LIMIT 30;
   </select>
 
   <select id="findById" resultType="ShopGroup">
-    SELECT * FROM
-        shop_group
-    WHERE
-        id = #{id};
+    SELECT *
+    FROM shop_group
+    WHERE id = #{id};
   </select>
 
   <select id="allCount" resultType="Integer">
-    SELECT COUNT(*) FROM
-        shop_group;
+    SELECT COUNT(*)
+    FROM shop_group;
   </select>
 </mapper>

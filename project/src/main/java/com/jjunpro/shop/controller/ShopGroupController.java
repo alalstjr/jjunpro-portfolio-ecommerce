@@ -35,7 +35,7 @@ public class ShopGroupController {
     public String index(
             Model model
     ) {
-        List<ShopGroup> shopGroupList = this.shopGroupService.findByIsNullParentShopGroupId();
+        List<ShopGroup> shopGroupList = this.shopGroupService.findByIsNullParentShopGroupId(true);
         model.addAttribute("shopGroupList", shopGroupList);
 
         return ADMINGROUP.concat("/index");

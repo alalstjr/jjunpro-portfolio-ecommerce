@@ -61,6 +61,8 @@ public class ProductOrderDTO {
 
     private Integer accountPoint;
 
+    private Boolean pointEnabled;
+
     @Builder
     public ProductOrderDTO(Long id, String ip, Boolean enabled, String orderName,
             String orderEmail, String orderPhone, String postcode, String addr1, String addr2,

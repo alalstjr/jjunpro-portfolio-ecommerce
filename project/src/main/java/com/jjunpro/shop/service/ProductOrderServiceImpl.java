@@ -1,5 +1,6 @@
 package com.jjunpro.shop.service;
 
+import com.jjunpro.shop.aspect.ProductOrderSet;
 import com.jjunpro.shop.enums.DomainType;
 import com.jjunpro.shop.exception.DataNullException;
 import com.jjunpro.shop.exception.ProductOrderException;
@@ -13,7 +14,6 @@ import com.jjunpro.shop.model.Product;
 import com.jjunpro.shop.model.ProductOrder;
 import com.jjunpro.shop.util.FileUtil;
 import com.jjunpro.shop.util.StringBuilderUtil;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -34,8 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ProductOrderServiceImpl implements ProductOrderService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProductOrderServiceImpl.class);
-
     private final ProductMapper      productMapper;
     private final AccountMapper      accountMapper;
     private final FileStorageMapper  fileStorageMapper;
@@ -43,6 +39,7 @@ public class ProductOrderServiceImpl implements ProductOrderService {
     private final StringBuilderUtil  stringBuilderUtil;
     private final FileUtil           fileUtil;
 
+    @ProductOrderSet
     @Override
     public ProductOrder set(ProductOrder productOrder) {
         int     totalAmount       = 0;

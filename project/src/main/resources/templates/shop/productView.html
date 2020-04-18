@@ -7,7 +7,7 @@
   <div class="row">
     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
       <img class="product-list-img img-thumbnail"
-           th:src="${product.getFileStorageList().isEmpty() ? 'none' : product.getFileStorageList().get(0).fileDownloadUri}"
+           th:src="${product.getFileStorageList().isEmpty() ? 'none' : 'https://storage.googleapis.com/jjunpro-storage/' + product.getFileStorageList().get(0).fileDownloadUri}"
            onError="this.onerror=null;this.src='/image/none-img.png';"
            alt="상품이미지">
       </th:block>
@@ -91,7 +91,7 @@
     <th:block th:each="file, index : ${product.fileStorageList}">
       <th:block th:if="${index.index > 0}">
         <img class="product-list-img img-thumbnail"
-             th:src="${#strings.replace(#strings.escapeXml(file.fileDownloadUri),'/thumb-','/')}"
+             th:src="${'https://storage.googleapis.com/jjunpro-storage/' + #strings.replace(#strings.escapeXml(file.fileDownloadUri),'/thumb-','/')}"
              onError="this.onerror=null;this.src='/image/none-img.png';"
              alt="상품이미지">
       </th:block>

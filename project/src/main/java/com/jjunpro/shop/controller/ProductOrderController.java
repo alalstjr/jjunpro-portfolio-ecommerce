@@ -139,6 +139,16 @@ public class ProductOrderController {
         productOrderDTO.setAddr1(userDetails.getAccount().getAddr1());
         productOrderDTO.setAddr2(userDetails.getAccount().getAddr2());
 
+        /* 포인트 사용금지가 하나라도 있으면 포인트 사용 금지 */
+        productOrderDTO.setPointEnabled(true);
+
+        for(Product product : productList) {
+            if(!product.getPointEnabled()) {
+                productOrderDTO.setPointEnabled(false);
+                break;
+            }
+        }
+
         model.addAttribute("productList", productList);
         model.addAttribute("productOrderDTO", productOrderDTO);
 

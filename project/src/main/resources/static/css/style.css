@@ -18721,8 +18721,13 @@ address p {
 }
 
 .page-title {
-  color: #000;
-  margin: 0.38rem 0 0.75rem;
+  font-family: 'Rubik', sans-serif;
+  text-align: center;
+  padding: 50px 0 50px;
+  font-size: 30px;
+  font-weight: 500;
+  color: #111111;
+  letter-spacing: -1px;
 }
 
 .card-title {
@@ -21846,4 +21851,20 @@ input[type="checkbox"]:checked {
   background-color: #333333;
   color: #FFFFFF;
   border-color: #333333;
+}
+
+.discount {
+  font-size: 12px;
+  color: #aaa;
+  text-decoration: line-through;
+}
+
+.type-con {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  padding: 1px 8px;
+  background-color: #ba3c3f;
+  color: #fff;
+  font-size: 13px;
 }

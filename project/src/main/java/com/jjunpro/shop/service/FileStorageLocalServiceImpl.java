@@ -1,6 +1,5 @@
 package com.jjunpro.shop.service;
 
-import com.jjunpro.shop.common.CloudStorageHelper;
 import com.jjunpro.shop.enums.DomainType;
 import com.jjunpro.shop.exception.FileStorageException;
 import com.jjunpro.shop.exception.MyFileNotFoundException;
@@ -14,7 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,11 +24,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
-import lombok.RequiredArgsConstructor;
 import org.imagelib.ImageLib;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -39,18 +34,34 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-@Service
-@Transactional
-@RequiredArgsConstructor
-public class FileStorageServiceImpl implements FileStorageService {
+//@Service
+//@Transactional
+public class FileStorageLocalServiceImpl implements FileStorageService {
 
-    /* Google Cloud */
-    @Value("${google.id}")
-    private       String             _GCSID;
-    private final CloudStorageHelper cloudStorageHelper;
-
-    /* Local Cloud */
+    private final Path              fileStorageLocation;
     private final FileStorageMapper fileStorageMapper;
+
+    @Autowired
+    public FileStorageLocalServiceImpl(FileStorageProperties fileStorageProperties,
+            FileStorageMapper fileStorageMapper) {
+        this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir())
+                .toAbsolutePath().normalize();
+
+        this.fileStorageMapper = fileStorageMapper;
+
+        try {
+            /* 파일을 저장할 폴더를 생성합니다. */
+            Files.createDirectories(
+                    this.fileStorageLocation.resolve(DomainType.ACCOUNT.getValue()));
+            Files.createDirectories(
+                    this.fileStorageLocation.resolve(DomainType.PRODUCT.getValue()));
+            Files.createDirectories(
+                    this.fileStorageLocation.resolve(DomainType.PRODUCTORDER.getValue()));
+        } catch (Exception ex) {
+            throw new FileStorageException(
+                    "Could not create the directory where the uploaded files will be stored.", ex);
+        }
+    }
 
     /* MultipartFile file 전용 메소드 주로 새로운 파일을 업로드 할때 처리 */
     @Override
@@ -59,8 +70,8 @@ public class FileStorageServiceImpl implements FileStorageService {
                 .cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         String fileType = fileOriName.substring(fileOriName.lastIndexOf(".")).replace(".", "");
 
-        String fileName      = domain.getValue() + '/' + this.setFileName(fileOriName);
-        String fileNameThumb = domain.getValue() + '/' + this.setFileName("thumb-" + fileOriName);
+        String fileName      = this.setFileName(fileOriName);
+        String fileNameThumb = this.setFileName("thumb-" + fileOriName);
 
         try {
             // Check if the file's name contains invalid characters
@@ -68,6 +79,17 @@ public class FileStorageServiceImpl implements FileStorageService {
                 throw new FileStorageException(
                         "Sorry! Filename contains invalid path sequence " + fileName);
             }
+
+            /* 대상 위치로 파일 복사(같은 이름으로 기존 파일 바꾸기) */
+            Path targetLocation = this.fileStorageLocation
+                    .resolve(domain.getValue())
+                    .resolve(fileName);
+
+            Files.copy(
+                    file.getInputStream(),
+                    targetLocation,
+                    StandardCopyOption.REPLACE_EXISTING
+            );
 
             /*
              * 썸네일 생성
@@ -93,30 +115,30 @@ public class FileStorageServiceImpl implements FileStorageService {
             );
             InputStream thumbnail = new ByteArrayInputStream(os.toByteArray());
 
+            Path targetLocationThumb = this.fileStorageLocation
+                    .resolve(domain.getValue())
+                    .resolve(fileNameThumb);
+
+            Files.copy(
+                    thumbnail,
+                    targetLocationThumb,
+                    StandardCopyOption.REPLACE_EXISTING
+            );
+
+            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/file/")
+                    .path("/" + domain.getValue() + "/")
+                    .path(fileNameThumb)
+                    .toUriString();
+
             FileStorage fileStorage = FileStorage.builder()
                     .fileName(fileName)
                     .fileType(file.getContentType())
                     .fileSize(file.getSize())
-                    .fileDownloadUri(fileNameThumb)
+                    .fileDownloadUri(fileDownloadUri)
                     .build();
 
             this.fileStorageMapper.insert(fileStorage);
-
-            /* GCS Upload 원본 이미지파일 저장 */
-            try {
-                cloudStorageHelper.uploadFile(
-                        file.getInputStream(),
-                        fileName,
-                        _GCSID
-                );
-                cloudStorageHelper.uploadFile(
-                        thumbnail,
-                        fileNameThumb,
-                        _GCSID
-                );
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
             return fileStorage.getId();
         } catch (IOException ex) {
@@ -126,23 +148,20 @@ public class FileStorageServiceImpl implements FileStorageService {
         }
     }
 
+    @Override
+    public Long storeResource(String fileUrl, DomainType domain) {
+        return null;
+    }
+
     /*
      * Resource file 전용 메소드 주로 이미 업로드된 파일의 URI 파악하려 복사 업로드 할때 처리
      * ex) product img -> productOrder img 복사 업로드
      */
     @Override
-    public Long storeResource(String fileUrl, DomainType domain) {
+    public Long storeResource(Resource resource, DomainType domain) {
         File file = null;
-        URL  url  = null;
-
-        /*
-         * 외부 URL 링크파일 생성
-         * 도움받은 링크 : https://stackoverflow.com/questions/8324862/how-to-create-file-object-from-url-object
-         */
         try {
-            url = new URL(fileUrl);
-            BufferedImage img = ImageIO.read(url);
-            file = new File("downloaded.jpg");
+            file = resource.getFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -153,7 +172,7 @@ public class FileStorageServiceImpl implements FileStorageService {
         String fileType      = fileOriName.substring(fileOriName.lastIndexOf(".")).replace(".", "");
         String fileThumbName = "thumb." + fileType;
 
-        String fileName = domain.getValue() + '/' + this.setFileName(fileThumbName);
+        String fileName = this.setFileName(fileThumbName);
 
         try {
             // Check if the file's name contains invalid characters
@@ -172,7 +191,7 @@ public class FileStorageServiceImpl implements FileStorageService {
             int resizeHeight = 100;
 
             BufferedImage resizeImage = ImageLib.handleThumbnail(
-                    url.openStream().readAllBytes(),
+                    resource.getInputStream().readAllBytes(),
                     resizeWidth,
                     resizeHeight
             );
@@ -188,24 +207,30 @@ public class FileStorageServiceImpl implements FileStorageService {
             /* 대상 위치로 파일 복사(같은 이름으로 기존 파일 바꾸기) */
             InputStream thumbnail = new ByteArrayInputStream(os.toByteArray());
 
+            Path targetLocationThumb = this.fileStorageLocation
+                    .resolve(domain.getValue())
+                    .resolve(fileName);
+
+            Files.copy(
+                    thumbnail,
+                    targetLocationThumb,
+                    StandardCopyOption.REPLACE_EXISTING
+            );
+
+            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/file/")
+                    .path("/" + domain.getValue() + "/")
+                    .path(fileName)
+                    .toUriString();
+
             FileStorage fileStorage = FileStorage.builder()
                     .fileName(fileName)
                     .fileType(fileType)
                     .fileSize((long) os.size())
-                    .fileDownloadUri(fileName)
+                    .fileDownloadUri(fileDownloadUri)
                     .build();
 
             this.fileStorageMapper.insert(fileStorage);
-
-            try {
-                cloudStorageHelper.uploadFile(
-                        thumbnail,
-                        fileName,
-                        _GCSID
-                );
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
             return fileStorage.getId();
         } catch (IOException ex) {
@@ -213,11 +238,6 @@ public class FileStorageServiceImpl implements FileStorageService {
                     "Could not store file " + fileName + ". Please try again!",
                     ex);
         }
-    }
-
-    @Override
-    public Long storeResource(Resource resource, DomainType domain) {
-        return null;
     }
 
     @Override
@@ -236,7 +256,8 @@ public class FileStorageServiceImpl implements FileStorageService {
     @Override
     public Resource loadFileAsResource(String fileName) {
         try {
-            Resource resource = new UrlResource(fileName);
+            Path     filePath = this.fileStorageLocation.resolve(fileName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
 
             if (resource.exists()) {
                 return resource;
@@ -256,21 +277,29 @@ public class FileStorageServiceImpl implements FileStorageService {
     @Override
     public void delete(String[] deleteFileArr, DomainType domainType) {
         for (String deleteFile : deleteFileArr) {
-            Optional<FileStorage> dbFileStorage = this.fileStorageMapper
-                    .findById(Long.parseLong(deleteFile.trim()));
+            try {
+                Optional<FileStorage> dbFileStorage = this.fileStorageMapper
+                        .findById(Long.parseLong(deleteFile.trim()));
 
-            if (dbFileStorage.isPresent()) {
-                // GCS File Delete
-                cloudStorageHelper.deleteFile(
-                        dbFileStorage.get().getFileName(),
-                        _GCSID
-                );
-                cloudStorageHelper.deleteFile(
-                        dbFileStorage.get().getFileDownloadUri(),
-                        _GCSID
-                );
+                if (dbFileStorage.isPresent()) {
+                    /* 원본파일 삭제 */
+                    Path filePath = this.fileStorageLocation
+                            .resolve(domainType.getValue())
+                            .resolve(dbFileStorage.get().getFileName()).normalize();
+                    Files.delete(filePath);
 
-                this.fileStorageMapper.delete(dbFileStorage.get().getId());
+                    /* 썸네일 삭제 */
+                    Path filePathThumb = this.fileStorageLocation
+                            .resolve(domainType.getValue())
+                            .resolve("thumb-" + dbFileStorage.get().getFileName()).normalize();
+                    Files.delete(filePathThumb);
+
+                    this.fileStorageMapper.delete(dbFileStorage.get().getId());
+                }
+            } catch (MalformedURLException ex) {
+                throw new MyFileNotFoundException("File not found", ex);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }

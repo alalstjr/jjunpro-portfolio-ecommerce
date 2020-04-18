@@ -9,7 +9,7 @@ public interface ShopGroupService {
 
     String delete(Long id);
 
-    List<ShopGroup> findByIsNullParentShopGroupId();
+    List<ShopGroup> findByIsNullParentShopGroupId(Boolean ignore);
 
     ShopGroup findById(Long id);
 

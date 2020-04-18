@@ -87,7 +87,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
                 .authorizeRequests()
-                .antMatchers("/admin/**", "/shopgroup/**", "/product/**")
+                .antMatchers("/admin/**", "/shopgroup/**", "/product", "/product/set")
                 .hasRole("ADMIN");
 
         /* 잘못된 접근인경우 "/" 경로로 이동 */

@@ -47,7 +47,8 @@
     SELECT *
     FROM product_order
     WHERE enabled = true
-      AND accountId = #{accountId};
+      AND accountId = #{accountId}
+    ORDER BY createddate DESC;
   </select>
 
   <update id="orderCancel">

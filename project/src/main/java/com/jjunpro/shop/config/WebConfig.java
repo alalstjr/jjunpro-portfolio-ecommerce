@@ -23,6 +23,7 @@ public class WebConfig {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
+    /* https 설정 이외 http 접근 허용 */
     @Bean
     public ServletWebServerFactory servletContainer() {
         TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory();
