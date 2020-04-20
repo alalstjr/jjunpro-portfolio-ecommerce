@@ -34,10 +34,11 @@ CREATE TABLE ACCOUNT
 );
 
 INSERT INTO ACCOUNT (username, email, enabled, userRole, password, createdDate,
-                     modifiedDate, ip, point)
+                     modifiedDate, ip, point, agerange, birthday, gender, postcode, addr1)
 VALUES ('관리자', 'admin', true, 'ADMIN',
         '{bcrypt}$2a$10$LeNw1of.2HNeTi8/8Xp/IO0D9JMcK/Wq.LzvnlOtNzCP3EwESEKFe',
-        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '0.0.0.0', '100000');
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '0.0.0.0', '100000', '27', '940721', '0', '000',
+        '서울');
 
 /* SHOP_GROUP */
 DROP TABLE IF EXISTS SHOP_GROUP;
@@ -164,4 +165,25 @@ CREATE TABLE PRODUCT_ORDER
     accountId        BIGINT,
     orderState       SMALLINT,
     receivePoint     INTEGER
+);
+
+/* PRODUCT_ACCESS */
+DROP TABLE IF EXISTS PRODUCT_ACCESS;
+CREATE TABLE PRODUCT_ACCESS
+(
+    id           SERIAL PRIMARY KEY,
+    ip           VARCHAR   NOT NULL,
+    createdDate  TIMESTAMP NOT NULL,
+    modifiedDate TIMESTAMP NOT NULL,
+
+    accountId    BIGINT,
+    ageRange     SMALLINT,
+    birthday     VARCHAR,
+    gender       INTEGER,
+    addr         VARCHAR,
+
+    productId    BIGINT,
+    price        INTEGER,
+    discount     BOOLEAN,
+    point        BOOLEAN
 );

@@ -36,6 +36,12 @@
             #{receivePoint});
   </insert>
 
+  <select id="findByIdAdmin" resultType="ProductOrder">
+    SELECT *
+    FROM product_order
+    WHERE id = #{id};
+  </select>
+
   <select id="findById" resultType="ProductOrder">
     SELECT *
     FROM product_order

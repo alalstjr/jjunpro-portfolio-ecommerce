@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jjunpro.shop.mapper.ProductAccessMapper">
+
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO product_access (ip, createddate, modifiedDate, accountId, ageRange, birthday,
+                                gender, addr, productId, price, discount, point)
+    VALUES (#{ip},
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP,
+            #{accountId},
+            #{ageRange},
+            #{birthday},
+            #{gender},
+            #{addr},
+            #{productId},
+            #{price},
+            #{discount},
+            #{point});
+  </insert>
+
+  <select id="findProductIdByAgeRange" resultType="Long">
+    SELECT productId
+    FROM product_access
+    WHERE ageRange = #{ageRange};
+  </select>
+
+</mapper>

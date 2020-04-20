@@ -1,0 +1,31 @@
+<html xmlns:th="https://www.thymeleaf.org">
+
+<th:block th:fragment="list">
+  <th:block th:each="product, index : ${group}">
+    <tr>
+      <td th:text="${index.count}"></td>
+      <td>
+        <img class="product-list-img" th:src="${product.thumbnail}" onError="this.onerror=null;this.src='/image/none-img.png';" alt="">
+      </td>
+      <td>
+        <th:block th:text="${product.productName}">상품이름</th:block>
+      </td>
+      <td>
+        <th:block th:if="${product.enabled} == false">
+          <span class="material-icons text-danger">close</span>
+        </th:block>
+        <th:block th:if="${product.enabled} == true">
+          <span class="material-icons text-success">check</span>
+        </th:block>
+      </td>
+      <td>
+        <span th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + '원'}"></span>
+        /
+        <span th:text="${product.quantity + '개'}"></span>
+      </td>
+      <td>
+        <a th:href="@{/product/set(id=${product.id})}" class="btn btn-primary mr-2">수정</a>
+      </td>
+    </tr>
+  </th:block>
+</th:block>

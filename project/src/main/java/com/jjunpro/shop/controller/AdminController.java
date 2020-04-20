@@ -3,9 +3,12 @@ package com.jjunpro.shop.controller;
 import static com.jjunpro.shop.util.ClassPathUtil.ADMINACCOUNT;
 import static com.jjunpro.shop.util.ClassPathUtil.ADMINORDER;
 
+import com.jjunpro.shop.dto.ProductAccessAgeDTO;
+import com.jjunpro.shop.dto.ProductAccessDTO;
 import com.jjunpro.shop.model.Account;
 import com.jjunpro.shop.model.ProductOrder;
 import com.jjunpro.shop.service.AccountServiceImpl;
+import com.jjunpro.shop.service.ProductAccessServiceImpl;
 import com.jjunpro.shop.service.ProductOrderServiceImpl;
 import java.util.List;
 import java.util.Optional;
@@ -23,8 +26,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequiredArgsConstructor
 public class AdminController {
 
-    private final ProductOrderServiceImpl productOrderService;
-    private final AccountServiceImpl      accountService;
+    private final ProductOrderServiceImpl  productOrderService;
+    private final AccountServiceImpl       accountService;
+    private final ProductAccessServiceImpl productAccessService;
 
     @GetMapping("")
     public String index(Model model) {
@@ -32,11 +36,15 @@ public class AdminController {
         Integer dbTotalCount      = this.productOrderService.findCountByAll();
         Integer dbCountOrderState = this.productOrderService.findCountByOrderState();
         Integer dbCountAccount    = this.accountService.findCountByAll();
+        /* 연령대별 분류 탐색유저 정보 */
+        ProductAccessAgeDTO ageAccessByProduct = this.productAccessService
+                .getAgeAccessByProduct();
 
         model.addAttribute("totalAmount", dbTotalAmount);
         model.addAttribute("totalCount", dbTotalCount);
         model.addAttribute("countOrderState", dbCountOrderState);
         model.addAttribute("countAccount", dbCountAccount);
+        model.addAttribute("ageAccessByProduct", ageAccessByProduct);
 
         return "admin/index";
     }

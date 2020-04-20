@@ -10,7 +10,7 @@
   <div th:text="${title}" class="page-title"></div>
 </div>
 
-<th:block th:replace="widget/productList/index"></th:block>
+<th:block th:replace="~{widget/productList/index :: list (${productList})}"></th:block>
 
 </body>
 </html>

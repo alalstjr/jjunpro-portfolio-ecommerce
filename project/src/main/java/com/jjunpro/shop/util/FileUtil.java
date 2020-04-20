@@ -1,22 +1,11 @@
 package com.jjunpro.shop.util;
 
-import com.google.api.services.people.v1.model.Url;
 import com.jjunpro.shop.enums.DomainType;
 import com.jjunpro.shop.mapper.FileStorageMapper;
 import com.jjunpro.shop.model.FileStorage;
 import com.jjunpro.shop.model.Product;
 import com.jjunpro.shop.service.FileStorageServiceImpl;
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Field;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -217,19 +206,21 @@ public class FileUtil {
                     .findById(Long.parseLong(fileStorageArr[0]));
 
             if (dbFileStorage.isPresent()) {
-                /* 외부링크 참조하여 파일 가져오기 */
-                String   fileUrl  = "https://storage.googleapis.com/jjunpro-storage/" + dbFileStorage.get().getFileName();
+                /*
+                Google Cloud 외부링크 참조하여 파일 가져오기
+                String fileUrl =
+                        "https://storage.googleapis.com/jjunpro-storage/" + dbFileStorage.get()
+                                .getFileName();
 
                 return this.fileStorageService.storeResource(fileUrl, postDomain);
+                */
 
-                /*
-                로컬저장소 전용 파일 가져오기
 
+                /* 로컬저장소 전용 파일 가져오기 */
                 String   fileUrl  = preDomain.getValue() + "/" + dbFileStorage.get().getFileName();
                 Resource resource = this.fileStorageService.loadFileAsResource(fileUrl);
 
                 return this.fileStorageService.storeResource(resource, postDomain);
-                */
             }
         }
 

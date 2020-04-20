@@ -14,7 +14,7 @@ public interface ProductService {
 
     List<Product> findAll(Boolean ignore);
 
-    Optional<Product> findById(Long id);
+    Optional<Product> findById(Long id, Boolean ignore);
 
     Integer findCountByShopGroupId(Long shopGroupId);
 

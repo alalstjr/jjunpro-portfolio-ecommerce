@@ -1,6 +1,5 @@
 package com.jjunpro.shop.controller;
 
-import static com.jjunpro.shop.util.ClassPathUtil.ADMINGROUP;
 import static com.jjunpro.shop.util.ClassPathUtil.ADMINPRODUCT;
 import static com.jjunpro.shop.util.ClassPathUtil.SHOP;
 
@@ -71,7 +70,7 @@ public class ProductController {
 
         /* 수정 id */
         if (id != null) {
-            Optional<Product> product = this.productService.findById(id);
+            Optional<Product> product = this.productService.findById(id, true);
 
             if (product.isPresent()) {
                 model.addAttribute("productDTO", product.get());
@@ -131,7 +130,7 @@ public class ProductController {
     @PostMapping("/delete")
     public String delete(Long id, RedirectAttributes model) {
         /* DB 조회 후 삭제하려는 DATA 에 파일정보가 있으면 같이 삭제 */
-        Optional<Product> dbProduct = this.productService.findById(id);
+        Optional<Product> dbProduct = this.productService.findById(id, false);
 
         if (dbProduct.isPresent()) {
             if (dbProduct.get().getFileStorageIds() != null) {

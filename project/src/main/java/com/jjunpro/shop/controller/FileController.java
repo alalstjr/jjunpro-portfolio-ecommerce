@@ -22,11 +22,14 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class FileController {
 
-    private static final Logger                 logger = LoggerFactory.getLogger(FileController.class);
+    private static final Logger                 logger = LoggerFactory
+            .getLogger(FileController.class);
     private final        FileStorageServiceImpl fileStorageService;
 
     @PostMapping("/set")
     public void fileUpload(MultipartFile file) {
+        /* 파일 정상 업로드 테스트 */
+        System.out.println(file.getOriginalFilename());
     }
 
     @GetMapping("/{domain}/{fileName:.+}")
@@ -41,19 +44,21 @@ public class FileController {
         // Try to determine file's content type
         String contentType = null;
         try {
-            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+            contentType = request.getServletContext()
+                    .getMimeType(resource.getFile().getAbsolutePath());
         } catch (IOException ex) {
             logger.info("Could not determine file type.");
         }
 
         // Fallback to the default content type if type could not be determined
-        if(contentType == null) {
+        if (contentType == null) {
             contentType = "application/octet-stream";
         }
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
 }

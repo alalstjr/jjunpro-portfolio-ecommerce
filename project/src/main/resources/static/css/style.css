@@ -21868,3 +21868,7 @@ input[type="checkbox"]:checked {
   color: #fff;
   font-size: 13px;
 }
+
+.age-access-table td {
+  padding: 5px 10px;
+}

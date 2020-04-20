@@ -12,9 +12,9 @@ public class StringBuilderUtil {
      *
      * 서버에 저장할 때 사용
      */
-    public String classifyData(String ids) {
+    public String classifyData(String dataIds) {
         StringBuilder stringBuffer = new StringBuilder();
-        String[]      idArr        = ids.split(",");
+        String[]      idArr        = dataIds.split(",");
 
         int i = 0;
         for (String id : idArr) {
@@ -40,9 +40,9 @@ public class StringBuilderUtil {
      *
      * 서버에서 불러와서 처리할 때 사용
      */
-    public String[] classifyUnData(String ids) {
+    public String[] classifyUnData(String dataIds) {
         StringBuilder stringBuffer = new StringBuilder();
-        String[]      idArr        = ids.split(",");
+        String[]      idArr        = dataIds.split(",");
 
         int i = 0;
         for (String id : idArr) {
@@ -58,5 +58,19 @@ public class StringBuilderUtil {
         }
 
         return stringBuffer.toString().split(",");
+    }
+
+    public String classifyUnDataChar(String dataId) {
+        String   result = "";
+        String[] idArr  = dataId.split(",");
+
+        for (String id : idArr) {
+            if (!id.isEmpty()) {
+                result = id.trim();
+                break;
+            }
+        }
+
+        return result;
     }
 }

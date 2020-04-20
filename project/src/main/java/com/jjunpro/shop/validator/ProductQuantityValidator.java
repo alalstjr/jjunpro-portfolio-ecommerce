@@ -66,7 +66,7 @@ public class ProductQuantityValidator implements ConstraintValidator<ProductQuan
         for (Long id : productMap.keySet()) {
             Integer quantity = productMap.get(id);
 
-            Optional<Product> dbProduct = this.productService.findById(id);
+            Optional<Product> dbProduct = this.productService.findById(id, false);
 
             if (dbProduct.isPresent()) {
                 /* 상품이 판매가능 상태인지 체크합니다. */

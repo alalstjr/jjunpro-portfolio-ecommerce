@@ -99,8 +99,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Optional<Product> findById(Long id) {
-        Optional<Product> product = this.productMapper.findById(id);
+    public Optional<Product> findById(Long id, Boolean ignore) {
+        Optional<Product> product;
+        if (ignore) {
+            product = this.productMapper.findByIdAdmin(id);
+        } else {
+            product = this.productMapper.findById(id);
+        }
         product.ifPresent(this.fileUtil::fileSet);
 
         return product;

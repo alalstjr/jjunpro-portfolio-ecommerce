@@ -133,13 +133,21 @@ public class ProductOrderServiceImpl implements ProductOrderService {
             if (totalPointEnabled && productOrder.getUsePoint() != null
                     && productOrder.getUsePoint() > 0
                     && totalAmount >= 10000) {
+                int afterPoint;
 
                 /* 사용하려는 적립금과 유저의 적립금 차이가 있는지 확인합니다. */
                 if (point != null && point >= productOrder.getUsePoint()) {
-                    totalAmount = totalAmount - productOrder.getUsePoint();
-
+                    /* 상품보다 사용하는 포인트가 더 크거나 같은 경우 구매하는 가격만큼 포인트 차감 */
                     /* 사용자의 적립금 감소 */
-                    int afterPoint = point - productOrder.getUsePoint();
+                    if (totalAmount <= productOrder.getUsePoint()) {
+                        productOrder.setUsePoint(totalAmount);
+                        afterPoint = point - totalAmount;
+                        totalAmount = 0;
+                    } else {
+                        afterPoint = point - productOrder.getUsePoint();
+                        totalAmount = totalAmount - productOrder.getUsePoint();
+                    }
+
                     this.accountMapper.updatePoint(account.get().getId(), afterPoint);
 
                     productOrder.setReceivePoint(0);
@@ -263,7 +271,7 @@ public class ProductOrderServiceImpl implements ProductOrderService {
 
     @Override
     public String orderCancel(Long id) {
-        Optional<ProductOrder> dbProductOrder = this.productOrderMapper.findById(id);
+        Optional<ProductOrder> dbProductOrder = this.productOrderMapper.findByIdAdmin(id);
 
         if (dbProductOrder.isPresent()) {
             Optional<Account> account = getAccount();

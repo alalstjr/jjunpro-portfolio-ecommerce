@@ -28,7 +28,7 @@
           <tr th:each="product : ${productList}" class="text-center">
             <td>
               <img class="product-list-img"
-                   th:src="${product.getFileStorageList().isEmpty() ? 'none' : 'https://storage.googleapis.com/jjunpro-storage/' + product.getFileStorageList().get(0).fileDownloadUri}"
+                   th:src="${product.getFileStorageList().isEmpty() ? 'none' : product.getFileStorageList().get(0).fileDownloadUri}"
                    onError="this.onerror=null;this.src='/image/none-img.png';"
                    alt="상품이미지">
             </td>
@@ -170,6 +170,11 @@
     }
 
     return price;
+  }
+
+  /* 적립금 사용 그리고 유효성 검사에 실패한 경우 총 적립금 0 초기화 */
+  if(document.getElementById("usePoint").value !== '') {
+    document.getElementById("totalPoint").innerText = "0";
   }
 </script>
 

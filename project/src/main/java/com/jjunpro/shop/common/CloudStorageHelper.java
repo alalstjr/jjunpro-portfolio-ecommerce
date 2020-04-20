@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class CloudStorageHelper {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());

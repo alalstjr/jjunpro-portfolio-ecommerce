@@ -7,20 +7,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jjunpro.shop.dto.ProductOrderDTO;
 import com.jjunpro.shop.dto.ProductSetDTO;
 import com.jjunpro.shop.dto.ReceiptDTO;
-import com.jjunpro.shop.model.FileStorage;
+import com.jjunpro.shop.model.Account;
 import com.jjunpro.shop.model.Product;
+import com.jjunpro.shop.model.ProductAccess;
 import com.jjunpro.shop.model.ProductOrder;
 import com.jjunpro.shop.security.context.AccountContext;
 import com.jjunpro.shop.service.AccountServiceImpl;
-import com.jjunpro.shop.service.FileStorageServiceImpl;
+import com.jjunpro.shop.service.ProductAccessServiceImpl;
 import com.jjunpro.shop.service.ProductOrderServiceImpl;
 import com.jjunpro.shop.service.ProductServiceImpl;
+import com.jjunpro.shop.util.AccountUtil;
 import com.jjunpro.shop.util.IpUtil;
 import com.jjunpro.shop.util.StringBuilderUtil;
-import com.nimbusds.jose.proc.SecurityContext;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,9 +29,9 @@ import java.util.Map;
 import java.util.Optional;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -51,12 +52,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @SessionAttributes({"product", "productList", "productOrderDTO", "productSet"})
 public class ProductOrderController {
 
-    private final IpUtil                  ipUtil;
-    private final ProductServiceImpl      productService;
-    private final ProductOrderServiceImpl productOrderService;
-    private final AccountServiceImpl      accountService;
-    private final FileStorageServiceImpl  fileStorageService;
-    private final StringBuilderUtil       stringBuilderUtil;
+    private final IpUtil                   ipUtil;
+    private final StringBuilderUtil        stringBuilderUtil;
+    private final AccountUtil              accountUtil;
+    private final ProductServiceImpl       productService;
+    private final ProductOrderServiceImpl  productOrderService;
+    private final AccountServiceImpl       accountService;
+    private final ProductAccessServiceImpl productAccessService;
 
     /* Test Code */
     @PostMapping("/set")
@@ -69,12 +71,35 @@ public class ProductOrderController {
     @GetMapping("/view")
     public String view(
             @RequestParam Long id,
-            Model model
+            Model model,
+            HttpServletRequest request,
+            Principal principal
     ) {
-        Optional<Product> product = this.productService.findById(id);
+        Optional<Product> product = this.productService.findById(id, false);
 
         if (product.isPresent()) {
             model.addAttribute("product", product.get());
+
+            /* Account Product 접근 DATA 수집 */
+            if (principal != null) {
+                AccountContext dbAccount = (AccountContext) this.accountService
+                        .loadUserByUsername(principal.getName());
+
+                ProductAccess productAccess = ProductAccess.builder()
+                        .ip(this.ipUtil.getUserIp(request))
+                        .accountId(dbAccount.getAccount().getId())
+                        .ageRange(this.accountUtil.ageConverter(dbAccount.getAccount().getAgeRange(), dbAccount.getAccount().getBirthday()))
+                        .birthday(dbAccount.getAccount().getBirthday())
+                        .gender(dbAccount.getAccount().getGender())
+                        .addr(dbAccount.getAccount().getAddr1())
+                        .productId(product.get().getId())
+                        .price(product.get().getPrice())
+                        .discount(product.get().getDiscount() != 0)
+                        .point(product.get().getPointEnabled())
+                        .build();
+
+                this.productAccessService.set(productAccess);
+            }
         }
 
         /* 클라이언트에서 전달받는 상품의 { id, 수량 } 정보를 저장하는 DTO */
@@ -142,8 +167,8 @@ public class ProductOrderController {
         /* 포인트 사용금지가 하나라도 있으면 포인트 사용 금지 */
         productOrderDTO.setPointEnabled(true);
 
-        for(Product product : productList) {
-            if(!product.getPointEnabled()) {
+        for (Product product : productList) {
+            if (!product.getPointEnabled()) {
                 productOrderDTO.setPointEnabled(false);
                 break;
             }
@@ -308,7 +333,7 @@ public class ProductOrderController {
 
         for (Long id : productMap.keySet()) {
             Integer           quantity  = productMap.get(id);
-            Optional<Product> dbProduct = this.productService.findById(id);
+            Optional<Product> dbProduct = this.productService.findById(id, false);
 
             if (dbProduct.isPresent()) {
                 /* 주문수량을 개별상품에 담습니다. */

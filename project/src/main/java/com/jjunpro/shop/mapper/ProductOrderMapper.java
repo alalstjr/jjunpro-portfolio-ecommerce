@@ -10,6 +10,8 @@ public interface ProductOrderMapper {
 
     void insert(ProductOrder productOrder);
 
+    Optional<ProductOrder> findByIdAdmin(Long id);
+
     Optional<ProductOrder> findById(Long id);
 
     void orderCancel(Long id);

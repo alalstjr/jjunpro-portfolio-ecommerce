@@ -16,7 +16,15 @@
   </div>
   <div class="mb-5"></div>
 </div>
-<th:block th:replace="widget/productList/index"></th:block>
+<th:block th:replace="~{widget/productList/index :: list (${productList})}"></th:block>
+
+<div class="container-box">
+  <div class="input-title">
+    상품 <b>추천</b> (로그인한 사용자의 나이를 파악해서 적절한 상품을 출력합니다.)
+  </div>
+  <div class="mb-5"></div>
+</div>
+<th:block th:replace="~{widget/productList/index :: list (${ageAccessByProductList})}"></th:block>
 
 </body>
 </html>

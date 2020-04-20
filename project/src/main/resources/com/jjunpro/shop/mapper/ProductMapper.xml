@@ -95,10 +95,20 @@
     ORDER BY createddate DESC LIMIT 20;
   </select>
 
+  <!-- 관리자 전용 접근 함수 -->
+  <select id="findByIdAdmin" resultType="Product">
+    SELECT * FROM
+        product
+    WHERE
+        id = #{id};
+  </select>
+
   <select id="findById" resultType="Product">
     SELECT * FROM
         product
     WHERE
+        enabled = true
+    AND
         id = #{id};
   </select>
 
