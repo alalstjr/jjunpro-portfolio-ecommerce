@@ -13,7 +13,7 @@ public interface ProductOrderService {
 
     List<ProductOrder> findByAccountIdList(Long accountId);
 
-    String orderCancel(Long id);
+    String orderCancel(Long id, Boolean ignore);
 
     Integer findTotalAmountByOrderState();
 

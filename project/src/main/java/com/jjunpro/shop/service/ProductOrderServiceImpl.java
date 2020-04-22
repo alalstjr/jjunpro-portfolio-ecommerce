@@ -68,7 +68,11 @@ public class ProductOrderServiceImpl implements ProductOrderService {
             Optional<Product> dbProduct = this.productMapper.findById(id);
             if (dbProduct.isPresent()) {
                 /* 상품의 수량체크와 구매가능 상태를 체크합니다. */
-                if (dbProduct.get().getQuantity() > 0 && dbProduct.get().getEnabled()) {
+                if (dbProduct.get().getQuantity() > 0 &&
+                        dbProduct.get().getEnabled() &&
+                        !dbProduct.get().getPointEnabled() &&
+                        dbProduct.get().getBuyMinQuantity() <= quantity &&
+                        dbProduct.get().getBuyMaxQuantity() >= quantity) {
                     Integer price        = dbProduct.get().getPrice();
                     Short   discount     = dbProduct.get().getDiscount();
                     Boolean pointEnabled = dbProduct.get().getPointEnabled();
@@ -270,54 +274,60 @@ public class ProductOrderServiceImpl implements ProductOrderService {
     }
 
     @Override
-    public String orderCancel(Long id) {
-        Optional<ProductOrder> dbProductOrder = this.productOrderMapper.findByIdAdmin(id);
+    public String orderCancel(Long id, Boolean ignore) {
+        Optional<ProductOrder> dbProductOrder;
+
+        if (ignore) {
+            dbProductOrder = this.productOrderMapper.findByIdAdmin(id);
+        } else {
+            dbProductOrder = this.productOrderMapper.findById(id);
+        }
 
         if (dbProductOrder.isPresent()) {
-            Optional<Account> account = getAccount();
-
-            /* 구매한 상품의 수량, 포인트 회수 */
-            Map<Long, Integer> productMap = new HashMap<>();
-            String[] idArr = this.stringBuilderUtil
-                    .classifyUnData(dbProductOrder.get().getProductIds());
-            String[] quantityArr = this.stringBuilderUtil
-                    .classifyUnData(dbProductOrder.get().getProductQuantitys());
-
-            /* 상품 수량 반환 */
-            int i = 0;
-            for (String productId : idArr) {
-                productMap.put(Long.parseLong(productId), Integer.parseInt(quantityArr[i]));
-                i++;
-            }
-
-            for (Long productId : productMap.keySet()) {
-                Integer           quantity  = productMap.get(productId);
-                Optional<Product> dbProduct = this.productMapper.findById(productId);
-
-                if (dbProduct.isPresent()) {
-                    /* DB 존재하는 상품의 수량 + 취소하는 상품의 수량 */
-                    int afterQuantity = dbProduct.get().getQuantity() + quantity;
-                    dbProduct.get().setQuantity(afterQuantity);
-                    this.productMapper.update(dbProduct.get());
-                }
-            }
-
-            /* 사용한 포인트 반환 */
-            if (account.isPresent()) {
-                Integer point      = account.get().getPoint();
-                int     afterPoint = 0;
-
-                if (dbProductOrder.get().getUsePoint() == 0) {
-                    afterPoint = point - dbProductOrder.get().getReceivePoint();
-                } else {
-                    afterPoint = point + dbProductOrder.get().getUsePoint();
-                }
-
-                this.accountMapper.updatePoint(account.get().getId(), afterPoint);
-            }
-
-            /* 주문서의 상태변경 */
             if (!dbProductOrder.get().getOrderState().equals((short) 3)) {
+                Optional<Account> account = getAccount();
+
+                /* 구매한 상품의 수량, 포인트 회수 */
+                Map<Long, Integer> productMap = new HashMap<>();
+                String[] idArr = this.stringBuilderUtil
+                        .classifyUnData(dbProductOrder.get().getProductIds());
+                String[] quantityArr = this.stringBuilderUtil
+                        .classifyUnData(dbProductOrder.get().getProductQuantitys());
+
+                /* 상품 수량 반환 */
+                int i = 0;
+                for (String productId : idArr) {
+                    productMap.put(Long.parseLong(productId), Integer.parseInt(quantityArr[i]));
+                    i++;
+                }
+
+                for (Long productId : productMap.keySet()) {
+                    Integer           quantity  = productMap.get(productId);
+                    Optional<Product> dbProduct = this.productMapper.findById(productId);
+
+                    if (dbProduct.isPresent()) {
+                        /* DB 존재하는 상품의 수량 + 취소하는 상품의 수량 */
+                        int afterQuantity = dbProduct.get().getQuantity() + quantity;
+                        dbProduct.get().setQuantity(afterQuantity);
+                        this.productMapper.update(dbProduct.get());
+                    }
+                }
+
+                /* 사용한 포인트 반환 */
+                if (account.isPresent()) {
+                    Integer point      = account.get().getPoint();
+                    int     afterPoint = 0;
+
+                    if (dbProductOrder.get().getUsePoint() == 0) {
+                        afterPoint = point - dbProductOrder.get().getReceivePoint();
+                    } else {
+                        afterPoint = point + dbProductOrder.get().getUsePoint();
+                    }
+
+                    this.accountMapper.updatePoint(account.get().getId(), afterPoint);
+                }
+
+                /* 주문서의 상태변경 */
                 /* 주문의 상태를 취소로 변경합니다. */
                 this.productOrderMapper.orderCancel(id);
 

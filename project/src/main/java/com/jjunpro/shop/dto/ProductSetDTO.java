@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
+/**
+ * 장바구니 상품을 검증할 때 사용하는 DTO 다수의 상품 검수
+ */
 @Getter
 @Setter
 @NoArgsConstructor

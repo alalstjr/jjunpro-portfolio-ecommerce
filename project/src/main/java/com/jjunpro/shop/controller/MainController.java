@@ -43,15 +43,18 @@ public class MainController {
         if (principal != null) {
             AccountContext dbAccount = (AccountContext) this.accountService
                     .loadUserByUsername(principal.getName());
+            /* Account 정보에 등록된 나이 or 생일 정보가 있는경우에만 탐색 */
+            if (dbAccount.getAccount().getAgeRange() != null
+                    || dbAccount.getAccount().getBirthday() != null) {
+                byte ageConverter = accountUtil.ageConverter(
+                        dbAccount.getAccount().getAgeRange(),
+                        dbAccount.getAccount().getBirthday()
+                );
 
-            byte ageConverter = accountUtil.ageConverter(
-                    dbAccount.getAccount().getAgeRange(),
-                    dbAccount.getAccount().getBirthday()
-            );
-
-            List<Product> ageAccessByProductList = productAccessService
-                    .getAgeAccessByProductUser(ageConverter);
-            model.addAttribute("ageAccessByProductList", ageAccessByProductList);
+                List<Product> ageAccessByProductList = productAccessService
+                        .getAgeAccessByProductUser(ageConverter);
+                model.addAttribute("ageAccessByProductList", ageAccessByProductList);
+            }
         } else {
             model.addAttribute("ageAccessByProductList", productList);
         }

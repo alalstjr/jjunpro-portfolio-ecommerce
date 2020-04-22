@@ -41,8 +41,9 @@
             <td class="quantity"
                 th:data-quantity="${product.orderQuantity}" th:id="${'quantity-' + product.id}">
               <input type="number" th:value="${product.orderQuantity}"
+                     th:id="${'quantity-input-' + product.id}"
                      style="width: 50px;height: 35px;text-align: center;"
-                     th:onchange="'cartQuantityEdit(\''+ ${product.id} +'\', this, \''+ ${product.quantity} +'\')'">
+                     th:onchange="'cartQuantityEdit(\''+ ${product.id} +'\', \''+ ${product.quantity} +'\', \''+ ${product.buyMinQuantity} +'\', \''+ ${product.buyMaxQuantity} +'\', this)'">
             </td>
             <td class="price"
                 th:id="${'price-' + product.id}"
@@ -72,8 +73,8 @@
     <!-- 결제금액 -->
     <div class="option-line"></div>
     <div class="row">
-      <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 text-right">총 금액</div>
-      <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 text-right">
+      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 text-right">총 금액</div>
+      <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 text-right">
         <b id="totalPrice">
           총 결제금액
         </b>
@@ -82,8 +83,8 @@
 
     <div class="input-title">결제예정금액</div>
     <div class="row my-4">
-      <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 text-right">추가 적립금</div>
-      <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 text-right">
+      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 text-right">추가 적립금</div>
+      <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 text-right">
         <b class="text-success">
           +
           <span id="totalPoint">
@@ -94,8 +95,8 @@
     </div>
     <div class="option-line"></div>
     <div class="row my-4">
-      <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 text-right">총 결제금액</div>
-      <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 text-right">
+      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 text-right">총 결제금액</div>
+      <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 text-right">
         <b id="allTotalPrice">
           총 결제금액
         </b>
@@ -126,10 +127,16 @@
       totalPoint += priceList[i].dataset.point * 1;
     }
 
-    document.getElementById("totalPrice").innerText = numberWithCommas(totalPrice) + '원';
     document.getElementById("totalPoint").innerText = numberWithCommas(totalPoint) + '점';
-    document.getElementById("allTotalPrice").innerText = numberWithCommas(totalPrice)
-        + '원';
+
+    if(totalPrice >= 0) {
+      document.getElementById("totalPrice").innerText = numberWithCommas(totalPrice) + '원';
+      document.getElementById("allTotalPrice").innerText = numberWithCommas(totalPrice)
+          + '원';
+    } else {
+      document.getElementById("totalPrice").innerText = "수량 혹은 상품이 잘못되었습니다.";
+      document.getElementById("allTotalPrice").innerText = "수량 혹은 상품이 잘못되었습니다.";
+    }
   }
 
   init();
@@ -247,19 +254,29 @@
     }
   }
 
-  function cartQuantityEdit(id, e, maxQuantity) {
-    if (e.value <= 0) {
-      alert("수량을 1개 이상 작성해 주세여.")
+  function cartQuantityEdit(id, maxQuantity, buyMinQuantity, buyMaxQuantity, e) {
+    var value = e.value;
+
+    if (value < buyMinQuantity * 1) {
+      document.getElementById("quantity-input-" + id).value = buyMinQuantity * 1;
+      alert(buyMinQuantity + "개 이상 구매해야 합니다.");
       return false;
     }
 
     /* 상품의 재고를 확인하여 수량을 확인시켜 줍니다. */
     if (maxQuantity * 1 < e.value) {
+      document.getElementById("quantity-input-" + id).value = buyMaxQuantity;
       alert("정해진 수량 " + maxQuantity + "개 보다 많습니다.");
       return false;
     }
 
-    var editValue = Math.abs(e.value);
+    if (value > buyMaxQuantity * 1) {
+      document.getElementById("quantity-input-" + id).value = buyMaxQuantity * 1;
+      alert(buyMaxQuantity + "개 보다 적개 구매해야 합니다.");
+      return false;
+    }
+
+    var editValue = Math.abs(value);
     var item = JSON.parse(getCookie("Cart"));
 
     if (item !== null && editValue !== '') {

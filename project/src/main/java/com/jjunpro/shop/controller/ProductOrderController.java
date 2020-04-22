@@ -245,7 +245,7 @@ public class ProductOrderController {
             return "redirect:/order/receipt";
         }
 
-        String orderCancel = this.productOrderService.orderCancel(id.getId());
+        String orderCancel = this.productOrderService.orderCancel(id.getId(), false);
         redirectAttributes.addAttribute("message", orderCancel);
 
         return "redirect:/order/receipt";

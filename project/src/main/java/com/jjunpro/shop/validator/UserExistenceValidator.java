@@ -2,7 +2,9 @@ package com.jjunpro.shop.validator;
 
 import com.jjunpro.shop.security.context.AccountContext;
 import com.jjunpro.shop.service.AccountServiceImpl;
+import java.util.Collection;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.validation.ConstraintValidator;

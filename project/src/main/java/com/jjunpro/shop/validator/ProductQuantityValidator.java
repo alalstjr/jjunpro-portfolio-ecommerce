@@ -56,11 +56,21 @@ public class ProductQuantityValidator implements ConstraintValidator<ProductQuan
         for (String id : idArr) {
             /* 상품과 수량값이 존재하는지 확인 후 map 생성 */
             if (!id.isEmpty() && !quantityArr[i].isEmpty()) {
-                productMap.put(Long.parseLong(id), Integer.parseInt(quantityArr[i]));
-                i++;
+                int quantity = Integer.parseInt(quantityArr[i]);
+
+                /* 수량이 음수인경우 false */
+                if (quantity > 0) {
+                    productMap.put(Long.parseLong(id), quantity);
+                } else {
+                    quantityCheck = false;
+                    break;
+                }
             } else {
                 quantityCheck = false;
+                break;
             }
+
+            i++;
         }
 
         for (Long id : productMap.keySet()) {
@@ -73,7 +83,11 @@ public class ProductQuantityValidator implements ConstraintValidator<ProductQuan
                 enabledCheck = dbProduct.get().getEnabled();
 
                 /* DB 존재하는 상품의 수량보다 클라이언트 수량이 더 많은경우 false */
-                quantityCheck = dbProduct.get().getQuantity() >= quantity;
+                if (dbProduct.get().getQuantity() < quantity ||
+                        dbProduct.get().getBuyMinQuantity() > quantity ||
+                        dbProduct.get().getBuyMaxQuantity() < quantity) {
+                    quantityCheck = false;
+                }
             }
 
             if (!quantityCheck || !enabledCheck) {

@@ -55,8 +55,12 @@
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">수량</div>
           <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
             <input type="number" name="setQuantity" id="setQuantity" class="quantity-input"
-                   value="1" th:onchange="'maxQuantityCheck(\''+ ${product.quantity} +'\', this)'">
-            <div class="my-3">최대 <b th:text="${product.quantity}"></b>개 까지 구매 가능합니다.</div>
+                   th:value="${product.buyMinQuantity}"
+                   value="1"
+                   th:onchange="'maxQuantityCheck(\''+ ${product.quantity} +'\', \''+ ${product.buyMinQuantity} +'\', \''+ ${product.buyMaxQuantity} +'\', this)'">
+            <div class="my-3">
+              수량은 <b th:text="${product.quantity}"></b>개 남았습니다.
+            </div>
           </div>
         </div>
         <div class="option-line"></div>
@@ -66,7 +70,7 @@
                 th:text="${#numbers.formatDecimal(product.price - (product.price * product.discount / 100), 0, 'COMMA', 0, 'POINT') + ' WON'}">0</span>
         </div>
         <th:block th:if="${product.quantity > 0}">
-          <th:block th:if="${product.enabled}">
+          <th:block th:if="${product.enabled && !product.callQuestion}">
             <div class="row">
               <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
                 <button type="button" class="product-btn cart-btn" onclick="cartAdd()">장바구니</button>
@@ -79,6 +83,9 @@
           <div th:if="${!product.enabled}" class="product-enalbed-f">
             구매할 수 없는 상품입니다.
           </div>
+          <th:block th:if="${product.enabled && product.callQuestion}">
+            <div class="product-enalbed-f">상품 구매를 원하시면 010-4021-1220 으로 연락주세요.</div>
+          </th:block>
         </th:block>
         <div th:if="${product.quantity <= 0}" class="product-enalbed-f">
           품절된 상품입니다.
@@ -136,6 +143,11 @@
       return false;
     }
 
+    if (setQuantity < 0) {
+      alert("수량은 0개 이상 작성해야 합니다.");
+      return false;
+    }
+
     /* 장바구니 쿠키 초기화 */
     if (getCookie("Cart") === undefined) {
       var jsonData = {
@@ -187,9 +199,28 @@
   }
 
   /* 상품의 재고를 확인하여 수량을 확인시켜 줍니다. */
-  function maxQuantityCheck(maxQuantity, e) {
+  function maxQuantityCheck(maxQuantity, buyMinQuantity, buyMaxQuantity, e) {
+    var value = e.value;
+
     if (maxQuantity * 1 < e.value) {
+      if(buyMaxQuantity > maxQuantity) {
+        document.getElementById("setQuantity").value = maxQuantity;
+      } else {
+        document.getElementById("setQuantity").value = buyMaxQuantity;
+      }
       alert("정해진 수량 " + maxQuantity + "개 보다 많습니다.");
+      return false;
+    }
+
+    if (value < buyMinQuantity * 1) {
+      document.getElementById("setQuantity").value = buyMinQuantity * 1;
+      alert(buyMinQuantity + "개 이상 구매해야 합니다.");
+      return false;
+    }
+
+    if (value > buyMaxQuantity * 1) {
+      document.getElementById("setQuantity").value = buyMaxQuantity * 1;
+      alert(buyMaxQuantity + "개 보다 적개 구매해야 합니다.");
       return false;
     }
   }

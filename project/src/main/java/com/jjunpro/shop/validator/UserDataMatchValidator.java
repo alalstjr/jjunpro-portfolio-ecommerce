@@ -7,6 +7,7 @@ import com.jjunpro.shop.security.context.AccountContext;
 import com.jjunpro.shop.service.AccountService;
 import com.jjunpro.shop.service.AccountServiceImpl;
 import com.jjunpro.shop.service.ProductOrderServiceImpl;
+import com.jjunpro.shop.util.AccountUtil;
 import java.lang.reflect.Field;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,6 +33,7 @@ public class UserDataMatchValidator implements ConstraintValidator<UserDataMatch
 
     private final AccountServiceImpl      accountService;
     private final ProductOrderServiceImpl productOrderService;
+    private final AccountUtil             accountUtil;
 
     @Override
     public void initialize(UserDataMatch constraintAnnotation) {
@@ -56,27 +58,29 @@ public class UserDataMatchValidator implements ConstraintValidator<UserDataMatch
         AccountContext userDetails = (AccountContext) this.accountService
                 .loadUserByUsername(principal.getUsername());
 
-        try {
-            Field declaredField = value.getClass().getDeclaredField(this.id);
-            declaredField.setAccessible(true);
-            idCheck = (Long) declaredField.get(value);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        if (!accountUtil.adminCheck(principal)) {
+            try {
+                Field declaredField = value.getClass().getDeclaredField(this.id);
+                declaredField.setAccessible(true);
+                idCheck = (Long) declaredField.get(value);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
 
-        if (idCheck != null) {
-            valid = this.dbDataMatch(
-                    idCheck,
-                    userDetails.getAccount(),
-                    this.domain
-            );
-        }
+            if (idCheck != null) {
+                valid = this.dbDataMatch(
+                        idCheck,
+                        userDetails.getAccount(),
+                        this.domain
+                );
+            }
 
-        if (!valid) {
-            context
-                    .buildConstraintViolationWithTemplate(this.message)
-                    .addPropertyNode(this.id)
-                    .addConstraintViolation();
+            if (!valid) {
+                context
+                        .buildConstraintViolationWithTemplate(this.message)
+                        .addPropertyNode(this.id)
+                        .addConstraintViolation();
+            }
         }
 
         return valid;

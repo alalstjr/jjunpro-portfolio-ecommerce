@@ -8,6 +8,7 @@ import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,6 +22,7 @@ public class UserFormDTO {
     private String ip;
 
     @Email(message = "잘못된 이메일입니다.")
+    @Pattern(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}", message = "잘못된 이메일입니다.")
     @NotBlank(message = "이메일은 필수로 작성해야 합니다.")
     @DataMatch(message = "이미 존재하는 이메일 입니다.", column = ColumnType.EMAIL)
     private String email;
@@ -44,6 +46,7 @@ public class UserFormDTO {
 
     private String phoneNumber;
 
+    @Pattern(regexp = "(?:19|20)[0-9]{2}(?:(?:0[1-9]|1[0-2])(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])(?:30))|(?:(?:0[13578]|1[02])-31))", message = "옳바른 생년월일을 작성해 주세요.")
     private String birthday;
 
     private int gender;

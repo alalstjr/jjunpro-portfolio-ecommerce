@@ -35,18 +35,7 @@ public class ProductAccessServiceImpl implements ProductAccessService {
 
     @Override
     public ProductAccessAgeDTO getAgeAccessByProduct() {
-        DateTime dateTime = new DateTime();
-
-        /* 초기 캐싱 설정 */
-        if (this.checkTime == null) {
-            /* 캐싱된 시간 설정 */
-            this.setTimeAndData(dateTime);
-        }
-
-        /* 캐싱 1분이 지난경우 DB 재탐색 입니다.. 만 포트폴리오 설정으로 바로바로 업데이트 */
-        // if (dateTime.getMillis() > this.checkTime.getMillis() + (60 * 1000)) {
-        /* 캐싱된 시간 설정 */
-        this.setTimeAndData(dateTime);
+        this.initTime();
 
         return ProductAccessAgeDTO.builder()
                 .ageTen(this.getProduct(this.productAccessDTO.getAgeTen(), true))
@@ -59,6 +48,8 @@ public class ProductAccessServiceImpl implements ProductAccessService {
 
     @Override
     public List<Product> getAgeAccessByProductUser(byte ageRange) {
+        this.initTime();
+
         switch (ageRange) {
             case (byte) 10:
                 return this.getProduct(this.productAccessDTO.getAgeTen(), false);
@@ -72,6 +63,22 @@ public class ProductAccessServiceImpl implements ProductAccessService {
                 return this.getProduct(this.productAccessDTO.getAgeEtc(), false);
         }
     }
+
+    private void initTime() {
+        DateTime dateTime = new DateTime();
+
+        /* 초기 캐싱 설정 */
+        if (this.checkTime == null) {
+            /* 캐싱된 시간 설정 */
+            this.setTimeAndData(dateTime);
+        }
+
+        /* 캐싱 1분이 지난경우 DB 재탐색 입니다.. 만 포트폴리오 설정으로 바로바로 업데이트 */
+        // if (dateTime.getMillis() > this.checkTime.getMillis() + (60 * 1000)) {
+        /* 캐싱된 시간 설정 */
+        this.setTimeAndData(dateTime);
+    }
+
 
     private void setTimeAndData(DateTime dateTime) {
         this.checkTime = dateTime;

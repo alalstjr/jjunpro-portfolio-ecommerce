@@ -59,7 +59,8 @@
 
   <update id="orderCancel">
     UPDATE product_order
-    SET orderState = 3;
+    SET orderState = 3
+    WHERE id = #{id};
     --     WHERE orderState = 0
 --        OR orderState = 1
 --        OR orderState = 2;
