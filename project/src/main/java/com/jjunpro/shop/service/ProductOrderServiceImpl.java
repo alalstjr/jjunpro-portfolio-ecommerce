@@ -43,6 +43,7 @@ public class ProductOrderServiceImpl implements ProductOrderService {
     @Override
     public ProductOrder set(ProductOrder productOrder) {
         int     totalAmount       = 0;
+        int     totalReceivePoint = 0;
         boolean totalPointEnabled = false;
 
         Optional<Account> account = getAccount();
@@ -70,7 +71,6 @@ public class ProductOrderServiceImpl implements ProductOrderService {
                 /* 상품의 수량체크와 구매가능 상태를 체크합니다. */
                 if (dbProduct.get().getQuantity() > 0 &&
                         dbProduct.get().getEnabled() &&
-                        !dbProduct.get().getPointEnabled() &&
                         dbProduct.get().getBuyMinQuantity() <= quantity &&
                         dbProduct.get().getBuyMaxQuantity() >= quantity) {
                     Integer price        = dbProduct.get().getPrice();
@@ -95,8 +95,7 @@ public class ProductOrderServiceImpl implements ProductOrderService {
                     }
 
                     /* 적립금 계산 */
-                    Integer receivePoint = (price - (price * discount / 100)) * point / 100;
-                    productOrder.setReceivePoint(receivePoint);
+                    totalReceivePoint += (price - (price * discount / 100)) * point / 100;
 
                     /* 해당 상품의 할인률 계산 */
                     if (discount > 0) {
@@ -126,6 +125,9 @@ public class ProductOrderServiceImpl implements ProductOrderService {
                 throw new DataNullException("상품이 존재하지 않습니다.");
             }
         }
+
+        /* 상품의 최종 적립금을 설정합니다. */
+        productOrder.setReceivePoint(totalReceivePoint);
 
         /*
          * 유저의 적립금 사용 or 적립금 추가 계산
@@ -167,7 +169,6 @@ public class ProductOrderServiceImpl implements ProductOrderService {
         }
 
         /* 상품의 썸네일을 주문서에 저장합니다. */
-
 
         /* 구매하는 상품의 종류와 갯수를 저장합니다. */
         productOrder.idsAndQuantitysSet(orderInfo);

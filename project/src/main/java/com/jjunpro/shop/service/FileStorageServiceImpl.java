@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import org.imagelib.ImageLib;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -167,10 +168,9 @@ public class FileStorageServiceImpl implements FileStorageService {
         }
 
         // Normalize file name
-        String fileOriName = StringUtils.cleanPath(Objects.requireNonNull(
-                Objects.requireNonNull(file).getName()));
+        String fileOriName   = StringUtils.cleanPath(file.getName());
         String fileType      = fileOriName.substring(fileOriName.lastIndexOf(".")).replace(".", "");
-        String fileThumbName = "thumb." + fileType;
+        String fileThumbName = "thumb-" + fileOriName + "." + fileType;
 
         String fileName = this.setFileName(fileThumbName);
 
@@ -305,13 +305,11 @@ public class FileStorageServiceImpl implements FileStorageService {
     }
 
     private String setFileName(String fileOriName) {
-        long             timeMillis       = System.currentTimeMillis();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-        String           currentTime      = simpleDateFormat.format(timeMillis);
+        DateTime dateTime = new DateTime();
+        String   nowTime  = dateTime.toString("yyyy-MM-dd-HH-mm-ss");
+        String   fileName = fileOriName.substring(0, fileOriName.lastIndexOf("."));
+        String   fileType = fileOriName.substring(fileOriName.lastIndexOf("."));
 
-        String fileName = fileOriName.substring(0, fileOriName.lastIndexOf("."));
-        String fileType = fileOriName.substring(fileOriName.lastIndexOf("."));
-
-        return fileName + '-' + currentTime + fileType;
+        return fileName + '-' + nowTime + fileType;
     }
 }
