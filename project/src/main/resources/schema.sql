@@ -17,22 +17,23 @@ CREATE TABLE ACCOUNT
     modifiedDate TIMESTAMP NOT NULL,
     enabled      BOOLEAN   NOT NULL,
 
-    email        VARCHAR   NOT NULL UNIQUE,
-    password     VARCHAR,
-    username     VARCHAR,
+    email        VARCHAR   NOT NULL UNIQUE,-- '이메일',
+    password     VARCHAR,-- '비밀번호',
+    username     VARCHAR,-- '이름',
 
-    userRole     VARCHAR   NOT NULL,
-    agerange     VARCHAR,
-    birthday     VARCHAR,
-    gender       SMALLINT,
-    postcode     VARCHAR,
-    addr1        VARCHAR,
-    addr2        VARCHAR,
-    phoneNumber  VARCHAR,
+    userRole     VARCHAR   NOT NULL,-- '권한',
+    agerange     VARCHAR,-- '나이',
+    birthday     VARCHAR,-- '생일',
+    gender       SMALLINT,-- '성별',
+    postcode     VARCHAR,-- '우편번호',
+    addr1        VARCHAR,-- '일반 주소',
+    addr2        VARCHAR,-- '상세 주소',
+    phoneNumber  VARCHAR,-- '핸드폰 번호',
 
-    point        INTEGER
+    point        INTEGER-- '상품 구매 포인트'
 );
 
+/* 기본 관리자 유저 생성 */
 INSERT INTO ACCOUNT (username, email, enabled, userRole, password, createdDate,
                      modifiedDate, ip, point, agerange, birthday, gender, postcode, addr1)
 VALUES ('관리자', 'admin', true, 'ADMIN',
@@ -50,9 +51,9 @@ CREATE TABLE SHOP_GROUP
     modifiedDate      TIMESTAMP NOT NULL,
     enabled           BOOLEAN   NOT NULL,
 
-    shopName          VARCHAR   NOT NULL,
-    priority          INTEGER,
-    parentShopGroupId BIGINT
+    shopName          VARCHAR   NOT NULL,-- '카테고리 이름',
+    priority          INTEGER,-- '출력 순서',
+    parentShopGroupId BIGINT-- '해당 카테고리의 부모 id 값'
 );
 
 /* PRODUCT */
@@ -65,27 +66,27 @@ CREATE TABLE PRODUCT
     modifiedDate    TIMESTAMP NOT NULL,
     enabled         BOOLEAN   NOT NULL,
 
-    productName     VARCHAR,
-    explanation     VARCHAR,
-    tag             VARCHAR,
-    productType     VARCHAR,
-    callQuestion    BOOLEAN,
-    cuponEnabled    BOOLEAN,
-    pointEnabled    BOOLEAN,
-    content         VARCHAR,
-    summaryInfo     VARCHAR,
-    price           INTEGER   NOT NULL,
-    discount        SMALLINT  NOT NULL,
-    point           SMALLINT  NOT NULL,
-    quantity        INTEGER,
-    buyMinQuantity  INTEGER,
-    buyMaxQuantity  INTEGER,
-    reviewState     BOOLEAN,
-    reservationSale TIMESTAMP,
-    endSale         TIMESTAMP,
-    priority        INTEGER,
-    shopGroupIds    VARCHAR   NOT NULL,
-    fileStorageIds  VARCHAR
+    productName     VARCHAR,-- '상품 이름',
+    explanation     VARCHAR,-- '상품 설명',
+    tag             VARCHAR,-- '상품 태그',
+    productType     VARCHAR,-- '상품 타입',
+    callQuestion    BOOLEAN,-- '상품 구매상태 설정 그리고 전화요청 문구 출력 여부',
+    cuponEnabled    BOOLEAN,-- '쿠폰 사용 여부',
+    pointEnabled    BOOLEAN,-- '포인트 사용 여부',
+    content         VARCHAR,-- '상품 내용',
+    summaryInfo     VARCHAR,-- '상품 상세 정보',
+    price           INTEGER   NOT NULL,-- '가격',
+    discount        SMALLINT  NOT NULL,-- '할인',
+    point           SMALLINT  NOT NULL,-- '적립금',
+    quantity        INTEGER,-- '수량',
+    buyMinQuantity  INTEGER,-- '최소 구매 수량',
+    buyMaxQuantity  INTEGER,-- '최대 구매 수량',
+    reviewState     BOOLEAN,-- '상품 리뷰 작성 상태 여부',
+    reservationSale TIMESTAMP,-- '상품 구매 가능 날짜 설정',
+    endSale         TIMESTAMP,-- '상품 구매 불가 날짜 설정',
+    priority        INTEGER,-- '출력 순서',
+    shopGroupIds    VARCHAR   NOT NULL,-- '상품의 카테고리 id 값 들',
+    fileStorageIds  VARCHAR-- '상품의 파일 id 값 들'
 );
 
 /* SUB_PRODUCT */
@@ -98,9 +99,9 @@ CREATE TABLE SUB_PRODUCT
     modifiedDate TIMESTAMP NOT NULL,
     enabled      BOOLEAN   NOT NULL,
 
-    productName  VARCHAR   NOT NULL,
-    price        INTEGER   NOT NULL,
-    quantity     INTEGER   NOT NULL
+    productName  VARCHAR   NOT NULL,-- '서브 상품 이름',
+    price        INTEGER   NOT NULL,-- '서브 상품 가격',
+    quantity     INTEGER   NOT NULL-- '서브 상품 수량'
 );
 
 /* DELIVERY */
@@ -113,11 +114,11 @@ CREATE TABLE DELIVERY
     modifiedDate        TIMESTAMP NOT NULL,
     enabled             BOOLEAN   NOT NULL,
 
-    deliveryName        VARCHAR   NOT NULL,
-    deliveryType        SMALLINT,
-    deliveryPayType     SMALLINT,
-    deliveryDefaultPay  SMALLINT,
-    deliveryIfPay       SMALLINT,
+    deliveryName        VARCHAR   NOT NULL,-- '배달 이름',
+    deliveryType        SMALLINT,-- '배달 타입',
+    deliveryPayType     SMALLINT,-- '배달 비용 ex) 선불, 후불..',
+    deliveryDefaultPay  SMALLINT,-- '기본 배달 비용',
+    deliveryIfPay       SMALLINT,-- '배달시 지불 조건 ex) ~ 원 구매시 무료...',
     deliveryQuantityPay SMALLINT
 );
 
@@ -129,10 +130,10 @@ CREATE TABLE FILESTORAGE
     createdDate     TIMESTAMP NOT NULL,
     modifiedDate    TIMESTAMP NOT NULL,
 
-    fileName        VARCHAR   NOT NULL,
-    fileDownloadUri VARCHAR   NOT NULL,
-    fileType        VARCHAR   NOT NULL,
-    fileSize        INTEGER   NOT NULL
+    fileName        VARCHAR   NOT NULL,-- '업로드 파일의 기본 이름',
+    fileDownloadUri VARCHAR   NOT NULL,-- '불러오는 파일의 주소값',
+    fileType        VARCHAR   NOT NULL,-- '파일 형식',
+    fileSize        INTEGER   NOT NULL-- '파일 사이즈'
 );
 
 /* PRODUCT_ORDER */
@@ -145,26 +146,26 @@ CREATE TABLE PRODUCT_ORDER
     modifiedDate     TIMESTAMP NOT NULL,
     enabled          BOOLEAN   NOT NULL,
 
-    orderName        VARCHAR   NOT NULL,
-    orderEmail       VARCHAR,
-    orderPhone       VARCHAR   NOT NULL,
-    postcode         VARCHAR   NOT NULL,
-    addr1            VARCHAR   NOT NULL,
-    addr2            VARCHAR   NOT NULL,
-    memo             VARCHAR   NOT NULL,
+    orderName        VARCHAR   NOT NULL,-- '구매한 상품을 나열하여 주문서 제목으로 생성',
+    orderEmail       VARCHAR,-- '구매하는 유저의 이메일',
+    orderPhone       VARCHAR   NOT NULL,-- '구매하는 유저의 연락처',
+    postcode         VARCHAR   NOT NULL,-- '구매하는 유저의 우편번호',
+    addr1            VARCHAR   NOT NULL,-- '구매하는 유저의 기본 주소',
+    addr2            VARCHAR   NOT NULL,-- '구매하는 유저의 상세 주소',
+    memo             VARCHAR   NOT NULL,-- '구매하는 유저의 메모',
 
-    payment          SMALLINT  NOT NULL,
-    useCupon         VARCHAR,
-    usePoint         INTEGER,
-    totalAmount      INTEGER,
-    productNames     VARCHAR,
-    productIds       VARCHAR,
-    productQuantitys VARCHAR,
-    productAmounts   VARCHAR,
-    productThumbs    VARCHAR,
-    accountId        BIGINT,
-    orderState       SMALLINT,
-    receivePoint     INTEGER
+    payment          SMALLINT  NOT NULL,-- '구매하는 유저의 구매지불 방법 ex) 무통장, 네이버페이..',
+    useCupon         VARCHAR,-- '상품에 사용한 쿠폰 정보',
+    usePoint         INTEGER,-- '상품에 사용한 적립금',
+    totalAmount      INTEGER,-- '총 구매금액',
+    productNames     VARCHAR,-- '상품 이름 들',
+    productIds       VARCHAR,-- '상품 id값 들',
+    productQuantitys VARCHAR,-- '상품 구매 수량 들',
+    productAmounts   VARCHAR,-- '구매 당시 상품 가격 들',
+    productThumbs    VARCHAR,-- '구매 당시 상품 썸네일 파일 들',
+    accountId        BIGINT,-- '구매하는 유저의 id 정보',
+    orderState       SMALLINT,-- '구매 상태',
+    receivePoint     INTEGER-- '구매시 적립받는 포인트'
 );
 
 /* PRODUCT_ACCESS */
@@ -176,14 +177,14 @@ CREATE TABLE PRODUCT_ACCESS
     createdDate  TIMESTAMP NOT NULL,
     modifiedDate TIMESTAMP NOT NULL,
 
-    accountId    BIGINT,
-    ageRange     SMALLINT,
-    birthday     VARCHAR,
-    gender       INTEGER,
-    addr         VARCHAR,
+    accountId    BIGINT,-- '상품을 본 유저 id',
+    ageRange     SMALLINT,-- '상품을 본 유저 나이',
+    birthday     VARCHAR,-- '상품을 본 유저 생일',
+    gender       INTEGER,-- '상품을 본 유저 성별',
+    addr         VARCHAR,-- '상품을 본 유저 주소',
 
-    productId    BIGINT,
-    price        INTEGER,
-    discount     BOOLEAN,
-    point        BOOLEAN
+    productId    BIGINT,-- '유저가 본 상품 id',
+    price        INTEGER,-- '유저가 본 상품 가격',
+    discount     BOOLEAN,-- '유저가 본 상품 할인율',
+    point        BOOLEAN-- '유저가 본 상품 적립율'
 );
